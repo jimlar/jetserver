@@ -54,7 +54,7 @@ class ServletClassLoader extends ClassLoader {
      * Find and load classData
      */
     private byte[] loadClassData(String name) throws ClassNotFoundException {
-        File classFile = new File(webApp.getConfig().getFileRoot().getAbsolutePath()
+        File classFile = new File(webApp.getFileRoot().getAbsolutePath()
                                   + File.separator + "WEB-INF"
                                   + File.separator + "classes"
                                   + File.separator + name.replace('.', File.separatorChar)

@@ -55,7 +55,7 @@ class ServletInstanceFactory {
 
     private HttpServlet createInstance(String servletName) throws IOException {
         try {
-            JSServletConfig servletConfig = webApp.getConfig().getServletConfig(servletName);
+            JSServletConfig servletConfig = webApp.getServletConfig(servletName);
             Class servletClass = classLoader.loadClass(servletConfig.getClassName());
             HttpServlet servlet = (HttpServlet) servletClass.newInstance();
             if (servlet instanceof SingleThreadModel) {

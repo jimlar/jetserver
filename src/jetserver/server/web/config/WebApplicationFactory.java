@@ -13,65 +13,28 @@ import java.util.*;
 import jetserver.util.xml.JetServerEntityResolver;
 import jetserver.util.xml.XMLUtilities;
 import jetserver.util.Log;
+import jetserver.server.web.WebApplication;
+import jetserver.server.application.Application;
 
-public class WebApplicationConfig {
+public class WebApplicationFactory {
 
-    private String displayName;
-    private String httpRoot;
-    private File fileRoot;
-
-    private List welcomeFiles;
-    private List servletMappings;
-    private Map servletConfigsByName;
-
-
-    public WebApplicationConfig(File fileRoot) throws IOException {
-        this.fileRoot = fileRoot;
-        parse();
-    }
-
-
-    public String getDisplayName() {
-        return this.displayName;
-    }
-
-    public String getHttpRoot() {
-        return this.httpRoot;
-    }
-
-    public File getFileRoot() {
-        return this.fileRoot;
-    }
-
-    public Collection getWelcomeFiles() {
-        return this.welcomeFiles;
-    }
-
-    public List getServletMappings() {
-        return this.servletMappings;
-    }
-
-    public JSServletConfig getServletConfig(String servletName) {
-        return (JSServletConfig) this.servletConfigsByName.get(servletName);
-    }
-
-    /**
-     * Parse the xml
-     */
-    private void parse() throws IOException {
+    public static WebApplication createWebApplication(Application application, File fileRoot) throws IOException {
         try {
+            WebApplication webApplication = new WebApplication(application, fileRoot);
+
             DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             parser.setEntityResolver(new JetServerEntityResolver());
 
             /* parse web xml */
             File webINF = new File(fileRoot, "WEB-INF");
             File webXML = new File(webINF, "web.xml");
-            processWebXML(parser.parse(webXML.getAbsolutePath()));
+            processWebXML(webApplication, parser.parse(webXML.getAbsolutePath()));
 
             /* parse jetserver web xml */
             File jetServerWebXML = new File(webINF, "jetserver-web.xml");
-            processJetServerWebXML(parser.parse(jetServerWebXML.getAbsolutePath()));
+            processJetServerWebXML(webApplication, parser.parse(jetServerWebXML.getAbsolutePath()));
 
+            return webApplication;
 
         } catch (ParserConfigurationException e) {
             throw new IOException("cant parse xml: " + e);
@@ -82,41 +45,38 @@ public class WebApplicationConfig {
         }
     }
 
-    private void processWebXML(Document document)
+    private static void processWebXML(WebApplication webApplication, Document document)
             throws IOException
     {
         Node root = XMLUtilities.findFirstChildElement(document, "web-app");
 
         /** Fetch war info */
-        this.displayName = XMLUtilities.findValue(root, "display-name");
+        webApplication.setDisplayName(XMLUtilities.findValue(root, "display-name"));
 
         /** Fetch servlets */
-        this.servletConfigsByName = new HashMap();
         NodeList servletNodes = document.getElementsByTagName("servlet");
         for (int i = 0; i < servletNodes.getLength(); i++) {
-            processServletNode(servletNodes.item(i));
+            processServletNode(webApplication, servletNodes.item(i));
         }
 
         /** Fetch servlet mappings */
-        this.servletMappings = new ArrayList();
         NodeList servletMappingNodes = document.getElementsByTagName("servlet-mapping");
         for (int i = 0; i < servletMappingNodes.getLength(); i++) {
             Node node = servletMappingNodes.item(i);
             ServletMapping servletMapping = new ServletMapping(XMLUtilities.findValue(node, "servlet-name"),
                                                                XMLUtilities.findValue(node, "url-pattern"));
-            this.servletMappings.add(servletMapping);
+            webApplication.addServletMapping(servletMapping);
         }
 
         /** Fetch welcome files */
-        this.welcomeFiles = new ArrayList();
         NodeList welcomeFileNodes = document.getElementsByTagName("welcome-file");
         for (int i = 0; i < welcomeFileNodes.getLength(); i++) {
             Node node = welcomeFileNodes.item(i);
-            this.welcomeFiles.add(node.getFirstChild().getNodeValue());
+            webApplication.addWelcomeFile(node.getFirstChild().getNodeValue());
         }
     }
 
-    private void processServletNode(Node node) {
+    private static void processServletNode(WebApplication webApplication, Node node) {
         String servletName = XMLUtilities.findValue(node, "servlet-name");
         String servletClass = XMLUtilities.findValue(node, "servlet-class");
 
@@ -145,13 +105,13 @@ public class WebApplicationConfig {
             servletConfig.addInitParameter(paramName, paramValue);
         }
 
-        this.servletConfigsByName.put(servletName, servletConfig);
+        webApplication.addServletConfig(servletConfig);
     }
 
-    private void processJetServerWebXML(Document document)
+    private static void processJetServerWebXML(WebApplication webApplication, Document document)
             throws IOException
     {
         Node root = XMLUtilities.findFirstChildElement(document, "web-app");
-        this.httpRoot = XMLUtilities.findValue(root, "root");
+        webApplication.setHttpRoot(XMLUtilities.findValue(root, "root"));
     }
 }

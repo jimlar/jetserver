@@ -23,13 +23,11 @@ class FileInfoCache {
 
 
     private final WebApplication webApp;
-    private final MimeTypes mimeTypes;
     private final Map fileInfoByRequestURI;
 
 
     public FileInfoCache(WebApplication webApp) {
         this.webApp = webApp;
-        this.mimeTypes = new MimeTypes();
         this.fileInfoByRequestURI = Collections.synchronizedMap(new WeakHashMap());
     }
 
@@ -73,8 +71,8 @@ class FileInfoCache {
     private FileInfo createFileInfo(HttpServletRequest request)
             throws IOException
     {
-        String localRequestURI = request.getRequestURI().substring(webApp.getConfig().getHttpRoot().length());
-        File requestedFile = new File(webApp.getConfig().getFileRoot(), localRequestURI);
+        String localRequestURI = request.getRequestURI().substring(webApp.getHttpRoot().length());
+        File requestedFile = new File(webApp.getFileRoot(), localRequestURI);
         boolean isDirectoryIndexRequest = false;
         boolean fileExists = requestedFile.exists();
 
@@ -108,7 +106,7 @@ class FileInfoCache {
         }
 
         return new FileInfo(requestedFile,
-                            mimeTypes.getTypeByFileName(requestedFile.getName()),
+                            webApp.getMimeType(requestedFile.getName()),
                             size,
                             fileExists,
                             isDirectoryIndexRequest,
@@ -125,7 +123,7 @@ class FileInfoCache {
 
     private File getExistingWelcomeFile(File requestedFile) {
 
-        Iterator iter = webApp.getConfig().getWelcomeFiles().iterator();
+        Iterator iter = webApp.getWelcomeFiles().iterator();
         while (iter.hasNext()) {
             File candidate = new File(requestedFile, (String) iter.next());
             if (candidate.exists() && candidate.isFile()) {

@@ -7,7 +7,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import jetserver.server.web.config.WebApplicationConfig;
+import jetserver.server.web.config.WebApplicationFactory;
 import jetserver.util.Log;
 import jetserver.util.Strings;
 
@@ -252,7 +252,7 @@ class JSHttpServletRequest implements HttpServletRequest {
     }
 
     public String getContextPath() {
-        return webApplication.getConfig().getHttpRoot();
+        return webApplication.getHttpRoot();
     }
 
     public String getQueryString() {

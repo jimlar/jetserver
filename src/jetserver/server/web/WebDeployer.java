@@ -7,7 +7,7 @@ import java.util.*;
 
 import jetserver.util.Log;
 import jetserver.server.application.Application;
-import jetserver.server.web.config.WebApplicationConfig;
+import jetserver.server.web.config.WebApplicationFactory;
 
 public class WebDeployer {
 
@@ -23,11 +23,10 @@ public class WebDeployer {
     public WebApplication deploy(File applicationRoot, Application application) throws IOException {
         log.info("Deploying webapp in dir " + applicationRoot);
 
-        WebApplicationConfig config = new WebApplicationConfig(applicationRoot);
-        WebApplication webApplication = new WebApplication(application, config);
+        WebApplication webApplication = WebApplicationFactory.createWebApplication(application, applicationRoot);
         application.addWebApplication(webApplication);
 
-        log.info("Deployed " + config.getDisplayName());
+        log.info("Deployed " + webApplication.getDisplayName());
         return webApplication;
     }
 }
