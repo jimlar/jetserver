@@ -7,8 +7,9 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import jetserver.server.web.HttpResponse;
+import jetserver.server.web.services.HttpResponse;
 import jetserver.server.web.config.*;
+import jetserver.server.web.WebApplicationConfig;
 import jetserver.util.Log;
 
 /**
@@ -17,13 +18,13 @@ import jetserver.util.Log;
 
 class JetServerHttpServletResponse implements HttpServletResponse {
 
-    private WebAppConfig config;
+    private WebApplicationConfig config;
     private Log log;
     private HttpResponse httpResponse;
 
     private String encoding = "iso-8859-1";
 
-    JetServerHttpServletResponse(HttpResponse httpResponse, WebAppConfig config) {
+    JetServerHttpServletResponse(HttpResponse httpResponse, WebApplicationConfig config) {
 	this.httpResponse = httpResponse;
 	this.config = config;
 	this.log = Log.getInstance(this);

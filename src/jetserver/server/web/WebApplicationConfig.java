@@ -1,21 +1,77 @@
 
-package jetserver.server.web.config;
-
-import java.io.*;
-import java.util.*;
+package jetserver.server.web;
 
 import org.xml.sax.*;
 
-import jetserver.util.Log;
-import jetserver.util.xml.JetServerEntityResolver;
-
 import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import java.util.*;
 
-public class WebAppConfigFactory {
+import jetserver.util.xml.JetServerEntityResolver;
+import jetserver.util.Log;
 
-    public static WebAppConfig decode(File applicationRoot) throws IOException {
+public class WebApplicationConfig {
+
+    private String displayName;
+    private String httpRoot;
+    private File fileRoot;
+    private Collection welcomeFiles = new ArrayList();
+
+    private List servletMappings = new ArrayList();
+    private Map servletDeclarationsByName = new HashMap();
+
+
+    WebApplicationConfig(String displayName,
+                 File fileRoot,
+                 String httpRoot,
+                 Collection welcomeFiles,
+                 Collection servletDeclarations,
+                 List servletMappings) {
+
+        this.displayName = displayName;
+        this.httpRoot = httpRoot;
+        this.fileRoot = fileRoot;
+        this.welcomeFiles = welcomeFiles;
+
+        this.servletMappings = servletMappings;
+        this.servletDeclarationsByName = new HashMap();
+
+        Iterator iter = servletDeclarations.iterator();
+        while (iter.hasNext()) {
+            ServletDeclaration d = (ServletDeclaration) iter.next();
+            servletDeclarationsByName.put(d.getName(), d);
+        }
+    }
+
+    public String getDisplayName() {
+        return this.displayName;
+    }
+
+    public String getHttpRoot() {
+        return this.httpRoot;
+    }
+
+    public File getFileRoot() {
+        return this.fileRoot;
+    }
+
+    public Collection getWelcomeFiles() {
+        return this.welcomeFiles;
+    }
+
+    public List getServletMappings() {
+        return this.servletMappings;
+    }
+
+    public ServletDeclaration getServletDeclaration(String servletName) {
+        return (ServletDeclaration) this.servletDeclarationsByName.get(servletName);
+    }
+
+    /**
+     * This method would probably be much nice if I used DOM as in the ejb-jar parser
+     */
+    public static WebApplicationConfig decode(File applicationRoot) throws IOException {
 
         /* Read web.xml and jetserver-web.xml files */
         try {
@@ -37,18 +93,18 @@ public class WebAppConfigFactory {
             parser.setDocumentHandler(jetServerWebXMLHandler);
             parser.parse(new InputSource(new FileInputStream(jetServerWebXML)));
 
-            return new WebAppConfig(webXMLHandler.displayName,
-                    applicationRoot,
-                    jetServerWebXMLHandler.httpRoot,
-                    webXMLHandler.welcomeFiles,
-                    webXMLHandler.servletDeclarations,
-                    webXMLHandler.servletMappings);
+            return new WebApplicationConfig(webXMLHandler.displayName,
+                                    applicationRoot,
+                                    jetServerWebXMLHandler.httpRoot,
+                                    webXMLHandler.welcomeFiles,
+                                    webXMLHandler.servletDeclarations,
+                                    webXMLHandler.servletMappings);
 
         } catch (ParserConfigurationException e) {
-            Log.getInstance(WebAppConfigFactory.class).error("Cant parse web application config", e);
+            Log.getInstance(WebApplicationConfig.class).error("Cant parse web application config", e);
             throw new IOException("cant parse config: " + e);
         } catch (SAXException e) {
-            Log.getInstance(WebAppConfigFactory.class).error("Cant parse web application config", e);
+            Log.getInstance(WebApplicationConfig.class).error("Cant parse web application config", e);
             throw new IOException("cant parse config: " + e);
         }
     }

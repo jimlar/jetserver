@@ -6,6 +6,8 @@ import java.util.*;
 
 import jetserver.server.web.services.file.FileService;
 import jetserver.server.web.services.servlet.ServletService;
+import jetserver.server.web.services.HttpRequest;
+import jetserver.server.web.services.HttpResponse;
 import jetserver.server.web.config.*;
 import jetserver.server.application.Application;
 import jetserver.util.Log;
@@ -13,11 +15,11 @@ import jetserver.util.Log;
 public class WebApplication {
 
     private Application application;
-    private WebAppConfig config;
+    private WebApplicationConfig config;
     private FileService fileService;
     private ServletService servletService;
 
-    public WebApplication(Application application, WebAppConfig config) throws IOException {
+    public WebApplication(Application application, WebApplicationConfig config) throws IOException {
         this.application = application;
         this.config = config;
         this.fileService = new FileService(this);
@@ -28,7 +30,7 @@ public class WebApplication {
         return this.application;
     }
 
-    public WebAppConfig getConfig() {
+    public WebApplicationConfig getConfig() {
         return this.config;
     }
 

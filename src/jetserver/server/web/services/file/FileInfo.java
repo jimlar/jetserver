@@ -5,6 +5,7 @@ import java.io.*;
 
 import jetserver.util.*;
 import jetserver.server.web.*;
+import jetserver.server.web.services.HttpResponse;
 
 class FileInfo {
 

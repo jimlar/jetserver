@@ -7,8 +7,9 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import jetserver.server.web.HttpRequest;
+import jetserver.server.web.services.HttpRequest;
 import jetserver.server.web.config.*;
+import jetserver.server.web.WebApplicationConfig;
 import jetserver.util.Log;
 
 /**
@@ -25,13 +26,13 @@ class JetServerHttpServletRequest implements HttpServletRequest {
         public Object nextElement() { return null; }
     };
 
-    private WebAppConfig config;
+    private WebApplicationConfig config;
     private Log log;
     private HttpRequest httpRequest;
 
     private Map attributes = new HashMap();
 
-    JetServerHttpServletRequest(HttpRequest httpRequest, WebAppConfig config) {
+    JetServerHttpServletRequest(HttpRequest httpRequest, WebApplicationConfig config) {
         this.httpRequest = httpRequest;
         this.config = config;
         this.log = Log.getInstance(this);

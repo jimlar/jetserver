@@ -1,5 +1,5 @@
 
-package jetserver.server.web;
+package jetserver.server.web.services;
 
 import java.io.*;
 import java.net.*;
@@ -7,6 +7,7 @@ import java.util.*;
 
 import jetserver.server.config.ServerConfig;
 import jetserver.server.Deployer;
+import jetserver.server.web.WebApplication;
 import jetserver.util.Log;
 
 public class WebServerConnection implements Runnable {
