@@ -37,9 +37,6 @@ class FileService extends WebService {
 
 	    response.addHeaderBytes(fileInfo.getHeaderBytes());
 
-	    //	    response.setContentType(fileInfo.getMimeType());
-	    //response.setContentLength(fileInfo.getSize());
-	    
 	    OutputStream out = response.getOutputStream();
 	    InputStream fileIn = fileInfo.getInputStream();
 	    byte outputBuffer[] = new byte[bufferSize];
