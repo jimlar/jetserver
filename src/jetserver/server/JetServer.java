@@ -16,9 +16,11 @@ public class JetServer {
     public JetServer() 
 	throws IOException
     {
-	this.deployManager = new DeployManager();
 	this.webServer = new WebServer();
+	this.deployManager = new DeployManager(webServer.getWebContainerManager());
 	System.out.println("JetServer started.");
+
+	this.deployManager.start();
     }
 
     public static void main(String args[]) throws Exception {

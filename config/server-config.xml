@@ -3,7 +3,7 @@
 <jetserver>
 
   <!-- deployment manager settings -->
-  <deploymanager dropzone="../dropzone"/>
+  <deploymanager dropzone="../dropzone" deploy-dir="../deployments"/>
 
 
   <!-- Web container settings -->

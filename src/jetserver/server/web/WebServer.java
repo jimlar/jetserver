@@ -8,7 +8,6 @@ import java.util.*;
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 
 import jetserver.config.ServerConfig;
-import jetserver.server.web.services.Dispatcher;
 
 public class WebServer extends Thread {
     
@@ -18,7 +17,7 @@ public class WebServer extends Thread {
 
     private PooledExecutor executor;
 
-    private Dispatcher dispatcher;
+    private WebContainerManager webContainerManager;
     
     public WebServer() 
 	throws IOException
@@ -29,7 +28,7 @@ public class WebServer extends Thread {
 	this.port = config.getInteger("jetserver.webserver.socket.port");
     	this.serverSocket = new ServerSocket(port);
 
-	this.dispatcher = new Dispatcher();
+	this.webContainerManager = new WebContainerManager();
 
 	int maxThreads = config.getInteger("jetserver.webserver.threads.max");
 	int minThreads = config.getInteger("jetserver.webserver.threads.min");
@@ -49,6 +48,10 @@ public class WebServer extends Thread {
 	return this.port;
     }
 
+    public WebContainerManager getWebContainerManager() {
+	return this.webContainerManager;
+    }
+
     public void run() {
 	while (true) {
 	    Socket socket = null;
@@ -57,7 +60,7 @@ public class WebServer extends Thread {
 		
 		if (socket != null) {
 		    socket.setSoTimeout(socketTimeout);
-		    executor.execute(new WebServerConnection(socket, dispatcher));
+		    executor.execute(new WebServerConnection(socket, webContainerManager));
 		}
 
 	    } catch (Exception e) {

@@ -1,13 +1,13 @@
 
 
-package jetserver.server.web.services.file;
+package jetserver.server.web;
 
 import java.io.*;
 import java.util.*;
 
 import jetserver.config.ServerConfig;
 
-class MimeTypes {
+public class MimeTypes {
 
     private static final String MIMETYPES_PROPERTY = "jetserver.webserver.mime-types-file";
     private static final String DEFAULTMIMETYPE_PROPERTY = "jetserver.webserver.default-mime-type";

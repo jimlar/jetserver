@@ -20,7 +20,11 @@ class WebContainer {
     public WebContainer(String httpRoot, File fileRoot) throws IOException {
 	this.httpRoot = httpRoot;
 	this.fileRoot = fileRoot;
-	this.fileService = new FileService(fileRoot, new ArrayList());
+
+	Collection welcomeFiles = new ArrayList();
+	welcomeFiles.add("index.html");
+	welcomeFiles.add("index.htm");
+	this.fileService = new FileService(fileRoot, welcomeFiles);
     } 
 
     public String getHttpRoot() {

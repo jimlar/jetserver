@@ -7,15 +7,14 @@ import java.net.*;
 import java.util.*;
 
 import jetserver.server.web.*;
-import jetserver.server.web.services.WebService;
 
-public class FileService implements WebService {
+public class FileService  {
 
     private static final int BUFFER_SIZE = 1024;
     private final FileInfoCache fileInfoCache;
 
-    public FileService() throws IOException {
-	this.fileInfoCache = new FileInfoCache();
+    public FileService(File baseDir, Collection welcomeFiles) throws IOException {
+	this.fileInfoCache = new FileInfoCache(baseDir, welcomeFiles);
     }
 
     public void service(HttpRequest request, HttpResponse response) 

@@ -17,30 +17,18 @@ import jetserver.config.ServerConfig;
 
 class FileInfoCache {
 
-    private static final String ROOT_PROPERTY = "jetserver.webserver.root";
-    private static final String WELCOMEFILES_PROPERTY = "jetserver.webserver.welcome-file-list.welcome-file";
-    private static final String CACHEFILESIZE_PROPERTY = "jetserver.webserver.cache.max-file-size";
-    private static final String CACHETTL_PROPERTY = "jetserver.webserver.cache.time-to-live";
+    private static final int MAX_FILE_SIZE = 50 * 1024;
+    private static final int ENTRY_TIME_TO_LIVE = 5000; 
 
     private final File baseDir;
     private final MimeTypes mimeTypes;
     private final Collection welcomeFiles;
     private final Map fileInfoByRequestURI;
-    private final int maxFileSize;
 
-    /* Milliseconds */
-    private final int entryTimeToLive;
 
-    public FileInfoCache() throws IOException {
-	ServerConfig config = ServerConfig.getInstance();
-	this.baseDir = config.getFile(ROOT_PROPERTY);
-	this.welcomeFiles = config.getStrings(WELCOMEFILES_PROPERTY);
-
-	/* property given i kilobytes */
-	this.maxFileSize = config.getInteger(CACHEFILESIZE_PROPERTY) * 1024;
-
-	this.entryTimeToLive = config.getInteger(CACHETTL_PROPERTY);
-
+    public FileInfoCache(File baseDir, Collection welcomeFiles) throws IOException {
+	this.baseDir = baseDir;
+	this.welcomeFiles = welcomeFiles;
 	this.mimeTypes = new MimeTypes();
 	this.fileInfoByRequestURI = Collections.synchronizedMap(new WeakHashMap());
     }
@@ -108,7 +96,7 @@ class FileInfoCache {
 	if (fileExists && !isDirectoryIndexRequest) {
 	    size = (int) requestedFile.length();
 
-	    if (size <= maxFileSize) {
+	    if (size <= MAX_FILE_SIZE) {
 		data = new byte[size];
 		InputStream in = new BufferedInputStream(new FileInputStream(requestedFile));
 		if (in.read(data) != size) {
@@ -123,7 +111,7 @@ class FileInfoCache {
 			    size,
 			    fileExists, 
 			    isDirectoryIndexRequest,
-			    entryTimeToLive,
+			    ENTRY_TIME_TO_LIVE,
 			    requestedFile.lastModified(),
 			    data);
     }
