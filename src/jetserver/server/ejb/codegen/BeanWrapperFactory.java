@@ -28,19 +28,20 @@ public class BeanWrapperFactory {
             throws IOException
     {
         log.debug("Generation wrappers for " + entityBean.getEJBName());
-        BufferedWriter sourceWriter = new BufferedWriter(new FileWriter(new File(ejbJar.getConfig().getEjbJarRoot(), "Temp.java")));
+        SourceWriter sourceWriter = new SourceWriter(new FileWriter(new File(ejbJar.getConfig().getEjbJarRoot(), "Temp.java")));
         implementRemoteInterface(entityBean, sourceWriter);
         sourceWriter.close();
     }
 
 
     private void implementRemoteInterface(EntityBeanDefinition entityBean,
-                                     BufferedWriter sourceWriter)
+                                          SourceWriter sourceWriter)
             throws IOException
     {
-        sourceWriter.write("public class Temp implements " + entityBean.getRemoteClass().getName() + " {");
-        sourceWriter.newLine();
-        sourceWriter.newLine();
+
+        sourceWriter.startClass(entityBean.getEJBName() + "_wrapper ",
+                                null,
+                                new Class[] {entityBean.getRemoteClass()});
 
         Method[] remoteMethods = entityBean.getRemoteClass().getDeclaredMethods();
         if (remoteMethods != null) {
@@ -48,53 +49,19 @@ public class BeanWrapperFactory {
                 implementRemoteInterfaceMethod(remoteMethods[i], sourceWriter);
             }
         }
-
-        sourceWriter.newLine();
-        sourceWriter.write("}");
+        sourceWriter.endClass();
     }
 
     private void implementRemoteInterfaceMethod(Method interfaceMethod,
-                                           BufferedWriter sourceWriter)
+                                                SourceWriter sourceWriter)
             throws IOException
     {
-        sourceWriter.write("public " + classToString(interfaceMethod.getReturnType()) + " ");
-        sourceWriter.write(interfaceMethod.getName() + "(");
+        sourceWriter.startMethod(interfaceMethod.getReturnType(),
+                                 interfaceMethod.getName(),
+                                 interfaceMethod.getParameterTypes(),
+                                 interfaceMethod.getExceptionTypes());
 
-        Class[] parameterTypes = interfaceMethod.getParameterTypes();
-        if (parameterTypes != null) {
-            for (int i = 0; i < parameterTypes.length; i++) {
-                sourceWriter.write(classToString(parameterTypes[i]) + " arg" + i);
-                if (i < parameterTypes.length - 1) {
-                    sourceWriter.write(", ");
-                }
-            }
-        }
-
-        sourceWriter.write(") ");
-
-        Class[] exceptionTypes = interfaceMethod.getExceptionTypes();
-        if (exceptionTypes != null && exceptionTypes.length > 0) {
-            sourceWriter.write("throws ");
-            for (int i = 0; i < exceptionTypes.length; i++) {
-                sourceWriter.write(classToString(exceptionTypes[i]));
-                if (i < exceptionTypes.length - 1) {
-                    sourceWriter.write(", ");
-                }
-            }
-            sourceWriter.write(" ");
-        }
-
-        sourceWriter.write("{");
-        sourceWriter.newLine();
-
-
-        sourceWriter.newLine();
-        sourceWriter.write("}");
-        sourceWriter.newLine();
-        sourceWriter.newLine();
-    }
-
-    private String classToString(Class clazz) {
-        return clazz.getName();
+        sourceWriter.write("System.out.println(\"" + interfaceMethod.getName() + " called\");");
+        sourceWriter.endMethod();
     }
 }
