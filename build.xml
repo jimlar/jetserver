@@ -36,6 +36,10 @@
       <src path="src"/>
     </javac>
 
+    <copy todir="build/classes">
+      <fileset dir="src" includes="**/*.dtd" />
+    </copy>
+
     <copy todir="build">
       <fileset dir="." includes="lib/*.jar" />
       <fileset dir="." includes="config/*.xml,config/mime.types" />
