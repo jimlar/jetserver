@@ -62,8 +62,6 @@ class ServletClassLoader extends ClassLoader {
                                   + File.separator + name.replace('.', File.separatorChar)
                                   + ".class");
 
-        log.debug("trying to load class from " + classFile.getAbsolutePath());
-
         if (!classFile.exists()) {
             throw new ClassNotFoundException("cant find class "+ name);
         }

@@ -72,12 +72,13 @@ public class EJBDeployer {
                 EntityBeanDefinition ejb = (EntityBeanDefinition) ejbs.next();
 
                 /* Instantiate the home and bind it */
-                Object ejbHome = ejb.getRemoteProxy().newInstance();
+                Object ejbHome = ejb.getRemoteHomeWrapper().newInstance();
                 context.bind(ejb.getEJBName(), ejbHome);
             }
         } catch (NamingException e) {
             throw new IOException("Cant bind bean: " + e);
         } catch (InstantiationException e) {
+            e.printStackTrace();
             throw new IOException("Cant instantiate bean home: " + e);
         } catch (IllegalAccessException e) {
             throw new IOException("Cant instantiate bean home: " + e);

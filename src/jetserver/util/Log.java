@@ -28,7 +28,7 @@ public class Log {
     private static String timeString;
     private static long lastDateUpdateMillis = 0;
 
-    private String category;
+    private String className;
 
 
     public static Log getInstance(Object caller) {
@@ -89,7 +89,7 @@ public class Log {
 
 
     private Log(String category) {
-        this.category = category;
+        this.className = category;
     }
 
     public void error(String message) {
@@ -97,7 +97,7 @@ public class Log {
     }
 
     public void error(String message, Throwable throwable) {
-        printMessage(message, throwable, errorWriter, secondErrorWriter);
+        printMessage("Error", message, throwable, errorWriter, secondErrorWriter);
     }
 
     public void info(String message) {
@@ -105,7 +105,7 @@ public class Log {
     }
 
     public void info(String message, Throwable throwable) {
-        printMessage(message, throwable, infoWriter, secondInfoWriter);
+        printMessage("Info ", message, throwable, infoWriter, secondInfoWriter);
     }
 
     public void debug(String message) {
@@ -113,22 +113,28 @@ public class Log {
     }
 
     public void debug(String message, Throwable throwable) {
-        printMessage(message, throwable, debugWriter, secondDebugWriter);
+        printMessage("Debug", message, throwable, debugWriter, secondDebugWriter);
     }
 
-    private void printMessage(String message, Throwable throwable, PrintWriter writer, PrintWriter secondWriter) {
-        printMessage(message, throwable, writer);
-        printMessage(message, throwable, secondWriter);
+    private void printMessage(String level, String message, Throwable throwable, PrintWriter writer, PrintWriter secondWriter) {
+        printMessage(level, message, throwable, writer);
+        printMessage(level, message, throwable, secondWriter);
     }
 
-    private void printMessage(String message, Throwable throwable, PrintWriter writer) {
+    private void printMessage(String level, String message, Throwable throwable, PrintWriter writer) {
         if (writer != null) {
             synchronized (writer) {
                 if (throwable != null) {
-                    writer.print("[" + getDateLazy() + "] [" + category + "]: " + message + ": ");
+                    writer.print("[" + getDateLazy() + "] ["
+                                 + level + "] ["
+                                 + className + "]: "
+                                 + message + ": ");
                     throwable.printStackTrace(writer);
                 } else {
-                    writer.println("[" + getDateLazy() + "] [" + category + "]: " + message);
+                    writer.println("[" + getDateLazy() + "] ["
+                                   + level + "] ["
+                                   + className + "]: "
+                                   + message);
                 }
                 writer.flush();
             }

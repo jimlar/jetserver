@@ -22,10 +22,12 @@ import java.io.IOException;
 public class EJBClassLoader extends ClassLoader {
 
     private EJBJarConfig config;
+    private Log log;
 
     public EJBClassLoader(EJBJarConfig config) {
         super();
         this.config = config;
+        this.log = Log.getInstance(this);
     }
 
     /**
@@ -33,6 +35,7 @@ public class EJBClassLoader extends ClassLoader {
      */
     protected Class findClass(String name) throws ClassNotFoundException {
         byte[] classData = loadClassData(name);
+        log.debug("Loaded class " + name);
         return defineClass(name, classData, 0, classData.length);
     }
 

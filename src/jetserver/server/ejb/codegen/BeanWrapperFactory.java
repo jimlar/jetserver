@@ -40,11 +40,8 @@ public class BeanWrapperFactory {
     {
         log.debug("Generating wrappers for " + entityBean.getEJBName());
         createRemoteProxy(entityBean);
-        log.debug(" - remote proxy created");
         createRemoteHome(entityBean);
-        log.debug(" - remote home created");
         createBeanSubClass(entityBean);
-        log.debug(" - bean class subclassed");
     }
 
 
@@ -70,7 +67,7 @@ public class BeanWrapperFactory {
                                          remoteMethods[i].getParameterTypes(),
                                          remoteMethods[i].getExceptionTypes());
 
-                sourceWriter.write("System.out.println(\"" + remoteMethods[i].getName() + " called\");");
+                sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"" + remoteMethods[i].getName() + " called\");");
                 Class returnType = remoteMethods[i].getReturnType();
                 if (!returnType.equals(Void.TYPE)) {
                     sourceWriter.newLine();
@@ -94,7 +91,7 @@ public class BeanWrapperFactory {
                                  "getEJBHome",
                                  null,
                                  new Class[] { RemoteException.class });
-        sourceWriter.write("System.out.println(\"getEJBHome called\");");
+        sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"getEJBHome called\");");
         sourceWriter.newLine();
         sourceWriter.write("return null;");
         sourceWriter.endMethod();
@@ -104,7 +101,7 @@ public class BeanWrapperFactory {
                                  "getPrimaryKey",
                                  null,
                                  new Class[] { RemoteException.class });
-        sourceWriter.write("System.out.println(\"getPrimaryKey called\");");
+        sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"getPrimaryKey called\");");
         sourceWriter.newLine();
         sourceWriter.write("return null;");
         sourceWriter.endMethod();
@@ -114,7 +111,7 @@ public class BeanWrapperFactory {
                                  "remove",
                                  null,
                                  new Class[] { RemoteException.class, RemoveException.class });
-        sourceWriter.write("System.out.println(\"remove called\");");
+        sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"remove called\");");
         sourceWriter.endMethod();
 
         /*public Handle getHandle() throws RemoteException;*/
@@ -122,7 +119,7 @@ public class BeanWrapperFactory {
                                  "getHandle",
                                  null,
                                  new Class[] { RemoteException.class });
-        sourceWriter.write("System.out.println(\"getHandle called\");");
+        sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"getHandle called\");");
         sourceWriter.newLine();
         sourceWriter.write("return null;");
         sourceWriter.endMethod();
@@ -132,7 +129,7 @@ public class BeanWrapperFactory {
                                  "isIdentical",
                                  new Class[] { EJBObject.class },
                                  new Class[] { RemoteException.class });
-        sourceWriter.write("System.out.println(\"isIdentical called\");");
+        sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"isIdentical called\");");
         sourceWriter.newLine();
         sourceWriter.write("return false;");
         sourceWriter.endMethod();
@@ -171,7 +168,7 @@ public class BeanWrapperFactory {
                                          homeMethods[i].getParameterTypes(),
                                          homeMethods[i].getExceptionTypes());
 
-                sourceWriter.write("System.out.println(\"" + homeMethods[i].getName() + " called\");");
+                sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"" + homeMethods[i].getName() + " called\");");
                 if (!homeMethods[i].getReturnType().equals(Void.TYPE)) {
                     sourceWriter.newLine();
                     sourceWriter.write("return null;");
@@ -187,7 +184,7 @@ public class BeanWrapperFactory {
                                  "remove",
                                  new Class[] { Handle.class },
                                  new Class[] { RemoteException.class, RemoveException.class });
-        sourceWriter.write("System.out.println(\"remove(Handle) called\");");
+        sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"remove(Handle) called\");");
         sourceWriter.endMethod();
 
         /*public void remove(Object object) throws RemoteException, RemoveException;*/
@@ -195,7 +192,7 @@ public class BeanWrapperFactory {
                                  "remove",
                                  new Class[] { Object.class },
                                  new Class[] { RemoteException.class, RemoveException.class });
-        sourceWriter.write("System.out.println(\"remove(Object) called\");");
+        sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"remove(Object) called\");");
         sourceWriter.endMethod();
 
         /*public EJBMetaData getEJBMetaData() throws RemoteException;*/
@@ -203,7 +200,7 @@ public class BeanWrapperFactory {
                                  "getEJBMetaData",
                                  null,
                                  new Class[] { RemoteException.class });
-        sourceWriter.write("System.out.println(\"getEJBMetaData called\");");
+        sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"getEJBMetaData called\");");
         sourceWriter.newLine();
         sourceWriter.write("return null;");
         sourceWriter.endMethod();
@@ -213,7 +210,7 @@ public class BeanWrapperFactory {
                                  "getHomeHandle",
                                  null,
                                  new Class[] { RemoteException.class });
-        sourceWriter.write("System.out.println(\"getHomeHandle called\");");
+        sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"getHomeHandle called\");");
         sourceWriter.newLine();
         sourceWriter.write("return null;");
         sourceWriter.endMethod();
@@ -272,7 +269,7 @@ public class BeanWrapperFactory {
 
             /* Implement the getter method */
             sourceWriter.startMethod(returnType, getMethod.getName(), null, null);
-            sourceWriter.write("System.out.println(\""
+            sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\""
                                + getMethod.getName()
                                + " called\");");
 
@@ -299,7 +296,7 @@ public class BeanWrapperFactory {
                                      setMethod.getName(),
                                      setMethod.getParameterTypes(),
                                      null);
-            sourceWriter.write("System.out.println(\""
+            sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\""
                                + setMethod.getName()
                                + " called\");");
             sourceWriter.endMethod();
