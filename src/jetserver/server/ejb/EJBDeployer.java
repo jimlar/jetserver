@@ -20,11 +20,11 @@ public class EJBDeployer {
         log = Log.getInstance(this);
     }
 
-    public void deploy(File ejbJarRoot,
+    public void deploy(File deployDir,
                        Application application) throws IOException {
-        log.info("Deploying ejb jar (" + ejbJarRoot + ")");
+        log.info("Deploying ejb jar (" + deployDir + ")");
 
-        EJBJar ejbJar = new EJBJar(ejbJarRoot);
+        EJBJar ejbJar = new EJBJar(deployDir);
 
         /* Verfiy the validness of the EJB jar */
         validateBeans(ejbJar);
@@ -41,7 +41,7 @@ public class EJBDeployer {
         /* Add the ejb jar to the application */
         application.addEJBJar(ejbJar);
 
-        log.info("Deployment finished (" + ejbJarRoot + ")");
+        log.info("Deployment finished (" + deployDir + ")");
     }
 
     private void validateBeans(EJBJar ejbJar) throws IOException {
@@ -51,7 +51,7 @@ public class EJBDeployer {
     private void wrapBeans(EJBJar ejbJar) throws IOException {
         log.debug("Wrapping beans");
         BeanWrapperFactory beanWrapperFactory = new BeanWrapperFactory(ejbJar);
-        Iterator entities = ejbJar.getConfig().getEntityBeans().iterator();
+        Iterator entities = ejbJar.getEntityBeans().iterator();
         while (entities.hasNext()) {
             EntityBeanDefinition entityBean = (EntityBeanDefinition) entities.next();
             beanWrapperFactory.wrapEntity(entityBean);
@@ -67,7 +67,7 @@ public class EJBDeployer {
 
         try {
             InitialContext context = new InitialContext();
-            Iterator ejbs = ejbJar.getConfig().getEntityBeans().iterator();
+            Iterator ejbs = ejbJar.getEntityBeans().iterator();
             while (ejbs.hasNext()) {
                 EntityBeanDefinition ejb = (EntityBeanDefinition) ejbs.next();
 

@@ -21,12 +21,12 @@ import java.io.IOException;
  */
 public class EJBClassLoader extends ClassLoader {
 
-    private EJBJarConfig config;
+    private EJBJar ejbJar;
     private Log log;
 
-    public EJBClassLoader(EJBJarConfig config) {
+    public EJBClassLoader(EJBJar ejbJar) {
         super();
-        this.config = config;
+        this.ejbJar = ejbJar;
         this.log = Log.getInstance(this);
     }
 
@@ -43,13 +43,13 @@ public class EJBClassLoader extends ClassLoader {
      * Find and load classData
      */
     private byte[] loadClassData(String name) throws ClassNotFoundException {
-        File classFile = new File(config.getEjbJarRoot().getAbsolutePath()
+        File classFile = new File(ejbJar.getDeployDir().getAbsolutePath()
                                   + File.separator + name.replace('.', File.separatorChar)
                                   + ".class");
 
         if (!classFile.exists()) {
             /* Now try the wrappers dir */
-            classFile = new File(config.getWrappersDir().getAbsolutePath()
+            classFile = new File(ejbJar.getWrappersDir().getAbsolutePath()
                                  + File.separator + name.replace('.', File.separatorChar)
                                  + ".class");
 
