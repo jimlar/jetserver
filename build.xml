@@ -12,7 +12,7 @@
 
   <!-- jetserver -->
   <target name="jetserver" depends="compile">
-    <jar jarfile="build/jetserver.jar" 
+    <jar jarfile="build/jetserver.jar"
          basedir="build/classes"
          manifest="src/MANIFEST.MF"/>
   </target>
@@ -22,6 +22,7 @@
     <delete dir="build" />
     <delete>
       <fileset dir="test/testwebapp/WEB-INF/classes" includes="**/*.class"/>
+      <fileset dir="test/ejb" includes="**/*.class"/>
     </delete>
   </target>
 
@@ -32,7 +33,7 @@
     <javac destdir="build/classes"
 	   classpath="${classpath}"
 	   includes="**/*.java">
-    
+
       <src path="src"/>
     </javac>
 
@@ -49,26 +50,38 @@
   </target>
 
 
-  <!-- test web application -->
-  <target name="testwebapp">
+  <!-- test application -->
+  <target name="testapp">
 
+    <mkdir dir="build/dropzone"/>
+
+    <!-- The test web app -->
     <javac destdir="test/testwebapp/WEB-INF/classes"
 	   classpath="${classpath}"
 	   includes="**/*.java">
-    
+
       <src path="test/testwebapp/WEB-INF/classes"/>
     </javac>
 
-    <mkdir dir="build/dropzone"/>
-    <jar jarfile="build/dropzone/testwebapp.war" 
+    <jar jarfile="build/dropzone/testwebapp.war"
          basedir="test/testwebapp" />
 
-    <copy file="test/customerEjb.jar" todir="build/dropzone"/>
+    <!-- The test ejb jar -->
+    <javac destdir="test/ejb"
+	   classpath="${classpath}"
+	   includes="**/*.java">
+
+      <src path="test/ejb"/>
+    </javac>
+
+    <jar jarfile="build/dropzone/testejb.jar"
+         basedir="test/ejb" />
+
   </target>
- 
+
 
   <!-- start server -->
-  <target name="start" depends="jetserver, testwebapp">
+  <target name="start" depends="jetserver, testapp">
     <java classname="jetserver.server.JetServer"
           classpath="${classpath}"
           fork="true"

@@ -1,5 +1,7 @@
 package jetserver.server.naming;
 
+import jetserver.util.Log;
+
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -24,6 +26,7 @@ public class JetServerContextFactory implements InitialContextFactory {
      */
     public Context getInitialContext(Hashtable environment)
             throws NamingException {
+        Log.getInstance(this).debug("returning initialcontext");
         return new JetServerContext(environment);
     }
 }

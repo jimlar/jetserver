@@ -69,9 +69,17 @@ public class BeanWrapperFactory {
                                          remoteMethods[i].getExceptionTypes());
 
                 sourceWriter.write("System.out.println(\"" + remoteMethods[i].getName() + " called\");");
-                if (!remoteMethods[i].getReturnType().equals(Void.TYPE)) {
+                Class returnType = remoteMethods[i].getReturnType();
+                if (!returnType.equals(Void.TYPE)) {
                     sourceWriter.newLine();
-                    sourceWriter.write("return null;");
+                    if (returnType.isInstance(new Object())) {
+                        sourceWriter.write("return null;");
+                    } else if (returnType.equals(Boolean.TYPE)) {
+                        sourceWriter.write("return false;");
+                    } else if (returnType.equals(Integer.TYPE)
+                            || returnType.equals(Long.TYPE)) {
+                        sourceWriter.write("return -1;");
+                    }
                 }
                 sourceWriter.endMethod();
             }
@@ -234,9 +242,9 @@ public class BeanWrapperFactory {
                                 null);
 
         /*
-                * We only need to subclass the methods that appear
-                * in the remote interface
-                */
+         * We only need to subclass the abstract getters and setters
+         * for the cmp fields
+         */
         Method[] ejbMethods = entityBean.getEjbClass().getDeclaredMethods();
         if (ejbMethods != null) {
             for (int i = 0; i < ejbMethods.length; i++) {
@@ -247,9 +255,16 @@ public class BeanWrapperFactory {
                                              ejbMethods[i].getExceptionTypes());
 
                     sourceWriter.write("System.out.println(\"" + ejbMethods[i].getName() + " called\");");
-                    if (!ejbMethods[i].getReturnType().equals(Void.TYPE)) {
-                        sourceWriter.newLine();
-                        sourceWriter.write("return null;");
+                    Class returnType = ejbMethods[i].getReturnType();
+                    if (!returnType.equals(Void.TYPE)) {
+                        if (returnType.isInstance(new Object())) {
+                            sourceWriter.write("return null;");
+                        } else if (returnType.equals(Boolean.TYPE)) {
+                            sourceWriter.write("return false;");
+                        } else if (returnType.equals(Integer.TYPE)
+                                || returnType.equals(Long.TYPE)) {
+                            sourceWriter.write("return -1;");
+                        }
                     }
                     sourceWriter.endMethod();
                 }

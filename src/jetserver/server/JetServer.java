@@ -6,7 +6,10 @@ import java.net.*;
 import java.util.*;
 
 import jetserver.server.web.WebServer;
+import jetserver.server.naming.JetServerContext;
 import jetserver.util.Log;
+
+import javax.naming.Context;
 
 public class JetServer {
 
@@ -22,9 +25,15 @@ public class JetServer {
         this.dropZoneWatch = new DropZoneWatch(containerManager);
         this.dropZoneWatch.start();
 
+        initializeNaming();
         Runtime.getRuntime().addShutdownHook(new ShutdownManager());
 
         log.info("started");
+    }
+
+    private void initializeNaming() {
+        System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+                           "jetserver.server.naming.JetServerContextFactory");
     }
 
     public static void main(String args[]) throws Exception {

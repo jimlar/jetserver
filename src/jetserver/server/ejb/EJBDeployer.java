@@ -5,6 +5,8 @@ import jetserver.server.ejb.config.EntityBeanDefinition;
 import jetserver.server.ejb.codegen.BeanWrapperFactory;
 import jetserver.util.Log;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -33,10 +35,12 @@ public class EJBDeployer {
 
         /* Bind homes to the JNDI */
         bindBeans(ejbJar);
+
+        log.info("Deployment finished (" + ejbJarRoot + ")");
     }
 
     private void validateBeans(EJBJar ejbJar) throws IOException {
-        log.debug("Validating beans");
+        log.debug("Validating beans (NOT IMPLEMENTED)");
     }
 
     private void wrapBeans(EJBJar ejbJar) throws IOException {
@@ -50,10 +54,28 @@ public class EJBDeployer {
     }
 
     private void createCaches(EJBJar ejbJar) throws IOException {
-        log.debug("Creating bean caches");
+        log.debug("Creating bean caches (NOT IMPLEMENTED)");
     }
 
     private void bindBeans(EJBJar ejbJar) throws IOException {
-        log.debug("Binding beans to JNDI");
+        log.debug("Binding beans homes to JNDI");
+
+        try {
+            InitialContext context = new InitialContext();
+            Iterator ejbs = ejbJar.getConfig().getEntityBeans().iterator();
+            while (ejbs.hasNext()) {
+                EntityBeanDefinition ejb = (EntityBeanDefinition) ejbs.next();
+
+                /* Instantiate the home and bind it */
+                Object ejbHome = ejb.getRemoteProxy().newInstance();
+                context.bind(ejb.getEJBName(), ejbHome);
+            }
+        } catch (NamingException e) {
+            throw new IOException("Cant bind bean: " + e);
+        } catch (InstantiationException e) {
+            throw new IOException("Cant instantiate bean home: " + e);
+        } catch (IllegalAccessException e) {
+            throw new IOException("Cant instantiate bean home: " + e);
+        }
     }
 }
