@@ -67,7 +67,7 @@ public class ApplicationConfig {
     /**
      * Parse the xml
      */
-    public void parse() throws IOException {
+    private void parse() throws IOException {
         try {
             File applicationXML = new File(earRoot, "META-INF" + File.separator + "application.xml");
             DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();

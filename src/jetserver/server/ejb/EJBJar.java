@@ -11,7 +11,6 @@ import java.io.IOException;
 public class EJBJar {
 
     private EJBJarConfig config;
-    private EJBClassLoader classLoader;
 
     /**
      * Create instance and parse configs (ejb-jar.xml)
@@ -27,6 +26,6 @@ public class EJBJar {
     }
 
     public EJBClassLoader getClassLoader() {
-        return classLoader;
+        return getConfig().getClassLoader();
     }
 }

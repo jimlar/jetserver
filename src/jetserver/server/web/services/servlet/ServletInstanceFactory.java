@@ -8,6 +8,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import jetserver.server.web.config.*;
+import jetserver.server.web.WebApplication;
 import jetserver.util.Log;
 
 /**
@@ -16,17 +17,17 @@ import jetserver.util.Log;
 
 class ServletInstanceFactory {
 
-    private WebAppConfig config;
+    private WebApplication webApp;
     private Log log;
 
     private ServletClassLoader classLoader;
     private Map instancesByName;
 
-    ServletInstanceFactory(WebAppConfig config) {
-	this.config = config;
-	this.log = Log.getInstance(this);
-	this.classLoader = new ServletClassLoader(config);
-	this.instancesByName = new HashMap();
+    ServletInstanceFactory(WebApplication webApp) {
+        this.webApp = webApp;
+        this.log = Log.getInstance(this);
+        this.classLoader = new ServletClassLoader(webApp);
+        this.instancesByName = new HashMap();
     }
 
     /**
@@ -35,41 +36,41 @@ class ServletInstanceFactory {
 
     public HttpServlet getServletInstance(String servletName) {
 
-	HttpServlet servlet = (HttpServlet) instancesByName.get(servletName);
-	
-	if (servlet == null) {
-	    synchronized (instancesByName) {
-		servlet = (HttpServlet) instancesByName.get(servletName);
-		if (servlet != null) {
-		    return servlet;
-		}
+        HttpServlet servlet = (HttpServlet) instancesByName.get(servletName);
 
-		servlet = createInstance(servletName);
-		if (servlet != null) {
-		    instancesByName.put(servletName, servlet);
-		}
-	    }
-	} 
-	return servlet;
+        if (servlet == null) {
+            synchronized (instancesByName) {
+                servlet = (HttpServlet) instancesByName.get(servletName);
+                if (servlet != null) {
+                    return servlet;
+                }
+
+                servlet = createInstance(servletName);
+                if (servlet != null) {
+                    instancesByName.put(servletName, servlet);
+                }
+            }
+        }
+        return servlet;
     }
 
     private HttpServlet createInstance(String servletName) {
-	try {
-	    String servletClassName = config.getServletDeclaration(servletName).getClassName();
-	    Class servletClass = classLoader.loadClass(servletClassName);	
-	    HttpServlet servlet = (HttpServlet) servletClass.newInstance();
-	    if (servlet instanceof SingleThreadModel) {
-		throw new RuntimeException("single thread model servlets are not supported!");
-	    }
-	    return servlet;
+        try {
+            String servletClassName = webApp.getConfig().getServletDeclaration(servletName).getClassName();
+            Class servletClass = classLoader.loadClass(servletClassName);
+            HttpServlet servlet = (HttpServlet) servletClass.newInstance();
+            if (servlet instanceof SingleThreadModel) {
+                throw new RuntimeException("single thread model servlets are not supported!");
+            }
+            return servlet;
 
-	} catch (ClassNotFoundException e) {
-	    log.error("Cant load servlet class", e);
-	} catch (IllegalAccessException e) {
-	    log.error("Cant load servlet class", e);
-	} catch (InstantiationException e) {
-	    log.error("Cant instantiate servlet", e);
-	}
-	return null;
+        } catch (ClassNotFoundException e) {
+            log.error("Cant load servlet class", e);
+        } catch (IllegalAccessException e) {
+            log.error("Cant load servlet class", e);
+        } catch (InstantiationException e) {
+            log.error("Cant instantiate servlet", e);
+        }
+        return null;
     }
 }

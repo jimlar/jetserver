@@ -15,19 +15,22 @@ public class JetServer {
 
     private Log log;
     private DropZoneWatch dropZoneWatch;
-    private Deployer containerManager;
+    private Deployer deployer;
+    private WebServer webServer;
 
     public JetServer()
             throws IOException
     {
         this.log = Log.getInstance(this);
-        this.containerManager = new Deployer();
-        this.dropZoneWatch = new DropZoneWatch(containerManager);
-        this.dropZoneWatch.start();
+        this.deployer = new Deployer();
+        this.dropZoneWatch = new DropZoneWatch(deployer);
+        this.webServer = new WebServer(deployer);
 
         initializeNaming();
         Runtime.getRuntime().addShutdownHook(new ShutdownManager());
 
+        this.webServer.start();
+        this.dropZoneWatch.start();
         log.info("started");
     }
 

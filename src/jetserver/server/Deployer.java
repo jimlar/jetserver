@@ -24,16 +24,29 @@ public class Deployer {
     private Log log;
 
     private File deployDir;
-    private WebContainer webContainer;
+    private WebDeployer webDeployer;
     private EJBDeployer ejbDeployer;
 
+    private Collection applications;
+    private Collection webApplications;
+
     public Deployer() throws IOException {
-        this.webContainer = new WebContainer();
+        this.webDeployer = new WebDeployer();
         this.ejbDeployer = new EJBDeployer();
+        this.applications = new ArrayList();
+        this.webApplications = new ArrayList();
         this.log = Log.getInstance(this);
 
         ServerConfig config = ServerConfig.getInstance();
         this.deployDir = config.getFile("jetserver.deployer.deploy-dir");
+    }
+
+    /**
+     * return all known web-apps regardless of which application they are
+     * part of (useful for web request dispatching)
+     */
+    public Collection getAllWebApplications() {
+        return this.webApplications;
     }
 
     /**
@@ -61,6 +74,10 @@ public class Deployer {
                 newApplication = deployEJBJar(jar);
             }
 
+            if (newApplication != null) {
+                this.applications.add(newApplication);
+            }
+
         } catch (IOException e) {
             log.error("Could not deploy", e);
         }
@@ -80,9 +97,11 @@ public class Deployer {
      */
     private Application deployWebApplication(Application application,
                                             EnterpriseJar jar) throws IOException {
-        File applicationRoot = new File(deployDir, jar.getFile().getName());
-        jar.unpackTo(applicationRoot);
-        webContainer.deploy(applicationRoot);
+        File webAppRoot = new File(deployDir, jar.getFile().getName());
+        jar.unpackTo(webAppRoot);
+        WebApplication webApp = webDeployer.deploy(webAppRoot,
+                                                   application);
+        this.webApplications.add(webApp);
         return application;
     }
 
@@ -101,7 +120,7 @@ public class Deployer {
                              EnterpriseJar jar) throws IOException {
         File ejbJarRoot = new File(deployDir, jar.getFile().getName());
         jar.unpackTo(ejbJarRoot);
-        ejbDeployer.deploy(ejbJarRoot);
+        ejbDeployer.deploy(ejbJarRoot, application);
         return application;
     }
 
@@ -114,22 +133,19 @@ public class Deployer {
 
         jar.unpackTo(earRoot);
         ApplicationConfig applicationConfig = ApplicationConfig.createFromEARFile(earRoot);
-        applicationConfig.parse();
 
         Application application = new Application(applicationConfig);
 
         Iterator ejbModules = applicationConfig.getEJBModules().iterator();
         while (ejbModules.hasNext()) {
             Module ejbModule = (Module) ejbModules.next();
-            deployEJBJar(application,
-                         new EnterpriseJar(ejbModule.getFile()));
+            deployEJBJar(application, new EnterpriseJar(ejbModule.getFile()));
         }
 
         Iterator webModules = applicationConfig.getWebModules().iterator();
         while (webModules.hasNext()) {
             Module webModule = (Module) webModules.next();
-            deployWebApplication(application,
-                                 new EnterpriseJar(webModule.getFile()));
+            deployWebApplication(application, new EnterpriseJar(webModule.getFile()));
         }
         return application;
     }

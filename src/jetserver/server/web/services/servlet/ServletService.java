@@ -20,16 +20,16 @@ import jetserver.util.Log;
 
 public class ServletService {
 
-    private WebAppConfig config;
+    private WebApplication webApp;
     private Log log;
 
     private ServletInstanceFactory servletInstanceFactory;
 
 
-    public ServletService(WebAppConfig config) {
-        this.config = config;
+    public ServletService(WebApplication webApp) {
+        this.webApp = webApp;
         this.log = Log.getInstance(this);
-        this.servletInstanceFactory = new ServletInstanceFactory(config);
+        this.servletInstanceFactory = new ServletInstanceFactory(webApp);
     }
 
     /**
@@ -48,9 +48,9 @@ public class ServletService {
 
         if (servlet != null) {
             JetServerHttpServletRequest httpServletRequest
-                    = new JetServerHttpServletRequest(request, config);
+                    = new JetServerHttpServletRequest(request, webApp.getConfig());
             JetServerHttpServletResponse httpServletResponse
-                    = new JetServerHttpServletResponse(response, config);
+                    = new JetServerHttpServletResponse(response, webApp.getConfig());
 
             try {
                 servlet.service(httpServletRequest, httpServletResponse);
@@ -72,7 +72,7 @@ public class ServletService {
      */
     private ServletMapping getMapping(HttpRequest request) {
 
-        Iterator mappings = config.getServletMappings().iterator();
+        Iterator mappings = webApp.getConfig().getServletMappings().iterator();
         while (mappings.hasNext()) {
             ServletMapping mapping = (ServletMapping) mappings.next();
 

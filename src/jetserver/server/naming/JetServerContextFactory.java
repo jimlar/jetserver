@@ -8,6 +8,9 @@ import javax.naming.NamingException;
 import java.util.Hashtable;
 
 public class JetServerContextFactory implements InitialContextFactory {
+
+    private static JetServerContext context;
+
     /**
      * Creates an Initial Context for beginning name resolution.
      * Special requirements of this context are supplied
@@ -26,7 +29,17 @@ public class JetServerContextFactory implements InitialContextFactory {
      */
     public Context getInitialContext(Hashtable environment)
             throws NamingException {
+
+        Context ctx = getContext(environment);
         Log.getInstance(this).debug("returning initialcontext");
-        return new JetServerContext(environment);
+        return ctx;
+    }
+
+    private JetServerContext getContext(Hashtable environment) {
+        if (context == null) {
+            context = new JetServerContext(environment);
+            Log.getInstance(this).debug("created initialcontext");
+        }
+        return context;
     }
 }

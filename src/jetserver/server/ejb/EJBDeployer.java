@@ -3,6 +3,7 @@ package jetserver.server.ejb;
 import jetserver.server.ejb.config.EJBJarConfig;
 import jetserver.server.ejb.config.EntityBeanDefinition;
 import jetserver.server.ejb.codegen.BeanWrapperFactory;
+import jetserver.server.application.Application;
 import jetserver.util.Log;
 
 import javax.naming.InitialContext;
@@ -19,7 +20,8 @@ public class EJBDeployer {
         log = Log.getInstance(this);
     }
 
-    public void deploy(File ejbJarRoot) throws IOException {
+    public void deploy(File ejbJarRoot,
+                       Application application) throws IOException {
         log.info("Deploying ejb jar (" + ejbJarRoot + ")");
 
         EJBJar ejbJar = new EJBJar(ejbJarRoot);
@@ -35,6 +37,9 @@ public class EJBDeployer {
 
         /* Bind homes to the JNDI */
         bindBeans(ejbJar);
+
+        /* Add the ejb jar to the application */
+        application.addEJBJar(ejbJar);
 
         log.info("Deployment finished (" + ejbJarRoot + ")");
     }

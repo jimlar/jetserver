@@ -27,7 +27,7 @@ public class EJBJarConfig {
     private File ejbJarRoot;
     private File tempDir;
     private File wrappersDir;
-    private ClassLoader classLoader;
+    private EJBClassLoader classLoader;
     private Log log;
 
     private String description;
@@ -80,7 +80,7 @@ public class EJBJarConfig {
         return wrappersDir;
     }
 
-    public ClassLoader getClassLoader() {
+    public EJBClassLoader getClassLoader() {
         return classLoader;
     }
 
