@@ -7,7 +7,6 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import jetserver.server.web.config.*;
 import jetserver.server.web.WebApplication;
 import jetserver.util.Log;
 

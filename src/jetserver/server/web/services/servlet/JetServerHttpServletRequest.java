@@ -8,7 +8,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import jetserver.server.web.services.HttpRequest;
-import jetserver.server.web.config.*;
 import jetserver.server.web.WebApplicationConfig;
 import jetserver.util.Log;
 

@@ -4,7 +4,6 @@ package jetserver.server.web.services.servlet;
 import java.io.*;
 import java.util.Iterator;
 
-import jetserver.server.web.config.*;
 import jetserver.server.web.WebApplication;
 import jetserver.server.ejb.EJBJar;
 import jetserver.util.Log;

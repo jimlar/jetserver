@@ -6,7 +6,6 @@ import java.io.*;
 import java.util.*;
 
 import jetserver.util.Log;
-import jetserver.server.web.config.*;
 import jetserver.server.application.Application;
 
 public class WebDeployer {
