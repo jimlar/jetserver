@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<project name="JetServer" default="jetserver" basedir=".">
+
+  <property name="build.compiler" value="jikes" />
+
+  <property name="classpath" value="src:
+				    ./build/classes" />
+
+  <!-- clean -->
+  <target name="clean">
+    <delete dir="build" />
+  </target>
+
+  <!-- compile -->
+  <target name="compile">
+    <mkdir dir="build/classes"/>
+
+    <javac destdir="build/classes"
+	   classpath="${classpath}"
+	   includes="**/*.java">
+    
+      <src path="src"/>
+    </javac>
+
+  </target>
+
+  <!-- jetserver -->
+  <target name="jetserver" depends="compile">
+    <jar jarfile="build/jetserver.jar" 
+         basedir="build/classes"
+         manifest="src/MANIFEST.MF"/>
+  </target>
+
+</project>
