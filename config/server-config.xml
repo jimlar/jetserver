@@ -2,6 +2,11 @@
 
 <jetserver>
 
+  <!-- deployment manager settings -->
+  <deploymanager dropzone="../dropzone"/>
+
+
+  <!-- Web container settings -->
   <webserver>
 
     <!-- timeout is socket timeout in seconds -->

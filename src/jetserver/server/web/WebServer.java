@@ -42,6 +42,7 @@ public class WebServer extends Thread {
 	this.executor.createThreads(startThreads);
 
 	this.start();
+	System.out.println("WebServer started on port " + this.port);
     }
 
     public int getPort() {

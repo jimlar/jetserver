@@ -6,22 +6,24 @@ import java.net.*;
 import java.util.*;
 
 import jetserver.server.web.WebServer;
+import jetserver.server.deploymanager.DeployManager;
 
 public class JetServer {
 
-    WebServer webServer;
+    private WebServer webServer;
+    private DeployManager deployManager;
 
     public JetServer() 
 	throws IOException
     {
+	this.deployManager = new DeployManager();
 	this.webServer = new WebServer();
-	System.out.println("WebServer started on port " + webServer.getPort());
+	System.out.println("JetServer started.");
     }
 
     public static void main(String args[]) throws Exception {
 
 	JetServer jetServer = new JetServer();
-	System.out.println("JetServer started.");
 	
 	while (true) {
 	    try {
