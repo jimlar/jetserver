@@ -1,16 +1,26 @@
 package jetserver.server.ejb;
 
+import jetserver.server.ejb.parsing.EJBJarXMLParser;
+import jetserver.util.Log;
+
 import java.io.File;
 import java.io.IOException;
 
 public class EJBDeployer {
+    private Log log;
 
-    public EJBDeployer() {}
+    public EJBDeployer() {
+        log = Log.getInstance(this);
+    }
 
     public void deploy(File ejbJarRoot) throws IOException {
-        System.out.println("Deploying ejb jar");
+        log.info("Deploying ejb jar (" + ejbJarRoot + ")");
 
         /* Decode ejb-jar.xml */
+        EJBJarXMLParser parser = new EJBJarXMLParser(new File(ejbJarRoot,
+                "META-INF" + File.separator + "ejb-jar.xml"));
+
+        parser.parse();
 
         /* For each bean:
          *  1. generate wrapper classes

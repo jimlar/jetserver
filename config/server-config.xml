@@ -4,11 +4,11 @@
 
   <!-- logging options -->
   <logs>
-    <info-log file="../logs/messages.txt"/>
-    <error-log file="../logs/errors.txt"/>
+    <message-log file="../logs/messages.txt" stdout="true"/>
+    <error-log file="../logs/errors.txt" stderr="true"/>
 
     <!-- set enabled to true if you want debugging info -->
-    <debug-log file="../logs/debug.txt" enabled="true"/>
+    <debug-log file="../logs/debug.txt" enabled="true" stdout="false"/>
   </logs>
 
   <!-- The dropzone is where you put your war/ear/ejb-jar file to deploy it -->
@@ -20,7 +20,7 @@
     <socket port="8080" timeout="10"/>
 
     <!-- thread keep alive time is in seconds -->
-    <threads max="200" min="5" start="5" keep-alive-time="60"/>  
+    <threads max="200" min="5" start="5" keep-alive-time="60"/>
 
     <mime-types-file>mime.types</mime-types-file>
     <default-mime-type>text/plain</default-mime-type>

@@ -16,11 +16,11 @@ import jetserver.server.ejb.EJBDeployer;
 public class Deployer {
 
     private WebContainer webContainer;
-    private EJBDeployer ejbContainer;
+    private EJBDeployer ejbDeployer;
     
     public Deployer() throws IOException {
         this.webContainer = new WebContainer();
-        this.ejbContainer = new EJBDeployer();
+        this.ejbDeployer = new EJBDeployer();
     }
 
     /**
@@ -34,6 +34,6 @@ public class Deployer {
      * Deploy an EJB jar
      */
     public void deployEJBJar(File jarRoot) throws IOException {
-        ejbContainer.deploy(jarRoot);
+        ejbDeployer.deploy(jarRoot);
     }
 }

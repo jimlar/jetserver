@@ -58,6 +58,8 @@
     <mkdir dir="build/dropzone"/>
     <jar jarfile="build/dropzone/testwebapp.war" 
          basedir="test/testwebapp" />
+
+    <copy file="test/customerEjb.jar" todir="build/dropzone"/>
   </target>
  
 

@@ -47,7 +47,6 @@ public class WebContainer {
         webApplications.add(webApplication);
 
         log.info("Deployed " + config.getDisplayName());
-        System.out.println("Deployed " + config.getDisplayName());
     }
 
     /**

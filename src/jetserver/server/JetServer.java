@@ -21,7 +21,6 @@ public class JetServer {
 	this.dropZoneWatch.start();
 
 	Log.getInstance(this).info("started");
-	System.out.println("Jetserver started");
     }
 
     public static void main(String args[]) throws Exception {

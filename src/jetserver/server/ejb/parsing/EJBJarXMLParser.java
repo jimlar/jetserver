@@ -1,19 +1,21 @@
 package jetserver.server.ejb.parsing;
 
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.xml.sax.SAXException;
-import org.xml.sax.HandlerBase;
-import org.xml.sax.AttributeList;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.FactoryConfigurationError;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.ArrayList;
+
+import jetserver.util.Log;
+
 
 /**
  * Parser for ejb-jar.xml, creates objects for all elements
@@ -25,6 +27,8 @@ public class EJBJarXMLParser {
     private Collection sessionBeans;
     private Collection messageBeans;
 
+    private Log log;
+
     /**
      * Create a parser
      */
@@ -33,55 +37,41 @@ public class EJBJarXMLParser {
         this.entityBeans = new ArrayList();
         this.sessionBeans = new ArrayList();
         this.messageBeans = new ArrayList();
+
+        log = Log.getInstance(this);
     }
 
     /**
      * Parse the xml
      */
     public void parse() throws IOException {
-        try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            factory.setNamespaceAware(false);
-            factory.setValidating(false);
-            SAXParser parser = factory.newSAXParser();
 
-            EJBJarXMLHandler handler = new EJBJarXMLHandler();
-            parser.parse(new FileInputStream(ejbJarXML), handler);
+        try {
+            DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = parser.parse(ejbJarXML.getAbsolutePath());
+            processDocument(document);
 
         } catch (ParserConfigurationException e) {
-            throw new IOException("cant parse config: " + e);
+            throw new IOException("cant parse ejb-jar.xml: " + e);
+        } catch (FactoryConfigurationError error) {
+            throw new IOException("cant parse ejb-jar.xml: " + error);
         } catch (SAXException e) {
-            throw new IOException("cant parse config: " + e);
+            throw new IOException("cant parse ejb-jar.xml: " + e);
         }
     }
 
-    /**
-     * SAX handler for ejb-jar.xml
-     */
-    private class EJBJarXMLHandler extends HandlerBase {
-        private StringBuffer characterBuffer = new StringBuffer();
+    private void processDocument(Document document) {
 
-        public void startElement(String        name,
-                                 AttributeList attributes)
-                throws SAXException
-        {
-            /* Clear charater buffer to receive new data */
-            characterBuffer = new StringBuffer();
+        NodeList entityBeans = document.getElementsByTagName("entity");
+        if (entityBeans != null) {
+            for (int i = 0; i < entityBeans.getLength(); i++) {
+                processEntityBean(entityBeans.item(i), document);
+            }
         }
+    }
 
-        public void endElement(String name)
-                throws SAXException
-        {
-            /* Clear charater buffer to receive new data */
-            characterBuffer = new StringBuffer();
-        }
+    private void processEntityBean(Node entityNode, Document document) {
+        log.debug("Found entity bean");
 
-        public void characters(char[] ch,
-                               int start,
-                               int length)
-                throws SAXException
-        {
-            characterBuffer.append(ch, start, length);
-        }
     }
 }
