@@ -72,7 +72,16 @@
 
   <!-- start benchmarking -->
   <target name="benchmark">
-<!--    <echo message="http://localhost:8080/index.html" file="build/benchmark_urls"/> -->
+
+    <echo message=""/>
+    <echo message="Benchmarking HTML file"/>
+    <echo message="http://localhost:8080/hellocontainer.html" file="build/benchmark_urls"/>
+    <exec executable="./tools/http_load">
+      <arg line="-parallel 40 -fetches 2000 build/benchmark_urls"/>
+    </exec>
+
+    <echo message=""/>
+    <echo message="Benchmarking Servlet"/>
     <echo message="http://localhost:8080/hellocontainer" file="build/benchmark_urls"/>
     <exec executable="./tools/http_load">
       <arg line="-parallel 40 -fetches 2000 build/benchmark_urls"/>
