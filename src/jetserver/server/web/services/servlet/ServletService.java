@@ -78,7 +78,6 @@ public class ServletService {
 
 	    /* Should actually test with the contextpath prepended to the mapping */
 	    if (mapping.getUrlPattern().equals(request.getURI())) {
-		log.debug("found servlet mapping " + mapping);
 		return mapping;
 	    }
 	}
