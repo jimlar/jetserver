@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import jetserver.util.Log;
 import jetserver.util.xml.JetServerEntityResolver;
+import jetserver.util.xml.XMLUtilities;
 import jetserver.server.ejb.EJBClassLoader;
 
 
@@ -111,10 +112,10 @@ public class EJBJarConfig {
         NodeList ejbJarNodes = document.getElementsByTagName("ejb-jar");
         if (ejbJarNodes != null) {
             Node ejbJarNode = ejbJarNodes.item(0);
-            this.description = findProperty(ejbJarNode, "description");
-            this.displayName = findProperty(ejbJarNode, "display-name");
-            this.smallIcon = findProperty(ejbJarNode, "small-icon");
-            this.largeIcon = findProperty(ejbJarNode, "large-icon");
+            this.description = XMLUtilities.findProperty(ejbJarNode, "description");
+            this.displayName = XMLUtilities.findProperty(ejbJarNode, "display-name");
+            this.smallIcon = XMLUtilities.findProperty(ejbJarNode, "small-icon");
+            this.largeIcon = XMLUtilities.findProperty(ejbJarNode, "large-icon");
         }
 
         /* Fetch entity beans */
@@ -163,13 +164,13 @@ public class EJBJarConfig {
         entityBean.setLocalHomeClass(findClassProperty(entityBeanNode, "local-home"));
         entityBean.setLocalClass(findClassProperty(entityBeanNode, "local"));
 
-        entityBean.setPersistenceType(findProperty(entityBeanNode, "persistence-type"));
-        entityBean.setPrimKeyClass(findProperty(entityBeanNode, "prim-key-class"));
-        entityBean.setPrimKeyClass(findProperty(entityBeanNode, "primkey-field"));
-        entityBean.setReentrant(findProperty(entityBeanNode, "reentrant").equalsIgnoreCase("true"));
+        entityBean.setPersistenceType(XMLUtilities.findProperty(entityBeanNode, "persistence-type"));
+        entityBean.setPrimKeyClass(XMLUtilities.findProperty(entityBeanNode, "prim-key-class"));
+        entityBean.setPrimKeyClass(XMLUtilities.findProperty(entityBeanNode, "primkey-field"));
+        entityBean.setReentrant(XMLUtilities.findProperty(entityBeanNode, "reentrant").equalsIgnoreCase("true"));
 
-        entityBean.setCmpVersion(findProperty(entityBeanNode, "cmp-version"));
-        entityBean.setAbstractSchemaName(findProperty(entityBeanNode, "abstract-schema-name"));
+        entityBean.setCmpVersion(XMLUtilities.findProperty(entityBeanNode, "cmp-version"));
+        entityBean.setAbstractSchemaName(XMLUtilities.findProperty(entityBeanNode, "abstract-schema-name"));
 
         /*
          *  Fetch CMP fields
@@ -179,7 +180,7 @@ public class EJBJarConfig {
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             if (node.getNodeName().equals("cmp-field")) {
-                cmpFields.add(new CMPField(findProperty(node, "field-name")));
+                cmpFields.add(new CMPField(XMLUtilities.findProperty(node, "field-name")));
             }
         }
         entityBean.setCmpFields(cmpFields);
@@ -207,8 +208,8 @@ public class EJBJarConfig {
         sessionBean.setLocalHomeClass(findClassProperty(sessionBeanNode, "local-home"));
         sessionBean.setLocalClass(findClassProperty(sessionBeanNode, "local"));
 
-        sessionBean.setSessionType(findProperty(sessionBeanNode, "session-type"));
-        sessionBean.setTransactionType(findProperty(sessionBeanNode, "transaction-type"));
+        sessionBean.setSessionType(XMLUtilities.findProperty(sessionBeanNode, "session-type"));
+        sessionBean.setTransactionType(XMLUtilities.findProperty(sessionBeanNode, "transaction-type"));
 
         this.sessionBeans.add(sessionBean);
         log.debug("Found session bean " + sessionBean.getEJBName());
@@ -223,9 +224,9 @@ public class EJBJarConfig {
         MessageBeanDefinition messageBean = new MessageBeanDefinition();
         processBeanCommons(messageBean,  messageBeanNode, document);
 
-        messageBean.setTransactionType(findProperty(messageBeanNode, "transaction-type"));
-        messageBean.setMessageSelector(findProperty(messageBeanNode, "message-selector"));
-        messageBean.setAcknowledgeMode(findProperty(messageBeanNode, "acknowledge-mode"));
+        messageBean.setTransactionType(XMLUtilities.findProperty(messageBeanNode, "transaction-type"));
+        messageBean.setMessageSelector(XMLUtilities.findProperty(messageBeanNode, "message-selector"));
+        messageBean.setAcknowledgeMode(XMLUtilities.findProperty(messageBeanNode, "acknowledge-mode"));
 
         /*
          * TODO: handle these
@@ -243,11 +244,11 @@ public class EJBJarConfig {
     private void processBeanCommons(BeanDefinition bean, Node beanNode, Document document)
             throws IOException
     {
-        bean.setDescription(findProperty(beanNode, "description"));
-        bean.setDisplayName(findProperty(beanNode, "display-name"));
-        bean.setSmallIcon(findProperty(beanNode, "small-icon"));
-        bean.setLargeIcon(findProperty(beanNode, "large-icon"));
-        bean.setEJBName(findProperty(beanNode, "ejb-name"));
+        bean.setDescription(XMLUtilities.findProperty(beanNode, "description"));
+        bean.setDisplayName(XMLUtilities.findProperty(beanNode, "display-name"));
+        bean.setSmallIcon(XMLUtilities.findProperty(beanNode, "small-icon"));
+        bean.setLargeIcon(XMLUtilities.findProperty(beanNode, "large-icon"));
+        bean.setEJBName(XMLUtilities.findProperty(beanNode, "ejb-name"));
 
         bean.setEjbClass(findClassProperty(beanNode, "ejb-class"));
 
@@ -260,7 +261,7 @@ public class EJBJarConfig {
          * - resourceEnvReferences
          * - roleReferences
          */
-        bean.setSecurityIdentity(findProperty(beanNode, "security-identity"));
+        bean.setSecurityIdentity(XMLUtilities.findProperty(beanNode, "security-identity"));
     }
 
 
@@ -272,7 +273,7 @@ public class EJBJarConfig {
     private Class findClassProperty(Node node, String propertyName)
             throws IOException
     {
-        String className = findProperty(node, propertyName);
+        String className = XMLUtilities.findProperty(node, propertyName);
         if (className == null) {
             return null;
         }
@@ -281,38 +282,5 @@ public class EJBJarConfig {
         } catch (ClassNotFoundException e) {
             throw new IOException("Class could not be loaded " + className);
         }
-    }
-
-
-    /**
-     * Fetch the value of a named child or attribute.
-     * For childs, the body of the child is returned.
-     * (Child nodes have predecence over attributes)
-     * @param node the node
-     * @param propertyName name of child or attribute to find.
-     * @return the value or null if not found
-     */
-    private String findProperty(Node node, String propertyName) {
-       /* Try children */
-       NodeList children = node.getChildNodes();
-       for (int i = 0; i < children.getLength(); i++) {
-           if (children.item(i).getNodeName().equals(propertyName)) {
-               /* Extract the body of the child */
-               String bodyValue = "";
-               NodeList bodies = children.item(i).getChildNodes();
-               for (int j = 0; j < bodies.getLength(); j++) {
-                   bodyValue += bodies.item(j).getNodeValue();
-               }
-               return bodyValue;
-           }
-       }
-
-       /* Try attributes */
-       Node attribute = node.getAttributes().getNamedItem(propertyName);
-       if (attribute != null) {
-           return attribute.getNodeValue();
-       } else {
-           return null;
-       }
     }
 }

@@ -17,6 +17,7 @@ import java.util.List;
 
 import jetserver.util.Log;
 import jetserver.util.xml.JetServerEntityResolver;
+import jetserver.util.xml.XMLUtilities;
 import jetserver.server.ejb.EJBClassLoader;
 import jetserver.server.ejb.config.*;
 
@@ -97,7 +98,7 @@ public class ApplicationConfig {
     private void processModule(Node moduleNode) {
 
         /* Is it an ejb module? */
-        String ejbModuleURI = findProperty(moduleNode, "ejb");
+        String ejbModuleURI = XMLUtilities.findProperty(moduleNode, "ejb");
         if (ejbModuleURI != null) {
             File file = new File(earRoot, ejbModuleURI);
             ejbModules.add(new Module(file, ejbModuleURI));
@@ -111,7 +112,7 @@ public class ApplicationConfig {
             for (int i = 0; i < children.getLength(); i++) {
                 Node webNode = children.item(i);
                 if (webNode.getNodeName().equals("web")) {
-                    String uri = findProperty(webNode, "web-uri");
+                    String uri = XMLUtilities.findProperty(webNode, "web-uri");
                     File file = new File(earRoot, uri);
                     webModules.add(new Module(file, uri));
                     log.debug("Found web module " + uri);
@@ -119,37 +120,5 @@ public class ApplicationConfig {
                 }
             }
         }
-    }
-
-    /**
-     * Fetch the value of a named child or attribute.
-     * For childs, the body of the child is returned.
-     * (Child nodes have predecence over attributes)
-     * @param node the node
-     * @param propertyName name of child or attribute to find.
-     * @return the value or null if not found
-     */
-    private String findProperty(Node node, String propertyName) {
-       /* Try children */
-       NodeList children = node.getChildNodes();
-       for (int i = 0; i < children.getLength(); i++) {
-           if (children.item(i).getNodeName().equals(propertyName)) {
-               /* Extract the body of the child */
-               String bodyValue = "";
-               NodeList bodies = children.item(i).getChildNodes();
-               for (int j = 0; j < bodies.getLength(); j++) {
-                   bodyValue += bodies.item(j).getNodeValue();
-               }
-               return bodyValue;
-           }
-       }
-
-       /* Try attributes */
-       Node attribute = node.getAttributes().getNamedItem(propertyName);
-       if (attribute != null) {
-           return attribute.getNodeValue();
-       } else {
-           return null;
-       }
     }
 }

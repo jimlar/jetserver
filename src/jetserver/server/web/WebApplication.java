@@ -12,6 +12,9 @@ import jetserver.util.Log;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 
+/**
+ * This represent a web application instance (a .war file that is deployed)
+ */
 public class WebApplication {
 
     private Application application;
@@ -39,7 +42,7 @@ public class WebApplication {
             throws IOException
     {
         /* search for a servlet mapping */
-        ServletMapping mapping = getMapping(request);
+        ServletMapping mapping = getMapping(request.getRequestURI());
         if (mapping == null) {
 
             /* No mapping found, let the file server take over */
@@ -60,21 +63,17 @@ public class WebApplication {
      * Fetch a mapping matching the request
      * @return the mapping found or null if no mapping
      */
-    private ServletMapping getMapping(JSHttpServletRequest request) {
+    private ServletMapping getMapping(String requestURI) {
 
         Iterator mappings = getConfig().getServletMappings().iterator();
         while (mappings.hasNext()) {
             ServletMapping mapping = (ServletMapping) mappings.next();
 
             /* Should actually test with the contextpath prepended to the mapping */
-            if (mapping.getUrlPattern().equals(request.getRequestURI())) {
+            if (mapping.getUrlPattern().equals(requestURI)) {
                 return mapping;
             }
         }
         return null;
-    }
-
-    public String toString() {
-        return "[WebApplication http=" + config.getHttpRoot() + ", file=" + config.getFileRoot() + "]";
     }
 }

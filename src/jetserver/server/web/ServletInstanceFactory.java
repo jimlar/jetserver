@@ -9,6 +9,7 @@ import javax.servlet.http.*;
 
 import jetserver.util.Log;
 import jetserver.server.web.config.ServletMapping;
+import jetserver.server.web.config.JSServletConfig;
 
 /**
  * This is a factory where you fetch the servlet instances
@@ -54,12 +55,14 @@ class ServletInstanceFactory {
 
     private HttpServlet createInstance(String servletName) throws IOException {
         try {
-            String servletClassName = webApp.getConfig().getServletDeclaration(servletName).getClassName();
-            Class servletClass = classLoader.loadClass(servletClassName);
+            JSServletConfig servletDeclaration = webApp.getConfig().getServletDeclaration(servletName);
+            Class servletClass = classLoader.loadClass(servletDeclaration.getClassName());
             HttpServlet servlet = (HttpServlet) servletClass.newInstance();
             if (servlet instanceof SingleThreadModel) {
                 throw new RuntimeException("single thread model servlets are not supported!");
             }
+
+            servlet.init(null);
             return servlet;
 
         } catch (ClassNotFoundException e) {

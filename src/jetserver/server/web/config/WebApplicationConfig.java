@@ -2,13 +2,16 @@
 package jetserver.server.web.config;
 
 import org.xml.sax.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.*;
 import java.io.*;
 import java.util.*;
 
 import jetserver.util.xml.JetServerEntityResolver;
+import jetserver.util.xml.XMLUtilities;
 import jetserver.util.Log;
 
 public class WebApplicationConfig {
@@ -22,26 +25,8 @@ public class WebApplicationConfig {
     private Map servletDeclarationsByName = new HashMap();
 
 
-    WebApplicationConfig(String displayName,
-                 File fileRoot,
-                 String httpRoot,
-                 Collection welcomeFiles,
-                 Collection servletDeclarations,
-                 List servletMappings) {
-
-        this.displayName = displayName;
-        this.httpRoot = httpRoot;
+    public WebApplicationConfig(File fileRoot) {
         this.fileRoot = fileRoot;
-        this.welcomeFiles = welcomeFiles;
-
-        this.servletMappings = servletMappings;
-        this.servletDeclarationsByName = new HashMap();
-
-        Iterator iter = servletDeclarations.iterator();
-        while (iter.hasNext()) {
-            ServletDeclaration d = (ServletDeclaration) iter.next();
-            servletDeclarationsByName.put(d.getName(), d);
-        }
     }
 
     public String getDisplayName() {
@@ -64,50 +49,50 @@ public class WebApplicationConfig {
         return this.servletMappings;
     }
 
-    public ServletDeclaration getServletDeclaration(String servletName) {
-        return (ServletDeclaration) this.servletDeclarationsByName.get(servletName);
+    public JSServletConfig getServletDeclaration(String servletName) {
+        return (JSServletConfig) this.servletDeclarationsByName.get(servletName);
     }
 
     /**
-     * This method would probably be much nice if I used DOM as in the ejb-jar parser
+     * Parse the xml
      */
-    public static WebApplicationConfig decode(File applicationRoot) throws IOException {
-
-        /* Read web.xml and jetserver-web.xml files */
+    public void parse() throws IOException {
         try {
-
-            File webINF = new File(applicationRoot, "WEB-INF");
-            File webXML = new File(webINF, "web.xml");
-            WebXMLHandler webXMLHandler = new WebXMLHandler();
-
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            factory.setNamespaceAware(false);
-            factory.setValidating(false);
-            Parser parser = factory.newSAXParser().getParser();
+            DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             parser.setEntityResolver(new JetServerEntityResolver());
-            parser.setDocumentHandler(webXMLHandler);
-            parser.parse(new InputSource(new FileInputStream(webXML)));
 
+            /* parse web xml */
+            File webINF = new File(fileRoot, "WEB-INF");
+            File webXML = new File(webINF, "web.xml");
+            processWebXML(parser.parse(webXML.getAbsolutePath()));
+
+            /* parse jetserver web xml */
             File jetServerWebXML = new File(webINF, "jetserver-web.xml");
-            JetServerWebXMLHandler jetServerWebXMLHandler = new JetServerWebXMLHandler();
-            parser.setDocumentHandler(jetServerWebXMLHandler);
-            parser.parse(new InputSource(new FileInputStream(jetServerWebXML)));
+            processJetServerWebXML(parser.parse(webXML.getAbsolutePath()));
 
-            return new WebApplicationConfig(webXMLHandler.displayName,
-                                    applicationRoot,
-                                    jetServerWebXMLHandler.httpRoot,
-                                    webXMLHandler.welcomeFiles,
-                                    webXMLHandler.servletDeclarations,
-                                    webXMLHandler.servletMappings);
 
         } catch (ParserConfigurationException e) {
-            Log.getInstance(WebApplicationConfig.class).error("Cant parse web application config", e);
-            throw new IOException("cant parse config: " + e);
+            throw new IOException("cant parse xml: " + e);
+        } catch (FactoryConfigurationError error) {
+            throw new IOException("cant parse xml: " + error);
         } catch (SAXException e) {
-            Log.getInstance(WebApplicationConfig.class).error("Cant parse web application config", e);
-            throw new IOException("cant parse config: " + e);
+            throw new IOException("cant parse xml: " + e);
         }
     }
+
+    private void processWebXML(Document document)
+            throws IOException
+    {
+        NodeList servletNodes = document.getElementsByTagName("servlet");
+        NodeList servletMappingNodes = document.getElementsByTagName("servlet-mapping");
+    }
+
+    private void processJetServerWebXML(Document document)
+            throws IOException
+    {
+        this.httpRoot = XMLUtilities.findProperty(document.getFirstChild(), "root");
+    }
+
 
     /* --- XML handler for web.xml --- */
 
@@ -144,38 +129,12 @@ public class WebApplicationConfig {
                 urlPattern = characterBuffer.toString().trim();
 
             } else if (name.equals("servlet")) {
-                servletDeclarations.add(new ServletDeclaration(servletName, servletClass));
+                servletDeclarations.add(new JSServletConfig(servletName, servletClass));
 
             } else if (name.equals("servlet-mapping")) {
                 servletMappings.add(new ServletMapping(servletName, urlPattern));
             }
 
-            characterBuffer = new StringBuffer();
-        }
-
-        public void characters(char[] ch, int start, int length) throws SAXException {
-            characterBuffer.append(ch, start, length);
-        }
-    }
-
-    /* --- XML handler for jetserver-web.xml --- */
-
-    private static class JetServerWebXMLHandler extends HandlerBase {
-        public String httpRoot;
-
-        private StringBuffer characterBuffer = new StringBuffer();
-
-        public void startElement(String name, AttributeList attributes) throws SAXException {
-            characterBuffer = new StringBuffer();
-        }
-
-        public void endElement(String name) throws SAXException {
-
-            if (name.equals("root") && characterBuffer.length() > 0) {
-                httpRoot = characterBuffer.toString().trim();
-            }
-
-            /* Clear charater buffer to receive new data */
             characterBuffer = new StringBuffer();
         }
 
