@@ -79,6 +79,20 @@ public class ServerConfig {
 	return values.size();
     }
 
+    public String[] getPropertyValues(String name) {
+	List values = (List) properties.get(name);
+	if (values == null) {
+	    throw new RuntimeException("no value for property " + name);
+	}
+	
+	String valuesArray[] = new String[values.size()];
+	for (int i = 0; i < valuesArray.length; i++) {
+	    valuesArray[i] = (String) values.get(i);
+	}
+
+	return valuesArray;
+    }
+
     public String getProperty(String name, int index) {
 	List values = (List) properties.get(name);
 	if (values == null) {

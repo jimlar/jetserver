@@ -6,6 +6,7 @@
     <root>../html</root>
 
     <mime-types-file>mime.types</mime-types-file>
+    <default-mime-type>text/plain</default-mime-type>
 
     <welcome-file-list>
       <welcome-file>index.html</welcome-file>
