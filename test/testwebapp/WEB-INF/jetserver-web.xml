@@ -1,0 +1,7 @@
+
+<web-app>
+
+   <!-- where in the http path o mount the web app -->
+   <root>/</root>
+
+</web-app>

@@ -38,15 +38,19 @@
       <fileset dir="." includes="html/*.html" />
     </copy>
 
-    <!-- copy the test applications -->
-    <copy todir="build/dropzone">
-      <fileset dir="test" includes="testwebapp.war"/>
-    </copy>
-
   </target>
 
+
+  <!-- test web application -->
+  <target name="testwebapp">
+    <mkdir dir="build/dropzone"/>
+    <jar jarfile="build/dropzone/testwebapp.war" 
+         basedir="test/testwebapp" />
+  </target>
+ 
+
   <!-- start server -->
-  <target name="start" depends="jetserver">
+  <target name="start" depends="jetserver, testwebapp">
     <java classname="jetserver.server.JetServer"
           classpath="${classpath}"
           fork="true"

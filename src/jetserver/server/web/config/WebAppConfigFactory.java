@@ -1,5 +1,5 @@
 
-package jetserver.server.web;
+package jetserver.server.web.config;
 
 import java.io.*;
 import java.util.*;
@@ -9,14 +9,9 @@ import javax.xml.parsers.*;
 
 import jetserver.util.Log;
 
-public class WebApplicationConfig {
+public class WebAppConfigFactory {
 
-    private String httpRoot;
-    private File fileRoot;
-    private Collection welcomeFiles;
-
-    
-    static WebApplicationConfig decode(File applicationRoot) throws IOException {
+    public static WebAppConfig decode(File applicationRoot) throws IOException {
 	
 	/* Read web.xml and jetserver-web.xml files */
 	try {
@@ -36,51 +31,58 @@ public class WebApplicationConfig {
 	    JetServerWebXMLHandler jetServerWebXMLHandler = new JetServerWebXMLHandler();	    
 	    parser.parse(new FileInputStream(jetServerWebXML), jetServerWebXMLHandler);
 
-	    return new WebApplicationConfig(applicationRoot, 
-					    jetServerWebXMLHandler.httpRoot,
-					    webXMLHandler.welcomeFiles);
+	    return new WebAppConfig(applicationRoot, 
+				    jetServerWebXMLHandler.httpRoot,
+				    webXMLHandler.welcomeFiles,
+				    webXMLHandler.servletDeclarations,
+				    webXMLHandler.servletMappings);
 	    
 	} catch (ParserConfigurationException e) {
-	    Log.getInstance(WebApplicationConfig.class).error("Cant parse web application config", e);
+	    Log.getInstance(WebAppConfigFactory.class).error("Cant parse web application config", e);
 	    throw new IOException("cant parse config: " + e);
 	} catch (SAXException e) {
-	    Log.getInstance(WebApplicationConfig.class).error("Cant parse web application config", e);
+	    Log.getInstance(WebAppConfigFactory.class).error("Cant parse web application config", e);
 	    throw new IOException("cant parse config: " + e);
 	}
-    }
-
-    private WebApplicationConfig(File fileRoot, String httpRoot, Collection welcomeFiles) {
-	this.httpRoot = httpRoot;
-	this.fileRoot = fileRoot;
-	this.welcomeFiles = welcomeFiles;
-    } 
-
-    public String getHttpRoot() {
-	return this.httpRoot;
-    }
-
-    public File getFileRoot() {
-	return this.fileRoot;
-    }
-
-    public Collection getWelcomeFiles() {
-	return this.welcomeFiles;
     }
 
     /* --- XML handler for web.xml --- */
 
     private static class WebXMLHandler extends HandlerBase {
-	public Collection welcomeFiles = new ArrayList();
-
 	private StringBuffer characterBuffer = new StringBuffer();
+
+	public Collection welcomeFiles = new ArrayList();
+	
+	private String servletName;
+	private String servletClass;
+	private String urlPattern;
+
+	public List servletDeclarations = new ArrayList();;
+	public List servletMappings = new ArrayList();;
+
+	public void startElement(String name, AttributeList attributes) throws SAXException {
+	    characterBuffer = new StringBuffer();	
+	}
 
 	public void endElement(String name) throws SAXException {
 	    
 	    if (name.equals("welcome-file") && characterBuffer.length() > 0) {
 		welcomeFiles.add(characterBuffer.toString().trim());
+	    
+	    } else if (name.equals("servlet-name")) {
+		servletName = characterBuffer.toString().trim();
+	    } else if (name.equals("servlet-class")) {
+		servletClass = characterBuffer.toString().trim();
+	    } else if (name.equals("url-pattern")) {
+		urlPattern = characterBuffer.toString().trim();	    
+
+	    } else if (name.equals("servlet")) {
+		servletDeclarations.add(new ServletDeclaration(servletName, servletClass));
+
+	    } else if (name.equals("servlet-mapping")) {
+		servletMappings.add(new ServletMapping(servletName, urlPattern));
 	    }
 	    
-	    /* Clear charater buffer to receive new data */
 	    characterBuffer = new StringBuffer();	
 	}
 	
@@ -95,6 +97,10 @@ public class WebApplicationConfig {
 	public String httpRoot;
 	
 	private StringBuffer characterBuffer = new StringBuffer();
+
+	public void startElement(String name, AttributeList attributes) throws SAXException {
+	    characterBuffer = new StringBuffer();	
+	}
 
 	public void endElement(String name) throws SAXException {
 	    

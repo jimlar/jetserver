@@ -55,16 +55,16 @@ public class Log {
 
 		File infoFile = config.getFile("jetserver.logs.info-log.file");
 		infoFile.getParentFile().mkdirs();
-		infoWriter = new PrintWriter(new FileOutputStream(infoFile), true);
+		infoWriter = new PrintWriter(new FileOutputStream(infoFile.getAbsolutePath(), true), true);
 
 		File errorFile = config.getFile("jetserver.logs.error-log.file");
 		errorFile.getParentFile().mkdirs();
-		errorWriter = new PrintWriter(new FileOutputStream(errorFile));
+		errorWriter = new PrintWriter(new FileOutputStream(errorFile.getAbsolutePath(), true));
 
 		if (config.getString("jetserver.logs.debug-log.enabled").equals("true")) {
 		    File debugFile = config.getFile("jetserver.logs.debug-log.file");
 		    debugFile.getParentFile().mkdirs();
-		    debugWriter = new PrintWriter(new FileOutputStream(debugFile));
+		    debugWriter = new PrintWriter(new FileOutputStream(debugFile.getAbsolutePath(), true));
 		} else {
 		    debugWriter = null;
 		}

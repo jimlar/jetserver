@@ -1,6 +1,6 @@
 
 
-package jetserver.server.web;
+package jetserver.server.web.config;
 
 import java.io.*;
 import java.util.*;

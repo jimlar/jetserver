@@ -18,9 +18,10 @@ public class JetServer {
     {
 	this.containerManager = new ContainerManager();
 	this.dropZoneWatch = new DropZoneWatch(containerManager);
-	Log.getInstance(this).info("started");
-
 	this.dropZoneWatch.start();
+
+	Log.getInstance(this).info("started");
+	System.out.println("Jetserver started");
     }
 
     public static void main(String args[]) throws Exception {

@@ -7,6 +7,7 @@ import java.net.*;
 import java.util.*;
 
 import jetserver.server.web.*;
+import jetserver.server.web.config.*;
 import jetserver.util.Log;
 
 public class FileService  {
@@ -15,7 +16,7 @@ public class FileService  {
     private static final int BUFFER_SIZE = 1024;
     private final FileInfoCache fileInfoCache;
 
-    public FileService(WebApplicationConfig config) throws IOException {	
+    public FileService(WebAppConfig config) throws IOException {	
 	this.fileInfoCache = new FileInfoCache(config);
 	this.log = Log.getInstance(this);
     }

@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.*;
 
 import jetserver.server.web.*;
-import jetserver.config.ServerConfig;
+import jetserver.server.web.config.*;
 
 /**
  * 
@@ -21,12 +21,12 @@ class FileInfoCache {
     private static final int ENTRY_TIME_TO_LIVE = 5000; 
 
 
-    private final WebApplicationConfig config;
+    private final WebAppConfig config;
     private final MimeTypes mimeTypes;
     private final Map fileInfoByRequestURI;
 
 
-    public FileInfoCache(WebApplicationConfig config) throws IOException {
+    public FileInfoCache(WebAppConfig config) throws IOException {
 	this.config = config;
 	this.mimeTypes = new MimeTypes();
 	this.fileInfoByRequestURI = Collections.synchronizedMap(new WeakHashMap());

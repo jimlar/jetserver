@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.*;
 
 import jetserver.util.Log;
+import jetserver.server.web.config.*;
 
 public class WebContainer {
 
@@ -40,9 +41,11 @@ public class WebContainer {
      */
     public void deploy(File applicationRoot) throws IOException {
 	log.info("Deploying webapp in dir " + applicationRoot);
-	WebApplicationConfig config = WebApplicationConfig.decode(applicationRoot);
+
+	WebAppConfig config = WebAppConfigFactory.decode(applicationRoot);
 	WebApplication webApplication = new WebApplication(config);
 	webApplications.add(webApplication);
+
 	log.info("Deployed " + webApplication);
     }
 
