@@ -1,5 +1,5 @@
 
-package jetserver.config;
+package jetserver.server.config;
 
 import java.io.*;
 import java.util.*;

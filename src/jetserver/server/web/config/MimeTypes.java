@@ -5,7 +5,7 @@ package jetserver.server.web.config;
 import java.io.*;
 import java.util.*;
 
-import jetserver.config.ServerConfig;
+import jetserver.server.config.ServerConfig;
 
 public class MimeTypes {
 

@@ -7,7 +7,7 @@ import java.util.*;
 
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 
-import jetserver.config.ServerConfig;
+import jetserver.server.config.ServerConfig;
 import jetserver.util.Log;
 
 public class WebServer extends Thread {

@@ -4,7 +4,7 @@ package jetserver.server;
 import java.io.*;
 import java.util.*;
 
-import jetserver.config.ServerConfig;
+import jetserver.server.config.ServerConfig;
 import jetserver.server.Deployer;
 import jetserver.util.*;
 

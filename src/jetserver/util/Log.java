@@ -2,7 +2,7 @@
 
 package jetserver.util;
 
-import jetserver.config.ServerConfig;
+import jetserver.server.config.ServerConfig;
 
 import java.io.*;
 import java.util.*;
