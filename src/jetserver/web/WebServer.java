@@ -8,12 +8,12 @@ import java.util.*;
 import jetserver.config.ServerConfig;
 
 public class WebServer {
-
+    
     private int numberOfThreads;
     private int port;
     private ServerSocket serverSocket;
     private WebServerThreadPool threadPool;
-
+    
     public WebServer() 
 	throws IOException
     {
@@ -24,8 +24,7 @@ public class WebServer {
 	this.threadPool = new WebServerThreadPool(1, serverSocket);
     }
 
-    public static void main(String args[]) throws Exception {
-	WebServer webServer = new WebServer();
-	System.out.println("WebServer started on port " + webServer.port);
+    public int getPort() {
+	return this.port;
     }
 }

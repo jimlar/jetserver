@@ -13,6 +13,7 @@ public class WebServerThread extends Thread {
     private WebServerThreadPool threadPool;
     private ServerSocket serverSocket;
     private Socket socket;
+    private int socketTimeout;
     private int threadNumber;
 
     public WebServerThread(WebServerThreadPool threadPool, 
@@ -23,6 +24,9 @@ public class WebServerThread extends Thread {
 	this.threadPool = threadPool;
 	this.threadNumber = threadNumber;
 	this.serverSocket = serverSocket;
+
+	ServerConfig config = ServerConfig.getInstance();
+	this.socketTimeout = config.getIntProperty("jetserver.webserver.timeout") * 1000;
     }
 
     public int getThreadNumber() {
@@ -37,6 +41,7 @@ public class WebServerThread extends Thread {
 		socket = serverSocket.accept();
 		threadPool.markThreadBusy(this);
 		
+		socket.setSoTimeout(socketTimeout);
 		InputStream in = new BufferedInputStream(socket.getInputStream());
 		HttpRequest request = HttpRequest.decodeRequest(in);
 

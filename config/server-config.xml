@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 
 <jetserver>
-  <webserver port="8080" buffersize="1024" threads="30">
+
+  <!-- timeout is socket timeout in seconds -->
+  <webserver port="8080" buffersize="1024" threads="50" timeout="10">
 
     <root>../html</root>
 
@@ -12,7 +14,10 @@
       <welcome-file>index.html</welcome-file>
       <welcome-file>index.htm</welcome-file>
     </welcome-file-list>
-  </webserver>
 
+    <!-- max size of files to cache in memory (kilobytes) -->
+    <cache max-file-size="50"/>
+
+  </webserver>
 </jetserver>
 

@@ -5,7 +5,8 @@
   <property name="build.compiler" value="jikes" />
 
   <property name="classpath" value="src:
-				    .build/classes" />
+				    .build/classes:
+                                    lib/xerces.jar" />
 
   <!-- jetserver -->
   <target name="jetserver" depends="compile">
@@ -38,13 +39,33 @@
 
   </target>
 
+  <!-- start server -->
+  <target name="start" depends="jetserver">
+    <java classname="jetserver.server.JetServer"
+          classpath="${classpath}"
+          fork="true"
+          dir=".build">
+    </java>
+  </target>
+
   <!-- start benchmarking -->
-  <target name="benchmark" depends="compile">
+  <target name="javabenchmark" depends="compile">
     <java classname="jetserver.benchmark.BenchMark"
           classpath="${classpath}">
       <arg value="http://localhost/index.html" />
       <arg value="3" />
     </java>
+  </target>
+
+  <target name="benchmark">
+    <echo message="http://localhost/index.html" file=".build/benchmark_urls"/>
+    <exec executable="./tools/http_load">
+      <arg value="-parallel"/>
+      <arg value="30"/>
+      <arg value="-fetches"/>
+      <arg value="2000"/>
+      <arg file=".build/benchmark_urls"/>
+    </exec>
   </target>
 
 </project>

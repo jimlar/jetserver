@@ -176,6 +176,7 @@ public class BenchMark {
 		    long st = System.currentTimeMillis();
 		    
 		    Socket socket = new Socket(host, port);
+		    socket.setSoTimeout(4000);
 		    OutputStream out = socket.getOutputStream();
 		    out.write(requestData);
 		    out.flush();
@@ -193,7 +194,7 @@ public class BenchMark {
 		    socket.close();
 
 		    report (System.currentTimeMillis() - st, totalRead);
-		
+
 		} catch (IOException e) {
 		    reportError();
 		    System.err.println("Error: " + e);
@@ -234,18 +235,18 @@ public class BenchMark {
 		long runTime = System.currentTimeMillis() - startTime;
 		
 		/* Restart afer 2 secs */
-		if (!hasResetted && totReq > 3000) {
-		    resetReports();
-		    hasResetted = true;
-		    System.out.println("-- Statistics resetted --");
+// 		if (!hasResetted && totReq > 3000) {
+// 		    resetReports();
+// 		    hasResetted = true;
+// 		    System.out.println("-- Statistics resetted --");
 		    
-		    synchronized (this) {
-			err = errors;
-			totReq = totalRequests;
-			totTime = totalTime;
-			totBytes = totalBytes;
-		    }
-		}
+// 		    synchronized (this) {
+// 			err = errors;
+// 			totReq = totalRequests;
+// 			totTime = totalTime;
+// 			totBytes = totalBytes;
+// 		    }
+// 		}
 		
 		if (totReq > 0) {
 		    
