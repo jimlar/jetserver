@@ -30,13 +30,31 @@ public class EntityWrapperFactory {
         Method[] beanMethods = entityBean.getEjbClass().getDeclaredMethods();
         if (beanMethods != null) {
             for (int i = 0; i < beanMethods.length; i++) {
-                methods += beanMethods[i].getName();
-                if (i < beanMethods.length - 1) {
-                    methods += ", ";
+                if (isInterfaceMethod(beanMethods[i], entityBean)) {
+                    methods += beanMethods[i].getName();
+                    if (i < beanMethods.length - 1) {
+                        methods += ", ";
+                    }
                 }
             }
         }
-        log.debug(" - found methods " + methods);
+        log.debug(" - wrapping methods " + methods);
         return null;
+    }
+
+    private boolean isEJBMethod(Method method, EntityBeanDefinition bean) {
+        return method.getName().startsWith("ejb");
+    }
+
+    private boolean isInterfaceMethod(Method method, EntityBeanDefinition bean) {
+        Method[] intfMethods = bean.getRemoteClass().getDeclaredMethods();
+        if (intfMethods != null) {
+            for (int i = 0; i < intfMethods.length; i++) {
+                if (intfMethods[i].getName().equals(method.getName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
