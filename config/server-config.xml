@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+
+<jetserver>
+  <webserver port="8080" root="/home/jimmy/orion/default-web-app" />
+</jetserver>
+

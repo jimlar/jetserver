@@ -5,9 +5,11 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import jetserver.config.ServerConfig;
+
 public class WebServerThread extends Thread {
 
-    private static final File baseDir = new File("/home/jimmy/orion/default-web-app");
+    private static final File baseDir = ServerConfig.getInstance().getFileProperty("jetserver.webserver.root");
 
     private WebServerThreadPool threadPool;
     private byte outputBuffer[] = new byte[1024];

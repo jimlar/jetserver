@@ -23,6 +23,11 @@
       <src path="src"/>
     </javac>
 
+    <copy todir="build">
+      <fileset dir="." includes="lib/*.jar" />
+      <fileset dir="." includes="config/*.xml" />
+    </copy>
+
   </target>
 
   <!-- jetserver -->

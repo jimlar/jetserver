@@ -5,7 +5,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import jetserver.util.*;
+import jetserver.config.ServerConfig;
 
 public class WebServer extends Thread {
 
@@ -33,6 +33,6 @@ public class WebServer extends Thread {
     }
 
     public static void main(String args[]) throws Exception {
-	WebServer webServer = new WebServer(8080);
+	WebServer webServer = new WebServer(ServerConfig.getInstance().getIntProperty("jetserver.webserver.port"));
     }
 }

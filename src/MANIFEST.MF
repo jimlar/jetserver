@@ -1,2 +1,2 @@
 Main-Class: jetserver.web.WebServer
-Class-Path: 
+Class-Path: lib/xerces.jar .
