@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import javax.servlet.*;
 import javax.servlet.http.*;
 
 import jetserver.server.web.*;
@@ -46,10 +47,14 @@ public class ServletService {
 	HttpServlet servlet = servletInstanceFactory.getServletInstance(mapping.getServletName());
 
 	if (servlet != null) {
-	    HttpServletRequest httpServletRequest = new JetServerHttpServletRequest(request);
-	    HttpServletResponse httpServletResponse = new JetServerHttpServletResponse(request);
-	    servlet.service(httpServletRequest, httpServletResponse);
-	    
+	    HttpServletRequest httpServletRequest = new JetServerHttpServletRequest(request, config);
+	    //HttpServletResponse httpServletResponse = new JetServerHttpServletResponse(request);
+
+	    try {
+		servlet.service(httpServletRequest, null);
+	    } catch (ServletException e) {
+		throw new IOException("got servlet exception: " + e);
+	    }
 	} else {
 	    throw new IOException("could not start servlet");
 	}

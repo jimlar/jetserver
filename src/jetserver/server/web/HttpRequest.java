@@ -49,6 +49,16 @@ public class HttpRequest {
 	return uri;
     }
 
+    public String getMethod() {
+	return this.method;
+    }
+
+    public String getProtocol() {
+	return this.protocol;
+    }
+
+
+
     public String toString() {
 	return "[HttpRequest method=" + method + ", uri=" + uri + ", protocol=" + protocol + "]";
     }
