@@ -2,18 +2,25 @@
 
 <jetserver>
 
-  <!-- deployment manager settings -->
-  <deploymanager dropzone="../dropzone" deploy-dir="../deployments"/>
+  <!-- logging options -->
+  <logs>
+    <info-log file="../logs/messages.txt"/>
+    <error-log file="../logs/errors.txt"/>
 
+    <!-- set enabled to true if you want debugging info -->
+    <debug-log file="../logs/debug.txt" enabled="true"/>
+  </logs>
 
-  <!-- Web container settings -->
+  <!-- The dropzone is where you put your war/ear/ejb-jar file to deploy it -->
+  <dropzonewatch dropzone="../dropzone" deploy-dir="../deployments"/>
+
   <webcontainer>
 
     <!-- timeout is socket timeout in seconds -->
     <socket port="8080" timeout="10"/>
 
-    <!-- keep alive time is in seconds -->
-    <threads max="10" min="1" start="1" keep-alive-time="60"/>  
+    <!-- thread keep alive time is in seconds -->
+    <threads max="200" min="5" start="5" keep-alive-time="60"/>  
 
     <mime-types-file>mime.types</mime-types-file>
     <default-mime-type>text/plain</default-mime-type>

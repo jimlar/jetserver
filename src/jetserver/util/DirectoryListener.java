@@ -1,4 +1,4 @@
-package jetserver.server.deploymanager;
+package jetserver.util;
 
 import java.io.File;
 

@@ -1,11 +1,15 @@
 
-package jetserver.server.deploymanager;
+package jetserver.util;
 
 import java.io.*;
 import java.util.*;
 
-import jetserver.config.ServerConfig;
-
+/**
+ * This class can watch a directory add report changes to listeners
+ *
+ * It only reports changes of files in the watched directory, no subdirectory
+ * support
+ */
 
 public class DirectoryWatch {
     

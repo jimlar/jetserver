@@ -1,35 +1,35 @@
 
-package jetserver.server.deploymanager;
+package jetserver.server;
 
 import java.io.*;
 import java.util.*;
 
 import jetserver.config.ServerConfig;
 import jetserver.server.ContainerManager;
-import jetserver.util.Log;
+import jetserver.util.*;
 
-public class DeployManager implements DirectoryListener {
+public class DropZoneWatch implements DirectoryListener {
     
     private ContainerManager containerManager;
-    private DirectoryWatch dropZoneWatch;
+    private DirectoryWatch directoryWatch;
     private File dropZone;
     private File deployDir;
 
     private Log log;
 
-    public DeployManager(ContainerManager containerManager) {
+    public DropZoneWatch(ContainerManager containerManager) {
 	ServerConfig config = ServerConfig.getInstance();
 	this.containerManager = containerManager;
-	this.deployDir = config.getFile("jetserver.deploymanager.deploy-dir");
-	this.dropZone = config.getFile("jetserver.deploymanager.dropzone");
-	this.dropZoneWatch = new DirectoryWatch(dropZone, 1000);
-	this.dropZoneWatch.addListener(this);
+	this.deployDir = config.getFile("jetserver.dropzonewatch.deploy-dir");
+	this.dropZone = config.getFile("jetserver.dropzonewatch.dropzone");
+	this.directoryWatch = new DirectoryWatch(dropZone, 1000);
+	this.directoryWatch.addListener(this);
 	this.log = Log.getInstance(this);
-	log.info("Deplymanager initialized, dropZone=" + dropZone.getAbsolutePath());
+	log.info("initialized. Drop zone=" + dropZone.getAbsolutePath());
     }
     
     public void start() {
-	this.dropZoneWatch.startWatching();
+	this.directoryWatch.startWatching();
     }
 
     public void fileFound(File file) {

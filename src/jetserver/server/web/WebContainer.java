@@ -20,7 +20,7 @@ public class WebContainer {
 	this.webServer.start();
 	this.log = Log.getInstance(this);
 
-	log.info("Web container initialized");
+	log.info("initialized");
     }
 
     /**
