@@ -2,7 +2,7 @@ package jetserver.server.ejb;
 
 import jetserver.server.ejb.config.EJBJarConfig;
 import jetserver.server.ejb.config.EntityBeanDefinition;
-import jetserver.server.ejb.codegen.EntityWrapperFactory;
+import jetserver.server.ejb.codegen.BeanWrapperFactory;
 import jetserver.util.Log;
 
 import java.io.File;
@@ -22,18 +22,38 @@ public class EJBDeployer {
 
         EJBJar ejbJar = new EJBJar(ejbJarRoot);
 
-        /* For each bean:
-         *  1. generate wrapper classes
-         *  2. create applicable caches
-         *  3. Bind to JNDI
-         */
+        /* Verfiy the validness of the EJB jar */
+        validateBeans(ejbJar);
 
-        EntityWrapperFactory entityWrapperFactory = new EntityWrapperFactory(ejbJar);
+        /* Generate wrappers and proxies for all beans */
+        wrapBeans(ejbJar);
+
+        /* Create bean caches */
+        createCaches(ejbJar);
+
+        /* Bind homes to the JNDI */
+        bindBeans(ejbJar);
+    }
+
+    private void validateBeans(EJBJar ejbJar) throws IOException {
+        log.debug("Validating beans");
+    }
+
+    private void wrapBeans(EJBJar ejbJar) throws IOException {
+        log.debug("Wrapping beans");
+        BeanWrapperFactory beanWrapperFactory = new BeanWrapperFactory(ejbJar);
         Iterator entities = ejbJar.getConfig().getEntityBeans().iterator();
         while (entities.hasNext()) {
             EntityBeanDefinition entityBean = (EntityBeanDefinition) entities.next();
-            Class wrapper = entityWrapperFactory.createWrapper(entityBean);
-            entityBean.setWrapperClass(wrapper);
+            beanWrapperFactory.wrapEntity(entityBean);
         }
+    }
+
+    private void createCaches(EJBJar ejbJar) throws IOException {
+        log.debug("Creating bean caches");
+    }
+
+    private void bindBeans(EJBJar ejbJar) throws IOException {
+        log.debug("Binding beans to JNDI");
     }
 }
