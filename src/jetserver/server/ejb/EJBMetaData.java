@@ -11,6 +11,9 @@ package jetserver.server.ejb;
 import javax.ejb.EJBHome;
 
 public class EJBMetaData implements javax.ejb.EJBMetaData {
+
+
+
     public EJBHome getEJBHome() {
         return null;
     }

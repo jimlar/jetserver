@@ -1,21 +1,40 @@
 package jetserver.server.naming;
 
 import javax.naming.*;
-import java.util.Hashtable;
+import java.util.*;
 
 public class JetServerContext implements Context {
 
     private Hashtable environment;
+    private NameParser nameParser;
+    private Map bindings;
 
     /**
-     * Create a new context
+     * Create a new context (input environment is cloned)
      */
     JetServerContext(Hashtable environment) {
+        this(environment, new HashMap());
+    }
+
+
+    /**
+     * Create a context with the given bindings (used for clone)
+     */
+    private JetServerContext(Hashtable environment, Map bindings) {
         if (environment != null) {
             this.environment = (Hashtable) environment.clone();
         } else {
             this.environment = new Hashtable();
         }
+        this.bindings = bindings;
+        this.nameParser = new JetServerNameParser();
+    }
+
+    /**
+     * Clone ourselves
+     */
+    private JetServerContext cloneContext() {
+        return new JetServerContext(environment, bindings);
     }
 
 
@@ -35,7 +54,17 @@ public class JetServerContext implements Context {
      * @see #lookupLink(Name)
      */
     public Object lookup(Name name) throws NamingException {
-        return null;
+        if (name.isEmpty()) {
+            return (cloneContext());
+        }
+
+        String key = getMyComponents(name);
+
+        Object result = bindings.get(key);
+        if (result == null) {
+            throw new NameNotFoundException(name + " not found");
+        }
+        return result;
     }
 
     /**
@@ -47,7 +76,7 @@ public class JetServerContext implements Context {
      * @throws	NamingException if a naming exception is encountered
      */
     public Object lookup(String name) throws NamingException {
-        return null;
+        return lookup(new CompositeName(name));
     }
 
     /**
@@ -70,6 +99,17 @@ public class JetServerContext implements Context {
      *		javax.naming.directory.Attributes)
      */
     public void bind(Name name, Object obj) throws NamingException {
+        if (name.isEmpty()) {
+            throw new InvalidNameException("Cannot bind empty name");
+        }
+
+        String key = getMyComponents(name);
+
+        if (bindings.get(key) != null) {
+            throw new NameAlreadyBoundException("Use rebind to override");
+        }
+
+        bindings.put(key, obj);
     }
 
     /**
@@ -86,6 +126,7 @@ public class JetServerContext implements Context {
      * @throws	NamingException if a naming exception is encountered
      */
     public void bind(String name, Object obj) throws NamingException {
+        bind(new CompositeName(name), obj);
     }
 
     /**
@@ -113,6 +154,12 @@ public class JetServerContext implements Context {
      * @see javax.naming.directory.DirContext
      */
     public void rebind(Name name, Object obj) throws NamingException {
+        if (name.isEmpty()) {
+            throw new InvalidNameException("Cannot bind empty name");
+        }
+
+        String key = getMyComponents(name);
+        bindings.put(key, obj);
     }
 
     /**
@@ -128,6 +175,7 @@ public class JetServerContext implements Context {
      * @throws	NamingException if a naming exception is encountered
      */
     public void rebind(String name, Object obj) throws NamingException {
+        rebind(new CompositeName(name), obj);
     }
 
     /**
@@ -152,6 +200,12 @@ public class JetServerContext implements Context {
      * @see #unbind(String)
      */
     public void unbind(Name name) throws NamingException {
+        if (name.isEmpty()) {
+            throw new InvalidNameException("Cannot unbind empty name");
+        }
+
+        String key = getMyComponents(name);
+        bindings.remove(key);
     }
 
     /**
@@ -164,6 +218,7 @@ public class JetServerContext implements Context {
      * @throws	NamingException if a naming exception is encountered
      */
     public void unbind(String name) throws NamingException {
+        unbind(new CompositeName(name));
     }
 
     /**
@@ -185,6 +240,26 @@ public class JetServerContext implements Context {
      * @see #rebind(Name, Object)
      */
     public void rename(Name oldName, Name newName) throws NamingException {
+        if (oldName.isEmpty() || newName.isEmpty()) {
+            throw new InvalidNameException("Cannot rename empty name");
+        }
+
+        String oldKey = getMyComponents(oldName);
+        String newKey = getMyComponents(newName);
+
+        /* Check if new name exists */
+        if (bindings.get(newKey) != null) {
+            throw new NameAlreadyBoundException(newName.toString() +
+                    " is already bound");
+        }
+
+        /* Check if old name is bound */
+        Object oldBinding = bindings.remove(oldKey);
+        if (oldBinding == null) {
+            throw new NameNotFoundException(oldName.toString() + " not bound");
+        }
+
+        bindings.put(newKey, oldBinding);
     }
 
     /**
@@ -200,6 +275,7 @@ public class JetServerContext implements Context {
      * @throws	NamingException if a naming exception is encountered
      */
     public void rename(String oldName, String newName) throws NamingException {
+        rename(new CompositeName(oldName), new CompositeName(newName));
     }
 
     /**
@@ -222,7 +298,21 @@ public class JetServerContext implements Context {
      * @see NameClassPair
      */
     public NamingEnumeration list(Name name) throws NamingException {
-        return null;
+        if (name.isEmpty()) {
+            /* listing this context */
+            return new ListOfNames(bindings.keySet().iterator());
+        }
+
+        /* Perhaps 'name' names a context */
+        Object target = lookup(name);
+        if (target instanceof Context) {
+            try {
+                return ((Context)target).list("");
+            } finally {
+                ((Context)target).close();
+            }
+        }
+        throw new NotContextException(name + " cannot be listed");
     }
 
     /**
@@ -238,7 +328,7 @@ public class JetServerContext implements Context {
      * @throws	NamingException if a naming exception is encountered
      */
     public NamingEnumeration list(String name) throws NamingException {
-        return null;
+        return list(new CompositeName(name));
     }
 
     /**
@@ -261,7 +351,21 @@ public class JetServerContext implements Context {
      * @see Binding
      */
     public NamingEnumeration listBindings(Name name) throws NamingException {
-        return null;
+        if (name.isEmpty()) {
+            // listing this context
+            return new ListOfBindings(bindings.keySet().iterator());
+        }
+
+        // Perhaps 'name' names a context
+        Object target = lookup(name);
+        if (target instanceof Context) {
+            try {
+                return ((Context)target).listBindings("");
+            } finally {
+                ((Context)target).close();
+            }
+        }
+        throw new NotContextException(name + " cannot be listed");
     }
 
     /**
@@ -277,7 +381,7 @@ public class JetServerContext implements Context {
      * @throws	NamingException if a naming exception is encountered
      */
     public NamingEnumeration listBindings(String name) throws NamingException {
-        return null;
+        return listBindings(name);
     }
 
     /**
@@ -314,6 +418,8 @@ public class JetServerContext implements Context {
      * @see #destroySubcontext(String)
      */
     public void destroySubcontext(Name name) throws NamingException {
+        throw new OperationNotSupportedException(
+                "Subcontexts not supported");
     }
 
     /**
@@ -329,6 +435,7 @@ public class JetServerContext implements Context {
      * @throws	NamingException if a naming exception is encountered
      */
     public void destroySubcontext(String name) throws NamingException {
+        destroySubcontext(new CompositeName(name));
     }
 
     /**
@@ -352,7 +459,8 @@ public class JetServerContext implements Context {
      * @see javax.naming.directory.DirContext#createSubcontext
      */
     public Context createSubcontext(Name name) throws NamingException {
-        return null;
+        throw new OperationNotSupportedException(
+                "Subcontexts not supported");
     }
 
     /**
@@ -370,7 +478,7 @@ public class JetServerContext implements Context {
      * @throws	NamingException if a naming exception is encountered
      */
     public Context createSubcontext(String name) throws NamingException {
-        return null;
+        return createSubcontext(new CompositeName(name));
     }
 
     /**
@@ -388,7 +496,8 @@ public class JetServerContext implements Context {
      * @see #lookupLink(String)
      */
     public Object lookupLink(Name name) throws NamingException {
-        return null;
+        // This flat context does not treat links specially
+        return lookup(name);
     }
 
     /**
@@ -403,7 +512,7 @@ public class JetServerContext implements Context {
      * @throws	NamingException if a naming exception is encountered
      */
     public Object lookupLink(String name) throws NamingException {
-        return null;
+        return lookupLink(new CompositeName(name));
     }
 
     /**
@@ -426,7 +535,12 @@ public class JetServerContext implements Context {
      * @see CompoundName
      */
     public NameParser getNameParser(Name name) throws NamingException {
-        return null;
+        // Do lookup to verify name exists
+        Object obj = lookup(name);
+        if (obj instanceof Context) {
+            ((Context)obj).close();
+        }
+        return nameParser;
     }
 
     /**
@@ -440,7 +554,7 @@ public class JetServerContext implements Context {
      * @throws	NamingException if a naming exception is encountered
      */
     public NameParser getNameParser(String name) throws NamingException {
-        return null;
+        return getNameParser(new CompositeName(name));
     }
 
     /**
@@ -478,7 +592,9 @@ public class JetServerContext implements Context {
      * @see #composeName(String, String)
      */
     public Name composeName(Name name, Name prefix) throws NamingException {
-        return null;
+        Name result = (Name)(prefix.clone());
+        result.addAll(name);
+        return result;
     }
 
     /**
@@ -495,7 +611,9 @@ public class JetServerContext implements Context {
      */
     public String composeName(String name, String prefix)
             throws NamingException {
-        return null;
+
+        return composeName(new CompositeName(name),
+                new CompositeName(prefix)).toString();
     }
 
     /**
@@ -516,7 +634,7 @@ public class JetServerContext implements Context {
      */
     public Object addToEnvironment(String propName, Object propVal)
             throws NamingException {
-        return null;
+        return environment.put(propName, propVal);
     }
 
     /**
@@ -535,7 +653,7 @@ public class JetServerContext implements Context {
      */
     public Object removeFromEnvironment(String propName)
             throws NamingException {
-        return null;
+        return environment.remove(propName);
     }
 
     /**
@@ -554,7 +672,7 @@ public class JetServerContext implements Context {
      * @see #removeFromEnvironment(String)
      */
     public Hashtable getEnvironment() throws NamingException {
-        return null;
+        return (Hashtable) environment.clone();
     }
 
     /**
@@ -591,6 +709,75 @@ public class JetServerContext implements Context {
      * @since 1.3
      */
     public String getNameInNamespace() throws NamingException {
-        return null;
+        return "";
+    }
+
+    /**
+     * Utility method for processing composite/compound name.
+     * @param name The non-null composite or compound name to process.
+     * @return The non-null string name in this namespace to be processed.
+     */
+    private String getMyComponents(Name name) throws NamingException {
+        if (name instanceof CompositeName) {
+            if (name.size() > 1) {
+                throw new InvalidNameException(name.toString() +
+                        " has more components than namespace can handle");
+            }
+            return name.get(0);
+        } else {
+            // compound name
+            return name.toString();
+        }
+    }
+
+    // Class for enumerating name/class pairs
+    class ListOfNames implements NamingEnumeration {
+        protected Iterator names;
+
+        ListOfNames (Iterator names) {
+            this.names = names;
+        }
+
+        public boolean hasMoreElements() {
+            try {
+                return hasMore();
+            } catch (NamingException e) {
+                return false;
+            }
+        }
+
+        public boolean hasMore() throws NamingException {
+            return names.hasNext();
+        }
+
+        public Object next() throws NamingException {
+            String name = (String) names.next();
+            String className = bindings.get(name).getClass().getName();
+            return new NameClassPair(name, className);
+        }
+
+        public Object nextElement() {
+            try {
+                return next();
+            } catch (NamingException e) {
+                throw new NoSuchElementException(e.toString());
+            }
+        }
+
+        public void close() {
+        }
+    }
+
+    // Class for enumerating bindings
+    class ListOfBindings extends ListOfNames {
+
+        ListOfBindings(Iterator names) {
+            super(names);
+        }
+
+        public Object next() throws NamingException {
+            String name = (String) names.next();
+            return new Binding(name, bindings.get(name));
+        }
     }
 }
