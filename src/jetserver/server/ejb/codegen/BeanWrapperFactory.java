@@ -4,6 +4,7 @@ import jetserver.server.ejb.config.EntityBeanDefinition;
 import jetserver.server.ejb.EJBJar;
 import jetserver.util.Log;
 
+import javax.ejb.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.File;
 import java.util.Arrays;
+import java.rmi.RemoteException;
 
 public class BeanWrapperFactory {
 
@@ -50,6 +52,7 @@ public class BeanWrapperFactory {
                                 null,
                                 new Class[] {entityBean.getRemoteClass()});
 
+        /*** Implement the business mtehods ***/
         Method[] remoteMethods = entityBean.getRemoteClass().getDeclaredMethods();
         if (remoteMethods != null) {
             for (int i = 0; i < remoteMethods.length; i++) {
@@ -59,9 +62,64 @@ public class BeanWrapperFactory {
                                          remoteMethods[i].getExceptionTypes());
 
                 sourceWriter.write("System.out.println(\"" + remoteMethods[i].getName() + " called\");");
+                if (!remoteMethods[i].getReturnType().equals(Void.TYPE)) {
+                    sourceWriter.newLine();
+                    sourceWriter.write("return null;");
+                }
                 sourceWriter.endMethod();
             }
         }
+
+        /*** Implement EJBObject ***/
+
+        /* public EJBHome getEJBHome() throws RemoteException;*/
+        sourceWriter.startMethod(EJBHome.class,
+                                 "getEJBHome",
+                                 null,
+                                 new Class[] { RemoteException.class });
+        sourceWriter.write("System.out.println(\"getEJBHome called\");");
+        sourceWriter.newLine();
+        sourceWriter.write("return null;");
+        sourceWriter.endMethod();
+
+        /*public Object getPrimaryKey() throws RemoteException;*/
+        sourceWriter.startMethod(Object.class,
+                                 "getPrimaryKey",
+                                 null,
+                                 new Class[] { RemoteException.class });
+        sourceWriter.write("System.out.println(\"getPrimaryKey called\");");
+        sourceWriter.newLine();
+        sourceWriter.write("return null;");
+        sourceWriter.endMethod();
+
+        /*public void remove() throws RemoteException, RemoveException;*/
+        sourceWriter.startMethod(Void.TYPE,
+                                 "remove",
+                                 null,
+                                 new Class[] { RemoteException.class, RemoveException.class });
+        sourceWriter.write("System.out.println(\"remove called\");");
+        sourceWriter.endMethod();
+
+        /*public Handle getHandle() throws RemoteException;*/
+        sourceWriter.startMethod(Handle.class,
+                                 "getHandle",
+                                 null,
+                                 new Class[] { RemoteException.class });
+        sourceWriter.write("System.out.println(\"getHandle called\");");
+        sourceWriter.newLine();
+        sourceWriter.write("return null;");
+        sourceWriter.endMethod();
+
+        /*public boolean isIdentical(EJBObject ejbobject_0_) throws RemoteException;*/
+        sourceWriter.startMethod(Boolean.TYPE,
+                                 "isIdentical",
+                                 new Class[] { EJBObject.class },
+                                 new Class[] { RemoteException.class });
+        sourceWriter.write("System.out.println(\"isIdentical called\");");
+        sourceWriter.newLine();
+        sourceWriter.write("return false;");
+        sourceWriter.endMethod();
+
         sourceWriter.endClass();
         sourceWriter.close();
     }
@@ -78,6 +136,7 @@ public class BeanWrapperFactory {
                                 null,
                                 new Class[] {entityBean.getRemoteHomeClass()});
 
+        /*** Implement userdefined methods ***/
         Method[] homeMethods = entityBean.getRemoteHomeClass().getDeclaredMethods();
         if (homeMethods != null) {
             for (int i = 0; i < homeMethods.length; i++) {
@@ -87,9 +146,52 @@ public class BeanWrapperFactory {
                                          homeMethods[i].getExceptionTypes());
 
                 sourceWriter.write("System.out.println(\"" + homeMethods[i].getName() + " called\");");
+                if (!homeMethods[i].getReturnType().equals(Void.TYPE)) {
+                    sourceWriter.newLine();
+                    sourceWriter.write("return null;");
+                }
                 sourceWriter.endMethod();
             }
         }
+
+        /*** implement EJBHome ***/
+
+        /*public void remove(Handle handle) throws RemoteException, RemoveException;*/
+        sourceWriter.startMethod(Void.TYPE,
+                                 "remove",
+                                 new Class[] { Handle.class },
+                                 new Class[] { RemoteException.class, RemoveException.class });
+        sourceWriter.write("System.out.println(\"remove(Handle) called\");");
+        sourceWriter.endMethod();
+
+        /*public void remove(Object object) throws RemoteException, RemoveException;*/
+        sourceWriter.startMethod(Void.TYPE,
+                                 "remove",
+                                 new Class[] { Object.class },
+                                 new Class[] { RemoteException.class, RemoveException.class });
+        sourceWriter.write("System.out.println(\"remove(Object) called\");");
+        sourceWriter.endMethod();
+
+        /*public EJBMetaData getEJBMetaData() throws RemoteException;*/
+        sourceWriter.startMethod(EJBMetaData.class,
+                                 "getEJBMetaData",
+                                 null,
+                                 new Class[] { RemoteException.class });
+        sourceWriter.write("System.out.println(\"getEJBMetaData called\");");
+        sourceWriter.newLine();
+        sourceWriter.write("return null;");
+        sourceWriter.endMethod();
+
+        /*public HomeHandle getHomeHandle() throws RemoteException;*/
+        sourceWriter.startMethod(HomeHandle.class,
+                                 "getHomeHandle",
+                                 null,
+                                 new Class[] { RemoteException.class });
+        sourceWriter.write("System.out.println(\"getHomeHandle called\");");
+        sourceWriter.newLine();
+        sourceWriter.write("return null;");
+        sourceWriter.endMethod();
+
         sourceWriter.endClass();
         sourceWriter.close();
     }
@@ -107,9 +209,9 @@ public class BeanWrapperFactory {
                                 null);
 
         /*
-         * We only need to subclass the methods that appear
-         * in the remote interface
-         */
+                * We only need to subclass the methods that appear
+                * in the remote interface
+                */
         Method[] ejbMethods = entityBean.getEjbClass().getDeclaredMethods();
         if (ejbMethods != null) {
             for (int i = 0; i < ejbMethods.length; i++) {
@@ -120,6 +222,10 @@ public class BeanWrapperFactory {
                                              ejbMethods[i].getExceptionTypes());
 
                     sourceWriter.write("System.out.println(\"" + ejbMethods[i].getName() + " called\");");
+                    if (!ejbMethods[i].getReturnType().equals(Void.TYPE)) {
+                        sourceWriter.newLine();
+                        sourceWriter.write("return null;");
+                    }
                     sourceWriter.endMethod();
                 }
             }

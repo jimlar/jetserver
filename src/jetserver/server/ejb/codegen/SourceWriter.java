@@ -50,8 +50,9 @@ class SourceWriter extends BufferedWriter {
     public void startMethod(Class returnType,
                             String name,
                             Class[] parameterTypes,
-                            Class[] exceptionTypes                            ) throws IOException {
-
+                            Class[] exceptionTypes)
+            throws IOException
+    {
         write("public " + returnType.getName() + " ");
         write(name + "(");
 
