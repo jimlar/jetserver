@@ -24,6 +24,7 @@ import jetserver.util.xml.JetServerEntityResolver;
 public class EJBJarConfig {
 
     private File ejbJarRoot;
+    private File tempDir;
     private ClassLoader classLoader;
     private Log log;
 
@@ -65,12 +66,17 @@ public class EJBJarConfig {
         return ejbJarRoot;
     }
 
+    public File getTempDir() {
+        return tempDir;
+    }
+
     /**
      * Parse the xml
      */
     public void parse() throws IOException {
 
         try {
+            this.tempDir = new File(ejbJarRoot, "jetserver_temp");
             File ejbJarXML = new File(ejbJarRoot, "META-INF" + File.separator + "ejb-jar.xml");
             DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             parser.setEntityResolver(new JetServerEntityResolver());
