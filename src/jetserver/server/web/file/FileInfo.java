@@ -1,11 +1,11 @@
 
-package jetserver.server.web.services.file;
+package jetserver.server.web.file;
 
 import java.io.*;
 
 import jetserver.util.*;
 import jetserver.server.web.*;
-import jetserver.server.web.services.HttpResponse;
+import jetserver.server.web.HttpResponse;
 
 class FileInfo {
 

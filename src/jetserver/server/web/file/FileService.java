@@ -1,14 +1,14 @@
 
 
-package jetserver.server.web.services.file;
+package jetserver.server.web.file;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
 import jetserver.server.web.*;
-import jetserver.server.web.services.HttpRequest;
-import jetserver.server.web.services.HttpResponse;
+import jetserver.server.web.HttpRequest;
+import jetserver.server.web.HttpResponse;
 import jetserver.util.Log;
 
 public class FileService  {

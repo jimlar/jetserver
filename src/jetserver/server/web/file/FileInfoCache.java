@@ -1,12 +1,12 @@
 
 
-package jetserver.server.web.services.file;
+package jetserver.server.web.file;
 
 import java.io.*;
 import java.util.*;
 
 import jetserver.server.web.*;
-import jetserver.server.web.services.HttpRequest;
+import jetserver.server.web.HttpRequest;
 
 /**
  * 

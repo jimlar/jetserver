@@ -5,7 +5,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import jetserver.server.web.services.WebServer;
+import jetserver.server.web.WebServer;
 import jetserver.server.naming.JetServerContext;
 import jetserver.util.Log;
 

@@ -1,5 +1,5 @@
 
-package jetserver.server.web.services;
+package jetserver.server.web;
 
 import java.io.*;
 import java.net.*;
@@ -7,7 +7,6 @@ import java.util.*;
 
 import jetserver.server.config.ServerConfig;
 import jetserver.server.Deployer;
-import jetserver.server.web.WebApplication;
 import jetserver.util.Log;
 
 public class WebServerConnection implements Runnable {
@@ -32,6 +31,8 @@ public class WebServerConnection implements Runnable {
             dispatchRequest(request, response);
 
         } catch (IOException e) {
+            Log.getInstance(this).error("Error serving web request", e);
+        } catch (RuntimeException e) {
             Log.getInstance(this).error("Error serving web request", e);
         } finally {
             try {

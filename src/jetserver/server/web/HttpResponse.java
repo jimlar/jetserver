@@ -1,5 +1,5 @@
 
-package jetserver.server.web.services;
+package jetserver.server.web;
 
 import java.io.*;
 import java.net.*;
