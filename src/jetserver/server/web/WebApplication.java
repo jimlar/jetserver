@@ -210,7 +210,7 @@ public class WebApplication implements ServletContext {
     }
 
     public String getServerInfo() {
-        return "JetServer/0.1";
+        return "JetServer/0.0";
     }
 
     public String getInitParameter(String name) {
