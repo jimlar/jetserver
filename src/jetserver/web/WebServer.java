@@ -11,7 +11,9 @@ public class WebServer extends Thread {
 
     private int port;
     private ServerSocket serverSocket;
-    private ThreadPool threadPool;
+    private WebServerThreadPool threadPool;
+
+    public static byte data[];
 
     public WebServer(int port) {
 	this.port = port;
@@ -21,16 +23,16 @@ public class WebServer extends Thread {
     public void run() {
 
 	try {
+	    File file = new File("/home/jimmy/orion/default-web-app/index.html");
+	    InputStream in = new FileInputStream(file);
+	    data = new byte[(int) file.length()];
+	    in.read(data);
+
 	    this.serverSocket = new ServerSocket(port);
-	    this.threadPool = new ThreadPool(50);
+	    this.threadPool = new WebServerThreadPool(50);
 
 	    while (true) {
-		WebServerThread wst = new WebServerThread(serverSocket.accept());
-
-		//Thread thread = new Thread(wst);
-		//thread.start();
-
-		threadPool.startRunnable(wst);
+		threadPool.startThread(serverSocket.accept());
 	    }
 	} catch (IOException e) {
 	    e.printStackTrace();

@@ -6,6 +6,9 @@ import java.net.*;
 import java.util.*;
 
 public class HttpResponse {
+
+    private static final String HEADER_ENCODING = "iso-8859-1";
+    private static final String NEWLINE = "\r\n";
     
     private OutputStream out;
     private String protocol;
@@ -43,18 +46,26 @@ public class HttpResponse {
 
     private void flushHeaders() throws IOException {
 
-	Writer writer = new OutputStreamWriter(out);
-	writer.write(this.protocol 
-		     + " " + statusCode 
-		     + " " + statusMessage + "\r\n");
+	StringBuffer buffer = new StringBuffer(256);
+
+	buffer.append(this.protocol);
+	buffer.append(" ");
+	buffer.append(statusCode);
+	buffer.append(" ");
+	buffer.append(statusMessage);
+	buffer.append(NEWLINE);
 
 	Iterator iter = headers.keySet().iterator();
 	while (iter.hasNext()) {
 	    String headerName = (String) iter.next();
-	    writer.write(headerName + ": " + headers.get(headerName) + "\r\n");
+	    buffer.append(headerName);
+	    buffer.append(": ");
+	    buffer.append(headers.get(headerName));
+	    buffer.append(NEWLINE);
 	}
 	
-	writer.write("\r\n");
-	writer.flush();
+	buffer.append(NEWLINE);
+
+	out.write(buffer.toString().getBytes(HEADER_ENCODING));
     }
 }
