@@ -9,11 +9,11 @@ import java.util.ArrayList;
  */
 public class EntityBeanDefinition extends BeanDefinition {
 
-    private String remoteHomeClass;
-    private String remoteClass;
+    private Class remoteHomeClass;
+    private Class remoteClass;
 
-    private String localHomeClass;
-    private String localClass;
+    private Class localHomeClass;
+    private Class localClass;
 
     private String persistenceType;
     private String primKeyClass;
@@ -29,35 +29,35 @@ public class EntityBeanDefinition extends BeanDefinition {
 
     EntityBeanDefinition() {}
 
-    public String getRemoteHomeClass() {
+    public Class getRemoteHomeClass() {
         return remoteHomeClass;
     }
 
-    public void setRemoteHomeClass(String remoteHomeClass) {
+    public void setRemoteHomeClass(Class remoteHomeClass) {
         this.remoteHomeClass = remoteHomeClass;
     }
 
-    public String getRemoteClass() {
+    public Class getRemoteClass() {
         return remoteClass;
     }
 
-    public void setRemoteClass(String remoteClass) {
+    public void setRemoteClass(Class remoteClass) {
         this.remoteClass = remoteClass;
     }
 
-    public String getLocalHomeClass() {
+    public Class getLocalHomeClass() {
         return localHomeClass;
     }
 
-    public void setLocalHomeClass(String localHomeClass) {
+    public void setLocalHomeClass(Class localHomeClass) {
         this.localHomeClass = localHomeClass;
     }
 
-    public String getLocalClass() {
+    public Class getLocalClass() {
         return localClass;
     }
 
-    public void setLocalClass(String localClass) {
+    public void setLocalClass(Class localClass) {
         this.localClass = localClass;
     }
 

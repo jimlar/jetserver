@@ -20,9 +20,10 @@ import jetserver.util.Log;
 /**
  * Parser for ejb-jar.xml, creates objects for all elements
  */
-public class EJBJarXMLParser {
+public class EJBJarConfig {
 
-    private File ejbJarXML;
+    private File ejbJarRoot;
+    private ClassLoader classLoader;
     private Log log;
 
     private String description;
@@ -37,8 +38,9 @@ public class EJBJarXMLParser {
     /**
      * Create a parser
      */
-    public EJBJarXMLParser(File ejbJarXML) {
-        this.ejbJarXML = ejbJarXML;
+    public EJBJarConfig(File ejbJarRoot, ClassLoader classLoader) {
+        this.ejbJarRoot = ejbJarRoot;
+        this.classLoader = classLoader;
         this.entityBeans = new ArrayList();
         this.sessionBeans = new ArrayList();
         this.messageBeans = new ArrayList();
@@ -58,6 +60,10 @@ public class EJBJarXMLParser {
         return messageBeans;
     }
 
+    public File getEjbJarRoot() {
+        return ejbJarRoot;
+    }
+
     /**
      * Parse the xml
      */
@@ -65,6 +71,7 @@ public class EJBJarXMLParser {
 
         try {
             DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            File ejbJarXML = new File(ejbJarRoot, "META-INF" + File.separator + "ejb-jar.xml");
             Document document = parser.parse(ejbJarXML.getAbsolutePath());
             processDocument(document);
 
@@ -77,8 +84,9 @@ public class EJBJarXMLParser {
         }
     }
 
-    private void processDocument(Document document) {
-
+    private void processDocument(Document document)
+            throws IOException
+    {
         /* Fetch general info */
         NodeList ejbJarNodes = document.getElementsByTagName("ejb-jar");
         if (ejbJarNodes != null) {
@@ -124,14 +132,16 @@ public class EJBJarXMLParser {
     /**
      * Process an entity bean declaration
      */
-    private void processEntityBean(Node entityBeanNode, Document document) {
+    private void processEntityBean(Node entityBeanNode, Document document)
+            throws IOException
+    {
         EntityBeanDefinition entityBean = new EntityBeanDefinition();
         processBeanCommons(entityBean,  entityBeanNode, document);
 
-        entityBean.setRemoteHomeClass(findProperty(entityBeanNode, "home"));
-        entityBean.setRemoteClass(findProperty(entityBeanNode, "remote"));
-        entityBean.setLocalHomeClass(findProperty(entityBeanNode, "local-home"));
-        entityBean.setLocalClass(findProperty(entityBeanNode, "local"));
+        entityBean.setRemoteHomeClass(findClassProperty(entityBeanNode, "home"));
+        entityBean.setRemoteClass(findClassProperty(entityBeanNode, "remote"));
+        entityBean.setLocalHomeClass(findClassProperty(entityBeanNode, "local-home"));
+        entityBean.setLocalClass(findClassProperty(entityBeanNode, "local"));
 
         entityBean.setPersistenceType(findProperty(entityBeanNode, "persistence-type"));
         entityBean.setPrimKeyClass(findProperty(entityBeanNode, "prim-key-class"));
@@ -154,14 +164,16 @@ public class EJBJarXMLParser {
     /**
      * Process a session bean declaration
      */
-    private void processSessionBean(Node sessionBeanNode, Document document) {
+    private void processSessionBean(Node sessionBeanNode, Document document)
+            throws IOException
+    {
         SessionBeanDefinition sessionBean = new SessionBeanDefinition();
         processBeanCommons(sessionBean,  sessionBeanNode, document);
 
-        sessionBean.setRemoteHomeClass(findProperty(sessionBeanNode, "home"));
-        sessionBean.setRemoteClass(findProperty(sessionBeanNode, "remote"));
-        sessionBean.setLocalHomeClass(findProperty(sessionBeanNode, "local-home"));
-        sessionBean.setLocalClass(findProperty(sessionBeanNode, "local"));
+        sessionBean.setRemoteHomeClass(findClassProperty(sessionBeanNode, "home"));
+        sessionBean.setRemoteClass(findClassProperty(sessionBeanNode, "remote"));
+        sessionBean.setLocalHomeClass(findClassProperty(sessionBeanNode, "local-home"));
+        sessionBean.setLocalClass(findClassProperty(sessionBeanNode, "local"));
 
         sessionBean.setSessionType(findProperty(sessionBeanNode, "session-type"));
         sessionBean.setTransactionType(findProperty(sessionBeanNode, "transaction-type"));
@@ -173,7 +185,9 @@ public class EJBJarXMLParser {
     /**
      * Process an entity bean declaration
      */
-    private void processMessageBean(Node messageBeanNode, Document document) {
+    private void processMessageBean(Node messageBeanNode, Document document)
+            throws IOException
+    {
         MessageBeanDefinition messageBean = new MessageBeanDefinition();
         processBeanCommons(messageBean,  messageBeanNode, document);
 
@@ -194,15 +208,16 @@ public class EJBJarXMLParser {
     /**
      * Process an entity bean declaration
      */
-    private void processBeanCommons(BeanDefinition bean, Node beanNode, Document document) {
-
+    private void processBeanCommons(BeanDefinition bean, Node beanNode, Document document)
+            throws IOException
+    {
         bean.setDescription(findProperty(beanNode, "description"));
         bean.setDisplayName(findProperty(beanNode, "display-name"));
         bean.setSmallIcon(findProperty(beanNode, "small-icon"));
         bean.setLargeIcon(findProperty(beanNode, "large-icon"));
         bean.setEJBName(findProperty(beanNode, "ejb-name"));
 
-        bean.setEjbClass(findProperty(beanNode, "ejb-class"));
+        bean.setEjbClass(findClassProperty(beanNode, "ejb-class"));
 
         /*
          * TODO: handle these
@@ -215,6 +230,27 @@ public class EJBJarXMLParser {
          */
         bean.setSecurityIdentity(findProperty(beanNode, "security-identity"));
     }
+
+
+    /**
+     *  Fetch a class-name property and load the class
+     * @return null if no such property found
+     * @throws IOException on class loading problems
+     */
+    private Class findClassProperty(Node node, String propertyName)
+            throws IOException
+    {
+        String className = findProperty(node, propertyName);
+        if (className == null) {
+            return null;
+        }
+        try {
+            return classLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Class could not be loaded " + className);
+        }
+    }
+
 
     /**
      * Fetch the value of a named child or attribute.
