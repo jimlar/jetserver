@@ -5,61 +5,39 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import jetserver.util.*;
+
 public class WebServer extends Thread {
 
-    private Socket socket;
-    private File baseDir = new File("/home/httpd/html");
+    private int port;
+    private ServerSocket serverSocket;
+    private ThreadPool threadPool;
 
-    public WebServer(Socket socket) {
-	this.socket = socket;
+    public WebServer(int port) {
+	this.port = port;
 	this.start();
     }
 
     public void run() {
 
 	try {
-	    InputStream in = socket.getInputStream();
-	    HttpRequest request = HttpRequest.decodeRequest(in);
+	    this.serverSocket = new ServerSocket(port);
+	    this.threadPool = new ThreadPool(50);
 
-	    System.out.println("Got request: " + request);
+	    while (true) {
+		WebServerThread wst = new WebServerThread(serverSocket.accept());
 
-	    HttpResponse response = HttpResponse.createResponse(socket);
-	    
+		//Thread thread = new Thread(wst);
+		//thread.start();
 
-	    File requestedFile = new File(baseDir, request.getURI());
-	    if (requestedFile.exists()) {
-		
-		response.setContentType("text/html");
-		response.setContentLength((int) requestedFile.length());
-
-		OutputStream out = response.getOutputStream();
-		InputStream fileIn = new FileInputStream(requestedFile);
-		byte buf[] = new byte[1024];
-		int readLen = 0;
-
-		while (readLen != -1) {
-		    readLen = fileIn.read(buf);
-		    if (readLen != -1) {
-			out.write(buf, 0, readLen);
-		    }
-		}
-
-		fileIn.close();
-		out.close();
+		threadPool.startRunnable(wst);
 	    }
-
-	    socket.close();
-
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
     }
 
     public static void main(String args[]) throws Exception {
-	
-	ServerSocket serverSocket = new ServerSocket(8080);
-	while(true) {
-	    new WebServer(serverSocket.accept());
-	}
+	WebServer webServer = new WebServer(8080);
     }
 }

@@ -1,8 +1,2 @@
-Manifest-Version: 1.0
-Name: "JetServer"
 Main-Class: jetserver.web.WebServer
-Created-By: 1.2 (Sun Microsystems Inc.)
-Implementation-Vendor: "JetServer"
 Class-Path: 
-Implementation-Title: "jetserver.web"
-Implementation-Version: "1.0.0"
