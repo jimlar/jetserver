@@ -18,7 +18,7 @@ class BeanDefinition {
     private String ejbName;
 
     private Class ejbClass;
-    private Class wrapperClass;
+    private Class ejbWrapperClass;
 
     private Collection environmentEntries = new ArrayList();
     private Collection ejbReferences = new ArrayList();
@@ -76,12 +76,12 @@ class BeanDefinition {
         this.ejbClass = ejbClass;
     }
 
-    public Class getWrapperClass() {
-        return wrapperClass;
+    public Class getEJBWrapperClass() {
+        return ejbWrapperClass;
     }
 
-    public void setWrapperClass(Class wrapperClass) {
-        this.wrapperClass = wrapperClass;
+    public void setEJBWrapperClass(Class ejbWrapperClass) {
+        this.ejbWrapperClass = ejbWrapperClass;
     }
 
     public Collection getEnvironmentEntries() {

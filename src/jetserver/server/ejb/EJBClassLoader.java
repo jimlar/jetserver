@@ -9,6 +9,7 @@
 package jetserver.server.ejb;
 
 import jetserver.util.Log;
+import jetserver.server.ejb.config.EJBJarConfig;
 
 import java.io.File;
 import java.io.InputStream;
@@ -20,11 +21,11 @@ import java.io.IOException;
  */
 public class EJBClassLoader extends ClassLoader {
 
-    private File ejbJarRoot;
+    private EJBJarConfig config;
 
-    EJBClassLoader(File ejbJarRoot) {
+    public EJBClassLoader(EJBJarConfig config) {
         super();
-        this.ejbJarRoot = ejbJarRoot;
+        this.config = config;
     }
 
     /**
@@ -39,12 +40,19 @@ public class EJBClassLoader extends ClassLoader {
      * Find and load classData
      */
     private byte[] loadClassData(String name) throws ClassNotFoundException {
-        File classFile = new File(ejbJarRoot.getAbsolutePath()
-                + File.separator + name.replace('.', File.separatorChar)
-                + ".class");
+        File classFile = new File(config.getEjbJarRoot().getAbsolutePath()
+                                  + File.separator + name.replace('.', File.separatorChar)
+                                  + ".class");
 
         if (!classFile.exists()) {
-            throw new ClassNotFoundException("cant find class "+ name);
+            /* Now try the wrappers dir */
+            classFile = new File(config.getWrappersDir().getAbsolutePath()
+                                 + File.separator + name.replace('.', File.separatorChar)
+                                 + ".class");
+
+            if (!classFile.exists()) {
+                throw new ClassNotFoundException("cant find class "+ name);
+            }
         }
 
         try {

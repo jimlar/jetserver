@@ -17,10 +17,8 @@ public class EJBJar {
      * Create instance and parse configs (ejb-jar.xml)
      */
     EJBJar(File root) throws IOException {
-        this.classLoader = new EJBClassLoader(root);
-
         /* Decode ejb-jar.xml */
-        this.config = new EJBJarConfig(root, classLoader);
+        this.config = new EJBJarConfig(root);
         this.config.parse();
     }
 

@@ -15,6 +15,11 @@ public class EntityBeanDefinition extends BeanDefinition {
     private Class localHomeClass;
     private Class localClass;
 
+    private Class remoteHomeWrapper;
+    private Class remoteProxy;
+    private Class localHomeWrapper;
+    private Class localProxy;
+
     private String persistenceType;
     private String primKeyClass;
     private boolean isReentrant;
@@ -59,6 +64,38 @@ public class EntityBeanDefinition extends BeanDefinition {
 
     public void setLocalClass(Class localClass) {
         this.localClass = localClass;
+    }
+
+    public Class getRemoteHomeWrapper() {
+        return remoteHomeWrapper;
+    }
+
+    public void setRemoteHomeWrapper(Class remoteHomeWrapper) {
+        this.remoteHomeWrapper = remoteHomeWrapper;
+    }
+
+    public Class getRemoteProxy() {
+        return remoteProxy;
+    }
+
+    public void setRemoteProxy(Class remoteProxy) {
+        this.remoteProxy = remoteProxy;
+    }
+
+    public Class getLocalHomeWrapper() {
+        return localHomeWrapper;
+    }
+
+    public void setLocalHomeWrapper(Class localHomeWrapper) {
+        this.localHomeWrapper = localHomeWrapper;
+    }
+
+    public Class getLocalProxy() {
+        return localProxy;
+    }
+
+    public void setLocalProxy(Class localProxy) {
+        this.localProxy = localProxy;
     }
 
     public String getPersistenceType() {

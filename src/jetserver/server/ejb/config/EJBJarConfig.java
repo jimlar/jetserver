@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import jetserver.util.Log;
 import jetserver.util.xml.JetServerEntityResolver;
+import jetserver.server.ejb.EJBClassLoader;
 
 
 /**
@@ -25,6 +26,7 @@ public class EJBJarConfig {
 
     private File ejbJarRoot;
     private File tempDir;
+    private File wrappersDir;
     private ClassLoader classLoader;
     private Log log;
 
@@ -40,12 +42,16 @@ public class EJBJarConfig {
     /**
      * Create a parser
      */
-    public EJBJarConfig(File ejbJarRoot, ClassLoader classLoader) {
+    public EJBJarConfig(File ejbJarRoot) throws IOException {
         this.ejbJarRoot = ejbJarRoot;
-        this.classLoader = classLoader;
+
         this.entityBeans = new ArrayList();
         this.sessionBeans = new ArrayList();
         this.messageBeans = new ArrayList();
+
+        this.tempDir = new File(ejbJarRoot, "jetserver_temp");
+        this.wrappersDir = new File(ejbJarRoot, "jetserver_wrappers");
+        this.classLoader = new EJBClassLoader(this);
 
         log = Log.getInstance(this);
     }
@@ -70,13 +76,19 @@ public class EJBJarConfig {
         return tempDir;
     }
 
+    public File getWrappersDir() {
+        return wrappersDir;
+    }
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
     /**
      * Parse the xml
      */
     public void parse() throws IOException {
-
         try {
-            this.tempDir = new File(ejbJarRoot, "jetserver_temp");
             File ejbJarXML = new File(ejbJarRoot, "META-INF" + File.separator + "ejb-jar.xml");
             DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             parser.setEntityResolver(new JetServerEntityResolver());

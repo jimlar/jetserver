@@ -19,9 +19,15 @@ public class BeanWrapperFactory {
     private Log log;
     private EJBJar ejbJar;
 
+    private File wrappersDir;
+    private Compiler compiler;
+
     public BeanWrapperFactory(EJBJar ejbJar) {
         this.ejbJar = ejbJar;
         this.log = Log.getInstance(this);
+        this.wrappersDir =  ejbJar.getConfig().getWrappersDir();
+        this.compiler = new Compiler(this.wrappersDir,
+                                     "..:../../../jetserver.jar");
     }
 
     /**
@@ -30,7 +36,7 @@ public class BeanWrapperFactory {
     public void wrapEntity(EntityBeanDefinition entityBean)
             throws IOException
     {
-        log.debug("Generation wrappers for " + entityBean.getEJBName());
+        log.debug("Generating wrappers for " + entityBean.getEJBName());
         createRemoteProxy(entityBean);
         log.debug(" - remote proxy created");
         createRemoteHome(entityBean);
@@ -44,7 +50,8 @@ public class BeanWrapperFactory {
             throws IOException
     {
         String className = entityBean.getEJBName() + "_JetServerRemoteProxy";
-        File sourceFile = new File(ejbJar.getConfig().getTempDir(), className + ".java");
+        File sourceFile = new File(this.wrappersDir,
+                                   className + ".java");
         sourceFile.getParentFile().mkdirs();
         SourceWriter sourceWriter = new SourceWriter(new FileWriter(sourceFile));
 
@@ -122,13 +129,22 @@ public class BeanWrapperFactory {
 
         sourceWriter.endClass();
         sourceWriter.close();
+
+        compiler.compile(sourceFile);
+        try {
+            Class proxyClass = ejbJar.getConfig().getClassLoader().loadClass(className);
+            entityBean.setRemoteProxy(proxyClass);
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Class could not be loaded" + e);
+        }
     }
 
     private void createRemoteHome(EntityBeanDefinition entityBean)
             throws IOException
     {
         String className = entityBean.getEJBName() + "_JetServerRemoteHome";
-        File sourceFile = new File(ejbJar.getConfig().getTempDir(), className + ".java");
+        File sourceFile = new File(this.wrappersDir,
+                                   className + ".java");
         sourceFile.getParentFile().mkdirs();
         SourceWriter sourceWriter = new SourceWriter(new FileWriter(sourceFile));
 
@@ -194,13 +210,22 @@ public class BeanWrapperFactory {
 
         sourceWriter.endClass();
         sourceWriter.close();
+
+        compiler.compile(sourceFile);
+        try {
+            Class homeClass = ejbJar.getConfig().getClassLoader().loadClass(className);
+            entityBean.setRemoteHomeWrapper(homeClass);
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Class could not be loaded" + e);
+        }
     }
 
     private void createBeanSubClass(EntityBeanDefinition entityBean)
             throws IOException
     {
         String className = entityBean.getEJBName() + "_JetServerEJBWrapper";
-        File sourceFile = new File(ejbJar.getConfig().getTempDir(), className + ".java");
+        File sourceFile = new File(this.wrappersDir,
+                                   className + ".java");
         sourceFile.getParentFile().mkdirs();
         SourceWriter sourceWriter = new SourceWriter(new FileWriter(sourceFile));
 
@@ -232,6 +257,14 @@ public class BeanWrapperFactory {
         }
         sourceWriter.endClass();
         sourceWriter.close();
+
+        compiler.compile(sourceFile);
+        try {
+            Class wrapperClass = ejbJar.getConfig().getClassLoader().loadClass(className);
+            entityBean.setEJBWrapperClass(wrapperClass);
+        } catch (ClassNotFoundException e) {
+            throw new IOException("Class could not be loaded" + e);
+        }
     }
 
     /**
