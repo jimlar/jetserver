@@ -172,9 +172,21 @@ public class EJBJarConfig {
         entityBean.setAbstractSchemaName(findProperty(entityBeanNode, "abstract-schema-name"));
 
         /*
+         *  Fetch CMP fields
+         */
+        Collection cmpFields = new ArrayList();
+        NodeList nodeList = entityBeanNode.getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node.getNodeName().equals("cmp-field")) {
+                cmpFields.add(new CMPField(findProperty(node, "field-name")));
+            }
+        }
+        entityBean.setCmpFields(cmpFields);
+
+        /*
          * TODO: handle these
          * - queries
-         * - cmpFields
          */
 
         this.entityBeans.add(entityBean);

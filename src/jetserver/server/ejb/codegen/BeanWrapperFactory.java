@@ -1,6 +1,7 @@
 package jetserver.server.ejb.codegen;
 
 import jetserver.server.ejb.config.EntityBeanDefinition;
+import jetserver.server.ejb.config.CMPField;
 import jetserver.server.ejb.EJBJar;
 import jetserver.util.Log;
 
@@ -12,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.rmi.RemoteException;
 
 public class BeanWrapperFactory {
@@ -241,35 +243,8 @@ public class BeanWrapperFactory {
                                 entityBean.getEjbClass(),
                                 null);
 
-        /*
-         * We only need to subclass the abstract getters and setters
-         * for the cmp fields
-         */
-        Method[] ejbMethods = entityBean.getEjbClass().getDeclaredMethods();
-        if (ejbMethods != null) {
-            for (int i = 0; i < ejbMethods.length; i++) {
-                if (isBusinessMethod(ejbMethods[i], entityBean.getRemoteClass())) {
-                    sourceWriter.startMethod(ejbMethods[i].getReturnType(),
-                                             ejbMethods[i].getName(),
-                                             ejbMethods[i].getParameterTypes(),
-                                             ejbMethods[i].getExceptionTypes());
+        implementCMPFields(entityBean, sourceWriter);
 
-                    sourceWriter.write("System.out.println(\"" + ejbMethods[i].getName() + " called\");");
-                    Class returnType = ejbMethods[i].getReturnType();
-                    if (!returnType.equals(Void.TYPE)) {
-                        if (returnType.isInstance(new Object())) {
-                            sourceWriter.write("return null;");
-                        } else if (returnType.equals(Boolean.TYPE)) {
-                            sourceWriter.write("return false;");
-                        } else if (returnType.equals(Integer.TYPE)
-                                || returnType.equals(Long.TYPE)) {
-                            sourceWriter.write("return -1;");
-                        }
-                    }
-                    sourceWriter.endMethod();
-                }
-            }
-        }
         sourceWriter.endClass();
         sourceWriter.close();
 
@@ -280,6 +255,83 @@ public class BeanWrapperFactory {
         } catch (ClassNotFoundException e) {
             throw new IOException("Class could not be loaded" + e);
         }
+    }
+
+    private void implementCMPFields(EntityBeanDefinition entityBean, SourceWriter sourceWriter) throws IOException {
+        Iterator cmpFields = entityBean.getCmpFields().iterator();
+        while (cmpFields.hasNext()) {
+            CMPField field = (CMPField) cmpFields.next();
+
+            Method getMethod = getMethod(fieldToGetterName(field),
+                                         entityBean.getEjbClass());
+            if (getMethod == null) {
+                throw new IOException("field " + field + " has no getter method");
+            }
+
+            Class returnType = getMethod.getReturnType();
+
+            /* Implement the getter method */
+            sourceWriter.startMethod(returnType, getMethod.getName(), null, null);
+            sourceWriter.write("System.out.println(\""
+                               + getMethod.getName()
+                               + " called\");");
+
+            if (!returnType.equals(Void.TYPE)) {
+                if (returnType.isInstance(new Object())) {
+                    sourceWriter.write("return null;");
+                } else if (returnType.equals(Boolean.TYPE)) {
+                    sourceWriter.write("return false;");
+                } else if (returnType.equals(Integer.TYPE)
+                        || returnType.equals(Long.TYPE)) {
+                    sourceWriter.write("return -1;");
+                }
+            }
+            sourceWriter.endMethod();
+
+
+            /* Implement the setter method */
+            Method setMethod = getMethod(fieldToSetterName(field),
+                                         entityBean.getEjbClass());
+            if (setMethod == null) {
+                throw new IOException("field " + field + " has no setter method");
+            }
+            sourceWriter.startMethod(setMethod.getReturnType(),
+                                     setMethod.getName(),
+                                     setMethod.getParameterTypes(),
+                                     null);
+            sourceWriter.write("System.out.println(\""
+                               + setMethod.getName()
+                               + " called\");");
+            sourceWriter.endMethod();
+        }
+    }
+
+    private String fieldToGetterName(CMPField field) {
+        return "get"
+                + field.getName().substring(0, 1).toUpperCase()
+                + field.getName().substring(1);
+    }
+
+    private String fieldToSetterName(CMPField field) {
+        return "set"
+                + field.getName().substring(0, 1).toUpperCase()
+                + field.getName().substring(1);
+    }
+
+    /**
+     * Return the first method in the class with the given name
+     * or null if no method found
+     */
+    private Method getMethod(String methodName, Class clazz) {
+        Method[] methods = clazz.getMethods();
+        if (methods != null) {
+            for (int i = 0; i < methods.length; i++) {
+               if (methods[i].getName().equals(methodName)) {
+                   return methods[i];
+               }
+            }
+        }
+        return null;
     }
 
     /**
