@@ -8,7 +8,7 @@
     <error-log file="../logs/errors.txt" stderr="true"/>
 
     <!-- set enabled to true if you want debugging info -->
-    <debug-log file="../logs/debug.txt" enabled="true" stdout="false"/>
+    <debug-log file="../logs/debug.txt" enabled="true" stdout="true"/>
   </logs>
 
   <!-- The dropzone is where you put your war/ear/ejb-jar file to deploy it -->

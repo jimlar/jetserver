@@ -5,74 +5,124 @@ import java.util.ArrayList;
 
 /**
  * This represents the configuration of an entitybean (from ejb-jar.xml)
+ *
  */
-public class EntityBeanDefinition {
+public class EntityBeanDefinition extends BeanDefinition {
 
+    private String remoteHomeClass;
     private String remoteClass;
+
+    private String localHomeClass;
     private String localClass;
-    private String homeClass;
-    private String ejbClass;
+
+    private String persistenceType;
+    private String primKeyClass;
+    private boolean isReentrant;
+
+    private String cmpVersion;
+    private String abstractSchemaName;
 
     private Collection cmpFields = new ArrayList();
-    private String primaryKeyField;
-    private String primaryKeyClass;
+    private String primKeyField;
 
-    public EntityBeanDefinition(String remoteClass,
-                                String localClass,
-                                String homeClass,
-                                String ejbClass,
-                                Collection cmpFields,
-                                String primaryKeyField,
-                                String primaryKeyClass) {
-        this.remoteClass = remoteClass;
-        this.localClass = localClass;
-        this.homeClass = homeClass;
-        this.ejbClass = ejbClass;
-        this.cmpFields = cmpFields;
-        this.primaryKeyField = primaryKeyField;
-        this.primaryKeyClass = primaryKeyClass;
+    private Collection queries = new ArrayList();
+
+    EntityBeanDefinition() {}
+
+    public String getRemoteHomeClass() {
+        return remoteHomeClass;
+    }
+
+    public void setRemoteHomeClass(String remoteHomeClass) {
+        this.remoteHomeClass = remoteHomeClass;
     }
 
     public String getRemoteClass() {
         return remoteClass;
     }
 
+    public void setRemoteClass(String remoteClass) {
+        this.remoteClass = remoteClass;
+    }
+
+    public String getLocalHomeClass() {
+        return localHomeClass;
+    }
+
+    public void setLocalHomeClass(String localHomeClass) {
+        this.localHomeClass = localHomeClass;
+    }
+
     public String getLocalClass() {
         return localClass;
     }
 
-    public String getHomeClass() {
-        return homeClass;
+    public void setLocalClass(String localClass) {
+        this.localClass = localClass;
     }
 
-    public String getEJBClass() {
-        return ejbClass;
+    public String getPersistenceType() {
+        return persistenceType;
+    }
+
+    public void setPersistenceType(String persistenceType) {
+        this.persistenceType = persistenceType;
+    }
+
+    public String getPrimKeyClass() {
+        return primKeyClass;
+    }
+
+    public void setPrimKeyClass(String primKeyClass) {
+        this.primKeyClass = primKeyClass;
+    }
+
+    public boolean isReentrant() {
+        return isReentrant;
+    }
+
+    public void setReentrant(boolean reentrant) {
+        isReentrant = reentrant;
+    }
+
+    public String getCmpVersion() {
+        return cmpVersion;
+    }
+
+    public void setCmpVersion(String cmpVersion) {
+        this.cmpVersion = cmpVersion;
+    }
+
+    public String getAbstractSchemaName() {
+        return abstractSchemaName;
+    }
+
+    public void setAbstractSchemaName(String abstractSchemaName) {
+        this.abstractSchemaName = abstractSchemaName;
     }
 
     public Collection getCmpFields() {
         return cmpFields;
     }
 
-    public String getPrimaryKeyField() {
-        return primaryKeyField;
+    public void setCmpFields(Collection cmpFields) {
+        this.cmpFields = cmpFields;
     }
 
-    public String getPrimaryKeyClass() {
-        return primaryKeyClass;
+    public String getPrimKeyField() {
+        return primKeyField;
     }
 
-    /**
-     * Info on one cmp-field element
-     */
-    public static class CMPField {
-        private String name;
+    public void setPrimKeyField(String primKeyField) {
+        this.primKeyField = primKeyField;
+    }
 
-        public CMPField(String name) {
-            this.name = name;
-        }
+    public Collection getQueries() {
+        return queries;
+    }
 
-        public String getName() {
-            return name;
-        }
+    public void setQueries(Collection queries) {
+        this.queries = queries;
     }
 }
+
