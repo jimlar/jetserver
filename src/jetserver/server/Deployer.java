@@ -44,6 +44,11 @@ public class Deployer {
         try {
             EnterpriseJar jar = new EnterpriseJar(file);
 
+            if (!jar.isValid()) {
+                log.error("The file " + file.getAbsoluteFile() + " is not a valid JAR");
+                return;
+            }
+
             if (jar.isWebApplication()) {
                 deployWebApplication(jar);
 

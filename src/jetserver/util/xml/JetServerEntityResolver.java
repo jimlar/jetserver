@@ -25,11 +25,18 @@ public class JetServerEntityResolver implements EntityResolver {
     static {
         resourcesByPublicId = new HashMap();
 
-        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN", "web-app_2_2.dtd");
-        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN", "web-app_2_3.dtd");
+        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN",
+                                "web-app_2_2.dtd");
+        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN",
+                                "web-app_2_3.dtd");
 
-        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 1.1//EN", "ejb-jar_1_1.dtd");
-        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN", "ejb-jar_2_0.dtd");
+        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 1.1//EN",
+                                "ejb-jar_1_1.dtd");
+        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN",
+                                "ejb-jar_2_0.dtd");
+
+        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD J2EE Application 1.2//EN",
+                                "application_1_2.dtd");
     }
 
     public JetServerEntityResolver() {

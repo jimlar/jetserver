@@ -91,16 +91,23 @@ public class EARConfig {
         if (ejbModuleURI != null) {
             File file = new File(earRoot, ejbModuleURI);
             ejbModules.add(new Module(file, ejbModuleURI));
+            log.debug("Found ejb module " + ejbModuleURI);
             return;
         }
 
         /* Is it a web module? */
-        Node webNode = moduleNode.getFirstChild();
-        if (webNode != null && webNode.getNodeName().equals("web")) {
-            String uri = findProperty(webNode, "web-uri");
-            File file = new File(earRoot, uri);
-            webModules.add(new Module(file, uri));
-            return;
+        NodeList children = moduleNode.getChildNodes();
+        if (children != null) {
+            for (int i = 0; i < children.getLength(); i++) {
+                Node webNode = children.item(i);
+                if (webNode.getNodeName().equals("web")) {
+                    String uri = findProperty(webNode, "web-uri");
+                    File file = new File(earRoot, uri);
+                    webModules.add(new Module(file, uri));
+                    log.debug("Found web module " + uri);
+                    return;
+                }
+            }
         }
     }
 

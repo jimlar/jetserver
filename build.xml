@@ -79,7 +79,7 @@
     <mkdir dir="build/dropzone"/>
     <jar jarfile="build/dropzone/testapplication.ear"
          basedir="testapplication"
-         includes="*web.war, ejn.jar, META-INF/*.xml" />
+         includes="*web.war, ejb.jar, META-INF/*.xml" />
 
   </target>
 
