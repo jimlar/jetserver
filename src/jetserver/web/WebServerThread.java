@@ -15,7 +15,10 @@ public class WebServerThread extends Thread {
     private Socket socket;
     private int threadNumber;
 
-    public WebServerThread(WebServerThreadPool threadPool, int threadNumber, ServerSocket serverSocket) {
+    public WebServerThread(WebServerThreadPool threadPool, 
+			   int threadNumber, 
+			   ServerSocket serverSocket) 
+    {
 	super("WebServerThread-" + threadNumber);
 	this.threadPool = threadPool;
 	this.threadNumber = threadNumber;
@@ -29,24 +32,29 @@ public class WebServerThread extends Thread {
     public void run() {
 
 	while (true) {
+		
 	    try {
 		socket = serverSocket.accept();
 		threadPool.markThreadBusy(this);
 		
 		InputStream in = new BufferedInputStream(socket.getInputStream());
 		HttpRequest request = HttpRequest.decodeRequest(in);
-		HttpResponse response = HttpResponse.createResponse(socket);
-		
+
+		OutputStream out = new BufferedOutputStream(socket.getOutputStream());
+		HttpResponse response = HttpResponse.createResponse(out);
+
 		WebService service = WebService.getServiceInstance(request);
 		service.service(request, response);
-		
+
+		in.close();
+		out.close();
 		socket.close();
 		
 	    } catch (IOException e) {
 		e.printStackTrace();
 	    }
-		
-	    threadPool.releaseThread(this);
+
+	    threadPool.releaseThread(this);	    
 	}
     }
 }

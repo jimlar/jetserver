@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <jetserver>
-  <webserver port="8080" buffersize="1024">
+  <webserver port="8080" buffersize="1024" threads="30">
 
     <root>../html</root>
 

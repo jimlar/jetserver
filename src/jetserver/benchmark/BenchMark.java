@@ -20,17 +20,15 @@ public class BenchMark {
     private static final int DEFAULT_THREADS = 10;
 
     BenchThread threads[];
+    private byte requestData[];
 
-    private long totalTime = 0;
-    private int totalRequests = 0;
-    private long totalBytes = 0;
-
-    private long startTime = System.currentTimeMillis();
+    private long startTime;
+    private long totalTime;
+    private int totalRequests;
+    private long totalBytes;
+    private int errors;
 
     private OutputThread outputThread;
-
-    /** HTTP BASIC string */
-    private String authorizationHeader;
 
     /**
      * Create and start benchmarking
@@ -38,7 +36,9 @@ public class BenchMark {
      */
 
 
-    public BenchMark (URL destURL, int numThreads) {
+    public BenchMark (URL destURL, int numThreads) 
+	throws UnsupportedEncodingException
+    {
 	this(destURL, numThreads, null, null);
     }
 
@@ -48,32 +48,34 @@ public class BenchMark {
      */
 
 
-    public BenchMark (URL destURL, int numThreads, String login, String password) {
+    public BenchMark (URL destURL, int numThreads, String login, String password) 
+	throws UnsupportedEncodingException
+    {
 
 	totalTime = 0;
 	totalRequests = 0;
 	totalBytes = 0;
 
+	StringBuffer buffer = new StringBuffer(1024);
+	buffer.append("GET " + destURL.getFile() + " HTTP/1.0\r\n");
+	buffer.append("Host: "+ destURL.getHost() + "\r\n");
+
 	if (login != null && password != null) {
-	    authorizationHeader = "Basic " + base64Encode(login + ":" + password);;
-	} else {
-	    authorizationHeader = null;
-	}
-	
+	    buffer.append("Authorization: Basic " + base64Encode(login + ":" + password) + "\r\n");
+	} 
+	buffer.append("\r\n");
+
+	requestData = buffer.toString().getBytes("ascii");
 	threads = new BenchThread [numThreads];
 
-	for (int i = 0; i < threads.length; i++) {
-	    
-	    threads[i] = new BenchThread (i, destURL);
+	for (int i = 0; i < threads.length; i++) {	    
+	    threads[i] = new BenchThread (destURL.getHost(), destURL.getPort() == -1 ? 80 : destURL.getPort(), requestData);
 	}
 	
-	startTime = System.currentTimeMillis();
-	
-
 	outputThread = new OutputThread();
 
-	for (int i = 0; i < threads.length; i++) {
-	    
+	startTime = System.currentTimeMillis();	
+	for (int i = 0; i < threads.length; i++) {	    
 	    threads[i].start();
 	}
     }
@@ -84,11 +86,26 @@ public class BenchMark {
      */
 
     private void report (long time, int bytes) {
-
 	synchronized (this) {
 	    ++totalRequests;
 	    totalTime += time;
 	    totalBytes += bytes;
+	}
+    }
+
+    private void reportError () {
+	synchronized (this) {
+	    errors++;
+	}
+    }
+
+    private void resetReports () {
+	synchronized (this) {
+	    totalRequests = 0;
+	    totalTime = 0;
+	    totalBytes = 0;
+	    errors = 0;
+	    startTime = System.currentTimeMillis();	
 	}
     }
 
@@ -141,51 +158,46 @@ public class BenchMark {
 
     private class BenchThread extends Thread {
 	
-	private int rowNum;
-	private URL url;
-	private byte buf[] = new byte [1024 * 80];
-	
+	private byte buffer[] = new byte[100 * 1024];
+	private byte requestData[];
+	private String host;
+	private int port;
 
-	public BenchThread (int rowNum, URL url) {
-	    
-	    this.rowNum = rowNum;
-	    this.url = url;
+	public BenchThread (String host, int port, byte requestData[]) {
+	    this.host = host;	    
+	    this.port = port;
+	    this.requestData = requestData;
 	}
 
-	public void run () {
-
-	    
-	    try {
-		while (true) {
+	public void run () {	    
+	    while (true) {
+		
+		try {
+		    long st = System.currentTimeMillis();
 		    
-		    long startTime = System.currentTimeMillis();
-		    
-		    URLConnection con = url.openConnection();
-		    con.setUseCaches (false);
+		    Socket socket = new Socket(host, port);
+		    OutputStream out = socket.getOutputStream();
+		    out.write(requestData);
+		    out.flush();
 
-		    if (authorizationHeader != null)
-			con.setRequestProperty("Authorization", authorizationHeader);
-
-		    InputStream in = con.getInputStream();
+		    InputStream in = socket.getInputStream();
 
 		    int totalRead = 0;
-		    int read = in.read (buf);
+		    int read = in.read (buffer);
 		    
-		    while (read != -1) {
-			
-			totalRead += read;
-			
-			read = in.read (buf);				    
+		    while (read != -1) {			
+			totalRead += read;			
+			read = in.read (buffer);				    
 		    }
 
-		    in.close();
+		    socket.close();
 
-		    report (System.currentTimeMillis() - startTime, totalRead);
-		}
+		    report (System.currentTimeMillis() - st, totalRead);
 		
-	    } catch (IOException e) {
-
-		e.printStackTrace();
+		} catch (IOException e) {
+		    reportError();
+		    System.err.println("Error: " + e);
+		}
 	    }
 	}
     }
@@ -197,8 +209,9 @@ public class BenchMark {
 
     private class OutputThread extends Thread {
 
-	public OutputThread () {
+	private boolean hasResetted = false;
 
+	public OutputThread () {
 	    this.start();
 	}
 
@@ -206,38 +219,55 @@ public class BenchMark {
 
 	    while (true) {
 
-		try {
-		    Thread.sleep (1000);
-		} catch (InterruptedException e) {}
-
-
+		int err;
 		int totReq;
 		long totTime;
 		long totBytes;
-		
+
 		synchronized (this) {
+		    err = errors;
 		    totReq = totalRequests;
 		    totTime = totalTime;
 		    totBytes = totalBytes;
 		}
 		
+		long runTime = System.currentTimeMillis() - startTime;
+		
+		/* Restart afer 2 secs */
+		if (!hasResetted && totReq > 3000) {
+		    resetReports();
+		    hasResetted = true;
+		    System.out.println("-- Statistics resetted --");
+		    
+		    synchronized (this) {
+			err = errors;
+			totReq = totalRequests;
+			totTime = totalTime;
+			totBytes = totalBytes;
+		    }
+		}
+		
 		if (totReq > 0) {
 		    
-		    long runTime = System.currentTimeMillis() - startTime;
-		    
-		    String mess = totReq + " requests, avg. req time: " + (totTime / totReq) 
+		    String mess = totReq + " requests, " + errors + " errors, avg. req time: " 
+			+ (totTime / totReq) 
 			+ " ms, run time: " + runTime + " ms, " 
 			+ (runTime < 1000 ? "N/A" : ("" + ((totBytes / 1024) / (runTime / 1000)))) 
 			+ " Kb/s, "
 			+ (totBytes / 1024) + " kB total, req/second: ";
 		    
-		    if (runTime == 0)
+		    if (runTime == 0) {
 			mess += "N/A";
-		    else
+		    } else {
 			mess += totReq / (runTime / 1000.0);
-		    
+		    }		    
+
 		    System.out.println (mess);
 		}
+
+		try {
+		    Thread.sleep (1000);
+		} catch (InterruptedException e) {}		
 	    }
 	}
     } 
@@ -247,8 +277,9 @@ public class BenchMark {
      *
      */
 
-    public static void main (String args[]) throws MalformedURLException {
-
+    public static void main (String args[]) 
+	throws MalformedURLException, UnsupportedEncodingException 
+    {
 	if (args.length < 1 || args.length > 4) {
 	    System.out.println ("Usage: java com.lektor.benchmark.BenchMark <url> [threads]");
 	    System.out.println ("   or: java com.lektor.benckmark.BenchMark <url> <login> <password> [threads]");

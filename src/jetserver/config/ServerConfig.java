@@ -59,15 +59,15 @@ public class ServerConfig {
 	}
 
 	/* Debug */
- 	Iterator iter = properties.keySet().iterator();
- 	while(iter.hasNext()) {
- 	    String key = (String) iter.next();
-	    Iterator values = ((List) properties.get(key)).iterator();
-	    for(int i = 0; values.hasNext(); i++) {
-		String value = (String) values.next();
-		System.out.println(key + "[" + i + "]=" + value);
-	    }
- 	}
+//  	Iterator iter = properties.keySet().iterator();
+//  	while(iter.hasNext()) {
+//  	    String key = (String) iter.next();
+// 	    Iterator values = ((List) properties.get(key)).iterator();
+// 	    for(int i = 0; values.hasNext(); i++) {
+// 		String value = (String) values.next();
+// 		System.out.println(key + "[" + i + "]=" + value);
+// 	    }
+//  	}
     }
 
 

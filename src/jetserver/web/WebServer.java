@@ -9,19 +9,23 @@ import jetserver.config.ServerConfig;
 
 public class WebServer {
 
+    private int numberOfThreads;
     private int port;
     private ServerSocket serverSocket;
     private WebServerThreadPool threadPool;
 
-    public WebServer(int port) 
+    public WebServer() 
 	throws IOException
     {
-	this.port = port;
+	ServerConfig config = ServerConfig.getInstance();
+	this.numberOfThreads = config.getIntProperty("jetserver.webserver.threads");
+	this.port = config.getIntProperty("jetserver.webserver.port");
 	this.serverSocket = new ServerSocket(port);
 	this.threadPool = new WebServerThreadPool(1, serverSocket);
     }
 
     public static void main(String args[]) throws Exception {
-	WebServer webServer = new WebServer(ServerConfig.getInstance().getIntProperty("jetserver.webserver.port"));
+	WebServer webServer = new WebServer();
+	System.out.println("WebServer started on port " + webServer.port);
     }
 }

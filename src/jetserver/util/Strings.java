@@ -12,4 +12,8 @@ public class Strings {
 	}
 	return result;
     }
+
+    public static String toStringFromAscii(byte bytes[], int start, int numBytes) {
+	return new String(bytes, 0, start, numBytes);
+    }
 }

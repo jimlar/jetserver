@@ -25,11 +25,11 @@ public class WebServerThreadPool {
 	}
     }
     
-    public synchronized void markThreadBusy(WebServerThread thread) {
+    public void markThreadBusy(WebServerThread thread) {
 	this.threadFreeMark[thread.getThreadNumber()] = false;
     }
 
-    public synchronized void releaseThread(WebServerThread thread) {
+    public void releaseThread(WebServerThread thread) {
 	this.threadFreeMark[thread.getThreadNumber()] = true;
     }
 

@@ -5,21 +5,44 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import jetserver.util.Strings;
+
 public class HttpRequest {
 
+    private static final int MAX_HEADER_LENGTH = 2048;
     private static final byte ASCII_CR = 0xd;
     private static final byte ASCII_LF = 0xa;
 
+    private byte readLineBuffer[] = new byte[MAX_HEADER_LENGTH];
     private String method;
     private String uri;
     private String protocol;
     private Map headers;
+    
+    private HttpRequest(InputStream in) 
+	throws IOException
+    {
+	String line = readLine(in);
 
-    private HttpRequest(String method, String uri, String protocol, Map headers) {
-	this.method = method;
-	this.uri = uri;
-	this.protocol = protocol;
-	this.headers = headers;
+	int i = line.indexOf(" ");
+	this.method = line.substring(0, i);
+
+	int j = line.indexOf(" ", i + 1);
+	this.uri = line.substring(i + 1, j);
+	this.protocol = line.substring(j + 1);
+	    
+	/* Fetch headers */
+	this.headers = new HashMap();
+	line = readLine(in);
+	while (line != null && !line.equals("")) {
+	    
+	    i = line.indexOf(":");
+	    String headerKey = line.substring(0, i);
+	    String headerValue = line.substring(i + 2);		
+	    this.headers.put(headerKey, headerValue);
+		
+	    line = readLine(in);
+	}	
     }
 
     public String getURI() {
@@ -31,49 +54,27 @@ public class HttpRequest {
     }
 
     public static HttpRequest decodeRequest(InputStream in) throws IOException {
-
-	String line = readLine(in);
-	
-	int i = line.indexOf(" ");
-	String method = line.substring(0, i);
-
-	int j = line.indexOf(" ", i + 1);
-	String uri = line.substring(i + 1, j);
-	String protocol = line.substring(j + 1);
-	    
-	/* Fetch headers */
-	Map headers = new HashMap();
-	line = readLine(in);
-	while (line != null && !line.equals("")) {
-	    
-	    i = line.indexOf(":");
-	    String headerKey = line.substring(0, i);
-	    String headerValue = line.substring(i + 2);		
-	    headers.put(headerKey, headerValue);
-		
-	    line = readLine(in);
-	}
-	
-	return new HttpRequest(method, uri, protocol, headers);
+	return new HttpRequest(in);
     }
 
-    private static String readLine(InputStream in) 
+    private String readLine(InputStream in) 
 	throws IOException 
     {
-	StringBuffer buffer = new StringBuffer(256);
+	int totalRead = 0;
 	byte b[] = new byte[1];
 
 	int numRead = in.read(b);
-	while (numRead != -1 && b[0] != ASCII_LF && b[0] != ASCII_CR) {
-	    buffer.append((char) b[0]);
+	while (numRead != -1 && numRead != 0 && b[0] != ASCII_LF && b[0] != ASCII_CR) {
+	    readLineBuffer[totalRead] = b[0];
+	    totalRead += numRead;
 	    numRead = in.read(b);
 	}
-
+	
 	/* if last char was a CR, read the LF */
 	if (b[0] == ASCII_CR) {
 	    in.read(b);
 	}
-
-	return buffer.toString();
+	
+	return Strings.toStringFromAscii(readLineBuffer, 0, totalRead);
     }
 }

@@ -17,14 +17,14 @@ public class HttpResponse {
     private int statusCode;
     private Map headers;
     
-    public static HttpResponse createResponse(Socket socket) 
+    public static HttpResponse createResponse(OutputStream out)
 	throws IOException 
     {
-	return new HttpResponse(socket.getOutputStream());
+	return new HttpResponse(out);
     }
 
     private HttpResponse(OutputStream out) {
-	this.out = new BufferedOutputStream(out);
+	this.out = out;
 	this.protocol = "HTTP/1.0";
 	this.statusCode = 200;
 	this.statusMessage = "OK";
