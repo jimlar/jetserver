@@ -87,7 +87,15 @@ public class Deployer {
     }
 
     /**
-     * Deploy an EJB jar
+     * Deploy a standalone EJB jar
+     */
+    private Application deployEJBJar(EnterpriseJar jar) throws IOException {
+        Application application = new Application(ApplicationConfig.createEmptyConfig());
+        return deployEJBJar(application, jar);
+    }
+
+    /**
+     * Deploy an EJB jar as part of an application
      */
     private Application deployEJBJar(Application application,
                              EnterpriseJar jar) throws IOException {

@@ -45,7 +45,7 @@ public class ApplicationConfig {
     /**
      * Create a parser
      */
-    private ApplicationConfig(File earRoot) throws IOException {
+    private ApplicationConfig(File earRoot) {
         this.earRoot = earRoot;
         this.ejbModules = new ArrayList();
         this.webModules = new ArrayList();
