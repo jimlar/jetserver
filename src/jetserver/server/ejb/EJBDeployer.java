@@ -1,6 +1,6 @@
 package jetserver.server.ejb;
 
-import jetserver.server.ejb.parsing.EJBJarXMLParser;
+import jetserver.server.ejb.config.EJBJarXMLParser;
 import jetserver.util.Log;
 
 import java.io.File;

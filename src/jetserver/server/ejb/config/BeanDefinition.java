@@ -1,4 +1,4 @@
-package jetserver.server.ejb.parsing;
+package jetserver.server.ejb.config;
 
 import java.util.Collection;
 import java.util.ArrayList;

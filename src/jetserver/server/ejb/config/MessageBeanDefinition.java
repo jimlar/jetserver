@@ -6,7 +6,8 @@
  * To change template for new class use 
  * Code Style | Class Templates options (Tools | IDE Options).
  */
-package jetserver.server.ejb.parsing;
+package jetserver.server.ejb.config;
+
 
 public class MessageBeanDefinition extends BeanDefinition {
 

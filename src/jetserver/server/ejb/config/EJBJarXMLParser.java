@@ -1,4 +1,4 @@
-package jetserver.server.ejb.parsing;
+package jetserver.server.ejb.config;
 
 import org.xml.sax.SAXException;
 import org.w3c.dom.NodeList;
