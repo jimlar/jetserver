@@ -9,7 +9,6 @@
 package jetserver.server.ejb;
 
 import jetserver.util.Log;
-import jetserver.server.ejb.config.EJBJarConfig;
 
 import java.io.File;
 import java.io.InputStream;

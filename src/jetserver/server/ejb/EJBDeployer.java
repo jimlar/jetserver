@@ -1,6 +1,5 @@
 package jetserver.server.ejb;
 
-import jetserver.server.ejb.config.EJBJarConfig;
 import jetserver.server.ejb.config.EntityBeanDefinition;
 import jetserver.server.ejb.codegen.BeanWrapperFactory;
 import jetserver.server.Application;

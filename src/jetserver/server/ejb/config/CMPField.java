@@ -7,7 +7,7 @@ public class CMPField {
 
     private String name;
 
-    CMPField(String name) {
+    public CMPField(String name) {
         this.name = name;
     }
 

@@ -17,7 +17,7 @@ public class MessageBeanDefinition extends BeanDefinition {
     private String destinationType;
     private String subscriptionDurability;
 
-    MessageBeanDefinition() {}
+    public MessageBeanDefinition() {}
 
     public String getTransactionType() {
         return transactionType;

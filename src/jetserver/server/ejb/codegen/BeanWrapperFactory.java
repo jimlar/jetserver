@@ -27,7 +27,7 @@ public class BeanWrapperFactory {
     public BeanWrapperFactory(EJBJar ejbJar) {
         this.ejbJar = ejbJar;
         this.log = Log.getInstance(this);
-        this.wrappersDir =  ejbJar.getConfig().getWrappersDir();
+        this.wrappersDir =  ejbJar.getWrappersDir();
         this.compiler = new Compiler(this.wrappersDir,
                                      "..:../../../jetserver.jar");
     }
@@ -139,7 +139,7 @@ public class BeanWrapperFactory {
 
         compiler.compile(sourceFile);
         try {
-            Class proxyClass = ejbJar.getConfig().getClassLoader().loadClass(className);
+            Class proxyClass = ejbJar.getClassLoader().loadClass(className);
             entityBean.setRemoteProxy(proxyClass);
         } catch (ClassNotFoundException e) {
             throw new IOException("Class could not be loaded" + e);
@@ -220,7 +220,7 @@ public class BeanWrapperFactory {
 
         compiler.compile(sourceFile);
         try {
-            Class homeClass = ejbJar.getConfig().getClassLoader().loadClass(className);
+            Class homeClass = ejbJar.getClassLoader().loadClass(className);
             entityBean.setRemoteHomeWrapper(homeClass);
         } catch (ClassNotFoundException e) {
             throw new IOException("Class could not be loaded" + e);
@@ -247,7 +247,7 @@ public class BeanWrapperFactory {
 
         compiler.compile(sourceFile);
         try {
-            Class wrapperClass = ejbJar.getConfig().getClassLoader().loadClass(className);
+            Class wrapperClass = ejbJar.getClassLoader().loadClass(className);
             entityBean.setEJBWrapperClass(wrapperClass);
         } catch (ClassNotFoundException e) {
             throw new IOException("Class could not be loaded" + e);

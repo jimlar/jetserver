@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
  */
 public class Application {
 
-    private File earRoot;
+    private File deployDir;
 
     private List ejbModules;
     private List webModules;
@@ -38,15 +38,15 @@ public class Application {
         return new Application(null);
     }
 
-    public static Application createFromEARFile(File earRoot) throws IOException {
-        Application application = new Application(earRoot);
+    public static Application createFromEARFile(File deployDir) throws IOException {
+        Application application = new Application(deployDir);
         application.parse();
         return application;
     }
 
 
-    private Application(File earRoot) {
-        this.earRoot = earRoot;
+    private Application(File deployDir) {
+        this.deployDir = deployDir;
         this.ejbModules = new ArrayList();
         this.webModules = new ArrayList();
         this.webApplications = new ArrayList();
@@ -69,8 +69,8 @@ public class Application {
         this.ejbJars.add(ejbJar);
     }
 
-    public File getEARRoot() {
-        return earRoot;
+    public File getDeployDir() {
+        return deployDir;
     }
 
     public Collection getEJBModules() {
@@ -86,7 +86,7 @@ public class Application {
      */
     private void parse() throws IOException {
         try {
-            File applicationXML = new File(earRoot, "META-INF" + File.separator + "application.xml");
+            File applicationXML = new File(deployDir, "META-INF" + File.separator + "application.xml");
             DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             parser.setEntityResolver(new JetServerEntityResolver());
             Document document = parser.parse(applicationXML.getAbsolutePath());
@@ -115,7 +115,7 @@ public class Application {
         /* Is it an ejb module? */
         String ejbModuleURI = XMLUtilities.findValue(moduleNode, "ejb");
         if (ejbModuleURI != null) {
-            File file = new File(earRoot, ejbModuleURI);
+            File file = new File(deployDir, ejbModuleURI);
             ejbModules.add(new ApplicationModule(file, ejbModuleURI));
             return;
         }
@@ -127,7 +127,7 @@ public class Application {
                 Node webNode = children.item(i);
                 if (webNode.getNodeName().equals("web")) {
                     String uri = XMLUtilities.findValue(webNode, "web-uri");
-                    File file = new File(earRoot, uri);
+                    File file = new File(deployDir, uri);
                     webModules.add(new ApplicationModule(file, uri));
                     return;
                 }

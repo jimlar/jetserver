@@ -32,7 +32,7 @@ public class EntityBeanDefinition extends BeanDefinition {
 
     private Collection queries = new ArrayList();
 
-    EntityBeanDefinition() {}
+    public EntityBeanDefinition() {}
 
     public Class getRemoteHomeClass() {
         return remoteHomeClass;

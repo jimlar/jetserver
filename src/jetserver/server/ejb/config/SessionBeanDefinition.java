@@ -20,7 +20,7 @@ public class SessionBeanDefinition extends BeanDefinition {
     private String sessionType;
     private String transactionType;
 
-    SessionBeanDefinition() {}
+    public SessionBeanDefinition() {}
 
     public Class getRemoteHomeClass() {
         return remoteHomeClass;

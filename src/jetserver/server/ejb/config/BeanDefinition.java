@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * for all types of EJBs
  *
  */
-class BeanDefinition {
+public class BeanDefinition {
 
     private String description;
     private String displayName;
