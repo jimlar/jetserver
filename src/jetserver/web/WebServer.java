@@ -7,29 +7,18 @@ import java.util.*;
 
 import jetserver.config.ServerConfig;
 
-public class WebServer extends Thread {
+public class WebServer {
 
     private int port;
     private ServerSocket serverSocket;
     private WebServerThreadPool threadPool;
 
-    public WebServer(int port) {
+    public WebServer(int port) 
+	throws IOException
+    {
 	this.port = port;
-	this.start();
-    }
-
-    public void run() {
-
-	try {
-	    this.serverSocket = new ServerSocket(port);
-	    this.threadPool = new WebServerThreadPool(50);
-
-	    while (true) {
-		threadPool.startThread(serverSocket.accept());
-	    }
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
+	this.serverSocket = new ServerSocket(port);
+	this.threadPool = new WebServerThreadPool(1, serverSocket);
     }
 
     public static void main(String args[]) throws Exception {

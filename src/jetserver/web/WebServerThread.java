@@ -11,20 +11,15 @@ import jetserver.web.services.WebService;
 public class WebServerThread extends Thread {
 
     private WebServerThreadPool threadPool;
+    private ServerSocket serverSocket;
     private Socket socket;
     private int threadNumber;
 
-    public WebServerThread(WebServerThreadPool threadPool, int threadNumber) {
+    public WebServerThread(WebServerThreadPool threadPool, int threadNumber, ServerSocket serverSocket) {
 	super("WebServerThread-" + threadNumber);
 	this.threadPool = threadPool;
 	this.threadNumber = threadNumber;
-    }
-
-    public void setSocketAndStart(Socket socket) {
-	this.socket = socket;
-	synchronized (this) {
-	    this.notify();
-	}
+	this.serverSocket = serverSocket;
     }
 
     public int getThreadNumber() {
@@ -32,33 +27,26 @@ public class WebServerThread extends Thread {
     }
 
     public void run() {
-	while (true) {
-	    if (socket != null) {
-		
-		try {
-		    InputStream in = socket.getInputStream();
-		    HttpRequest request = HttpRequest.decodeRequest(in);
-		    HttpResponse response = HttpResponse.createResponse(socket);
-		    
-		    WebService service = WebService.getServiceInstance(request);
-		    service.service(request, response);
-		    
-		    socket.close();
-		    
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
-	    }
-		
-	    threadPool.returnThread(this);
 
+	while (true) {
 	    try {
-		synchronized (this) {
-		    this.wait();
-		}
-	    } catch (InterruptedException e) {
+		socket = serverSocket.accept();
+		threadPool.markThreadBusy(this);
+		
+		InputStream in = new BufferedInputStream(socket.getInputStream());
+		HttpRequest request = HttpRequest.decodeRequest(in);
+		HttpResponse response = HttpResponse.createResponse(socket);
+		
+		WebService service = WebService.getServiceInstance(request);
+		service.service(request, response);
+		
+		socket.close();
+		
+	    } catch (IOException e) {
 		e.printStackTrace();
 	    }
+		
+	    threadPool.releaseThread(this);
 	}
     }
 }

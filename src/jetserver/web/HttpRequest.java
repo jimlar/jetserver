@@ -7,6 +7,9 @@ import java.util.*;
 
 public class HttpRequest {
 
+    private static final byte ASCII_CR = 0xd;
+    private static final byte ASCII_LF = 0xa;
+
     private String method;
     private String uri;
     private String protocol;
@@ -28,7 +31,7 @@ public class HttpRequest {
     }
 
     public static HttpRequest decodeRequest(InputStream in) throws IOException {
-	in = new BufferedInputStream(in);
+
 	String line = readLine(in);
 	
 	int i = line.indexOf(" ");
@@ -58,16 +61,17 @@ public class HttpRequest {
 	throws IOException 
     {
 	StringBuffer buffer = new StringBuffer(256);
+	byte b[] = new byte[1];
 
-	int readChar = in.read();
-	while (readChar != -1 && readChar != '\r' && readChar != '\n') {
-	    buffer.append((char) readChar);
-	    readChar = in.read();
+	int numRead = in.read(b);
+	while (numRead != -1 && b[0] != ASCII_LF && b[0] != ASCII_CR) {
+	    buffer.append((char) b[0]);
+	    numRead = in.read(b);
 	}
 
 	/* if last char was a CR, read the LF */
-	if (readChar == '\r') {
-	    in.read();
+	if (b[0] == ASCII_CR) {
+	    in.read(b);
 	}
 
 	return buffer.toString();

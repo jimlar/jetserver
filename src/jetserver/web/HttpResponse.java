@@ -5,9 +5,10 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import jetserver.util.Strings;
+
 public class HttpResponse {
 
-    private static final String HEADER_ENCODING = "iso-8859-1";
     private static final String NEWLINE = "\r\n";
     
     private OutputStream out;
@@ -66,6 +67,6 @@ public class HttpResponse {
 	
 	buffer.append(NEWLINE);
 
-	out.write(buffer.toString().getBytes(HEADER_ENCODING));
+	out.write(Strings.getAsciiBytes(buffer.toString()));
     }
 }
