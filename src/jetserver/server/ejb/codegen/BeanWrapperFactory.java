@@ -29,7 +29,7 @@ public class BeanWrapperFactory {
         this.log = Log.getInstance(this);
         this.wrappersDir =  ejbJar.getWrappersDir();
         this.compiler = new Compiler(this.wrappersDir,
-                                     "..:../../../jetserver.jar");
+                                     "..:../../../../jetserver.jar");
     }
 
     /**

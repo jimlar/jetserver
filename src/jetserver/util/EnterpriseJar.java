@@ -77,4 +77,8 @@ public class EnterpriseJar {
         in.close();
         out.close();
     }
+
+    public String toString() {
+        return file.getAbsolutePath();
+    }
 }

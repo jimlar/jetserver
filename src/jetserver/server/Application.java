@@ -34,8 +34,8 @@ public class Application {
     private Collection webApplications;
     private Collection ejbJars;
 
-    public static Application createEmpty() {
-        return new Application(null);
+    public static Application createEmpty(File deployDir) {
+        return new Application(deployDir);
     }
 
     public static Application createFromEARFile(File deployDir) throws IOException {

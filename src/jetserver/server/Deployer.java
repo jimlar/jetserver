@@ -85,7 +85,7 @@ public class Deployer {
      * Deploy a stand alone web application
      */
     private Application deployWebApplication(EnterpriseJar jar) throws IOException {
-        Application application = Application.createEmpty();
+        Application application = Application.createEmpty(deployDir);
         return deployWebApplication(application, jar);
     }
 
@@ -94,10 +94,10 @@ public class Deployer {
      */
     private Application deployWebApplication(Application application,
                                             EnterpriseJar jar) throws IOException {
-        File webAppDir = new File(deployDir, jar.getFile().getName());
+        File webAppDir = new File(application.getDeployDir(),
+                                  stripSuffix(jar.getFile().getName()));
         jar.unpackTo(webAppDir);
-        WebApplication webApp = webDeployer.deploy(webAppDir,
-                                                   application);
+        WebApplication webApp = webDeployer.deploy(webAppDir, application);
         this.webApplications.add(webApp);
         return application;
     }
@@ -106,7 +106,7 @@ public class Deployer {
      * Deploy a standalone EJB jar
      */
     private Application deployEJBJar(EnterpriseJar jar) throws IOException {
-        Application application = Application.createEmpty();
+        Application application = Application.createEmpty(deployDir);
         return deployEJBJar(application, jar);
     }
 
@@ -115,9 +115,10 @@ public class Deployer {
      */
     private Application deployEJBJar(Application application,
                              EnterpriseJar jar) throws IOException {
-        File ejbJarRoot = new File(deployDir, jar.getFile().getName());
-        jar.unpackTo(ejbJarRoot);
-        ejbDeployer.deploy(ejbJarRoot, application);
+        File ejbJarDir = new File(application.getDeployDir(),
+                                   stripSuffix(jar.getFile().getName()));
+        jar.unpackTo(ejbJarDir);
+        ejbDeployer.deploy(ejbJarDir, application);
         return application;
     }
 
@@ -125,11 +126,11 @@ public class Deployer {
      * Deploy an EAR
      */
     private Application deployEAR(EnterpriseJar jar) throws IOException {
-        File earRoot = new File(deployDir, jar.getFile().getName());
-        Log.getInstance(this).info("Deploying EAR (" + earRoot + ")");
+        File earDir = new File(deployDir, jar.getFile().getName());
+        Log.getInstance(this).info("Deploying EAR (" + jar + ")");
 
-        jar.unpackTo(earRoot);
-        Application application = Application.createFromEARFile(earRoot);
+        jar.unpackTo(earDir);
+        Application application = Application.createFromEARFile(earDir);
 
         Iterator ejbModules = application.getEJBModules().iterator();
         while (ejbModules.hasNext()) {
@@ -143,5 +144,13 @@ public class Deployer {
             deployWebApplication(application, new EnterpriseJar(webModule.getFile()));
         }
         return application;
+    }
+
+    private String stripSuffix(String filename) {
+        int i = filename.lastIndexOf(".");
+        if (i != -1) {
+            return filename.substring(0, i);
+        }
+        return filename;
     }
 }
