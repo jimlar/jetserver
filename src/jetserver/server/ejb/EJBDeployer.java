@@ -3,7 +3,7 @@ package jetserver.server.ejb;
 import jetserver.server.ejb.config.EJBJarConfig;
 import jetserver.server.ejb.config.EntityBeanDefinition;
 import jetserver.server.ejb.codegen.BeanWrapperFactory;
-import jetserver.server.application.Application;
+import jetserver.server.Application;
 import jetserver.util.Log;
 
 import javax.naming.InitialContext;

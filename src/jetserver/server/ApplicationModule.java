@@ -1,13 +1,13 @@
-package jetserver.server.application;
+package jetserver.server;
 
 import java.io.File;
 
-public class Module {
+public class ApplicationModule {
 
     private File file;
     private String uri;
 
-    Module(File file, String uri) {
+    ApplicationModule(File file, String uri) {
         this.file = file;
         this.uri = uri;
     }

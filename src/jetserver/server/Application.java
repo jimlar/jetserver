@@ -1,56 +1,72 @@
-package jetserver.server.application;
+package jetserver.server;
 
-import org.xml.sax.SAXException;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import jetserver.server.web.WebApplication;
+import jetserver.server.ejb.EJBJar;
+import jetserver.util.Log;
+import jetserver.util.xml.JetServerEntityResolver;
+import jetserver.util.xml.XMLUtilities;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.FactoryConfigurationError;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.List;
 
-import jetserver.util.Log;
-import jetserver.util.xml.JetServerEntityResolver;
-import jetserver.util.xml.XMLUtilities;
-import jetserver.server.ejb.EJBClassLoader;
-import jetserver.server.ejb.config.*;
-
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
- * Parser for application.xml, creates objects for all elements
+ * This class represents an J2EE applcaition instance
  */
-public class ApplicationConfig {
+public class Application {
 
-    private Log log;
     private File earRoot;
 
     private List ejbModules;
     private List webModules;
 
-    public static ApplicationConfig createEmptyConfig() {
-        return new ApplicationConfig(null);
+    private Collection webApplications;
+    private Collection ejbJars;
+
+    public static Application createEmpty() {
+        return new Application(null);
     }
 
-    public static ApplicationConfig createFromEARFile(File earRoot) throws IOException {
-        ApplicationConfig config = new ApplicationConfig(earRoot);
-        config.parse();
-        return config;
+    public static Application createFromEARFile(File earRoot) throws IOException {
+        Application application = new Application(earRoot);
+        application.parse();
+        return application;
     }
 
-    /**
-     * Create a parser
-     */
-    private ApplicationConfig(File earRoot) {
+
+    private Application(File earRoot) {
         this.earRoot = earRoot;
         this.ejbModules = new ArrayList();
         this.webModules = new ArrayList();
-        log = Log.getInstance(this);
+        this.webApplications = new ArrayList();
+        this.ejbJars = new ArrayList();
+    }
+
+    public Collection getWebApplications() {
+        return this.webApplications;
+    }
+
+    public void addWebApplication(WebApplication webApplication) {
+        this.webApplications.add(webApplication);
+    }
+
+    public Collection getEJBJars() {
+        return this.ejbJars;
+    }
+
+    public void addEJBJar(EJBJar ejbJar) {
+        this.ejbJars.add(ejbJar);
     }
 
     public File getEARRoot() {
@@ -66,7 +82,7 @@ public class ApplicationConfig {
     }
 
     /**
-     * Parse the xml
+     * Parse the application.xml
      */
     private void parse() throws IOException {
         try {
@@ -96,13 +112,11 @@ public class ApplicationConfig {
     }
 
     private void processModule(Node moduleNode) {
-
         /* Is it an ejb module? */
         String ejbModuleURI = XMLUtilities.findValue(moduleNode, "ejb");
         if (ejbModuleURI != null) {
             File file = new File(earRoot, ejbModuleURI);
-            ejbModules.add(new Module(file, ejbModuleURI));
-            log.debug("Found ejb module " + ejbModuleURI);
+            ejbModules.add(new ApplicationModule(file, ejbModuleURI));
             return;
         }
 
@@ -114,8 +128,7 @@ public class ApplicationConfig {
                 if (webNode.getNodeName().equals("web")) {
                     String uri = XMLUtilities.findValue(webNode, "web-uri");
                     File file = new File(earRoot, uri);
-                    webModules.add(new Module(file, uri));
-                    log.debug("Found web module " + uri);
+                    webModules.add(new ApplicationModule(file, uri));
                     return;
                 }
             }

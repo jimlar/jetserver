@@ -6,7 +6,7 @@ import java.util.*;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import jetserver.server.application.Application;
+import jetserver.server.Application;
 import jetserver.util.Log;
 
 import javax.servlet.http.HttpServlet;

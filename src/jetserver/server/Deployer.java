@@ -7,9 +7,6 @@ import java.util.*;
 
 import jetserver.server.web.*;
 import jetserver.server.ejb.EJBDeployer;
-import jetserver.server.application.ApplicationConfig;
-import jetserver.server.application.Module;
-import jetserver.server.application.Application;
 import jetserver.server.config.ServerConfig;
 import jetserver.util.Log;
 import jetserver.util.EnterpriseJar;
@@ -88,7 +85,7 @@ public class Deployer {
      * Deploy a stand alone web application
      */
     private Application deployWebApplication(EnterpriseJar jar) throws IOException {
-        Application application = new Application(ApplicationConfig.createEmptyConfig());
+        Application application = Application.createEmpty();
         return deployWebApplication(application, jar);
     }
 
@@ -109,7 +106,7 @@ public class Deployer {
      * Deploy a standalone EJB jar
      */
     private Application deployEJBJar(EnterpriseJar jar) throws IOException {
-        Application application = new Application(ApplicationConfig.createEmptyConfig());
+        Application application = Application.createEmpty();
         return deployEJBJar(application, jar);
     }
 
@@ -132,19 +129,17 @@ public class Deployer {
         Log.getInstance(this).info("Deploying EAR (" + earRoot + ")");
 
         jar.unpackTo(earRoot);
-        ApplicationConfig applicationConfig = ApplicationConfig.createFromEARFile(earRoot);
+        Application application = Application.createFromEARFile(earRoot);
 
-        Application application = new Application(applicationConfig);
-
-        Iterator ejbModules = applicationConfig.getEJBModules().iterator();
+        Iterator ejbModules = application.getEJBModules().iterator();
         while (ejbModules.hasNext()) {
-            Module ejbModule = (Module) ejbModules.next();
+            ApplicationModule ejbModule = (ApplicationModule) ejbModules.next();
             deployEJBJar(application, new EnterpriseJar(ejbModule.getFile()));
         }
 
-        Iterator webModules = applicationConfig.getWebModules().iterator();
+        Iterator webModules = application.getWebModules().iterator();
         while (webModules.hasNext()) {
-            Module webModule = (Module) webModules.next();
+            ApplicationModule webModule = (ApplicationModule) webModules.next();
             deployWebApplication(application, new EnterpriseJar(webModule.getFile()));
         }
         return application;

@@ -8,7 +8,7 @@ import java.util.*;
 import jetserver.util.Log;
 import jetserver.util.xml.JetServerEntityResolver;
 import jetserver.util.xml.XMLUtilities;
-import jetserver.server.application.Application;
+import jetserver.server.Application;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
