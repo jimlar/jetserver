@@ -97,9 +97,9 @@ public class Deployer {
      */
     private Application deployWebApplication(Application application,
                                             EnterpriseJar jar) throws IOException {
-        File webAppRoot = new File(deployDir, jar.getFile().getName());
-        jar.unpackTo(webAppRoot);
-        WebApplication webApp = webDeployer.deploy(webAppRoot,
+        File webAppDir = new File(deployDir, jar.getFile().getName());
+        jar.unpackTo(webAppDir);
+        WebApplication webApp = webDeployer.deploy(webAppDir,
                                                    application);
         this.webApplications.add(webApp);
         return application;

@@ -8,8 +8,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import jetserver.util.Log;
-import jetserver.server.web.config.ServletMapping;
-import jetserver.server.web.config.JSServletConfig;
 
 /**
  * This is a factory where you fetch the servlet instances

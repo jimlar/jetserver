@@ -5,8 +5,6 @@ package jetserver.server.web;
 import java.io.*;
 import java.util.*;
 
-import jetserver.server.web.config.MimeTypes;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -71,8 +69,8 @@ class FileInfoCache {
     private FileInfo createFileInfo(HttpServletRequest request)
             throws IOException
     {
-        String localRequestURI = request.getRequestURI().substring(webApp.getHttpRoot().length());
-        File requestedFile = new File(webApp.getFileRoot(), localRequestURI);
+        String localRequestURI = request.getRequestURI().substring(webApp.getContextRoot().length());
+        File requestedFile = new File(webApp.getDeployDir(), localRequestURI);
         boolean isDirectoryIndexRequest = false;
         boolean fileExists = requestedFile.exists();
 

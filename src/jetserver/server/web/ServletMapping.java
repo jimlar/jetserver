@@ -1,5 +1,5 @@
 
-package jetserver.server.web.config;
+package jetserver.server.web;
 
 
 public class ServletMapping {

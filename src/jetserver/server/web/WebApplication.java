@@ -6,10 +6,6 @@ import java.util.*;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import jetserver.server.web.config.WebApplicationFactory;
-import jetserver.server.web.config.ServletMapping;
-import jetserver.server.web.config.MimeTypes;
-import jetserver.server.web.config.JSServletConfig;
 import jetserver.server.application.Application;
 import jetserver.util.Log;
 
@@ -31,8 +27,8 @@ public class WebApplication implements ServletContext {
     private FileServer fileServer;
 
     private String displayName;
-    private String httpRoot;
-    private File fileRoot;
+    private String contextRoot;
+    private File deployDir;
     private List welcomeFiles;
     private List servletMappings;
     private Map servletConfigsByName;
@@ -41,11 +37,11 @@ public class WebApplication implements ServletContext {
     private Map initParameters;
     private Map attributes;
 
-    public WebApplication(Application application, File fileRoot)
+    public WebApplication(Application application, File deployDir)
             throws IOException
     {
         this.application = application;
-        this.fileRoot = fileRoot;
+        this.deployDir = deployDir;
 
         this.welcomeFiles = new ArrayList();
         this.servletMappings = new ArrayList();
@@ -62,8 +58,8 @@ public class WebApplication implements ServletContext {
         this.displayName = displayName;
     }
 
-    public void setHttpRoot(String httpRoot) {
-        this.httpRoot = httpRoot;
+    public void setContextRoot(String contextRoot) {
+        this.contextRoot = contextRoot;
     }
 
     public void addWelcomeFile(String welcomeFile) {
@@ -86,12 +82,12 @@ public class WebApplication implements ServletContext {
         return this.displayName;
     }
 
-    public String getHttpRoot() {
-        return this.httpRoot;
+    public String getContextRoot() {
+        return this.contextRoot;
     }
 
-    public File getFileRoot() {
-        return this.fileRoot;
+    public File getDeployDir() {
+        return this.deployDir;
     }
 
     public List getWelcomeFiles() {

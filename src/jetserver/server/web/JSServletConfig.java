@@ -1,5 +1,5 @@
 
-package jetserver.server.web.config;
+package jetserver.server.web;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;

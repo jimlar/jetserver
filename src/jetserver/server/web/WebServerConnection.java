@@ -73,7 +73,7 @@ class WebServerConnection implements Runnable {
         Iterator iter = deployer.getAllWebApplications().iterator();
         while (iter.hasNext()) {
             WebApplication application = (WebApplication) iter.next();
-            if (request.getRequestURI().startsWith(application.getHttpRoot())) {
+            if (request.getRequestURI().startsWith(application.getContextRoot())) {
                 return application;
             }
         }
