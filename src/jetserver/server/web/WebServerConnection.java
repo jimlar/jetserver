@@ -1,12 +1,12 @@
 
-package jetserver.web;
+package jetserver.server.web;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
 import jetserver.config.ServerConfig;
-import jetserver.web.services.Dispatcher;
+import jetserver.server.web.services.Dispatcher;
 
 public class WebServerConnection implements Runnable {
 
@@ -28,11 +28,12 @@ public class WebServerConnection implements Runnable {
 	    
 	    dispatcher.dispatch(request, response);
 	    
-	    socket.close();
-
 	} catch (IOException e) {
-	    e.printStackTrace();
-	    
-	} 
+	    e.printStackTrace();	    
+	} finally {
+	    try {
+		socket.close();
+	    } catch (IOException e) {}
+	}
     }
 }

@@ -5,7 +5,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import jetserver.web.WebServer;
+import jetserver.server.web.WebServer;
 
 public class JetServer {
 

@@ -1,12 +1,12 @@
 
 
-package jetserver.web.services;
+package jetserver.server.web.services;
 
 import java.io.*;
 
-import jetserver.web.*;
-import jetserver.web.services.file.*;
-import jetserver.web.services.servlet.*;
+import jetserver.server.web.*;
+import jetserver.server.web.services.file.*;
+import jetserver.server.web.services.servlet.*;
 
 public class Dispatcher {
 

@@ -1,13 +1,13 @@
 
 
-package jetserver.web.services.servlet;
+package jetserver.server.web.services.servlet;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import jetserver.web.*;
-import jetserver.web.services.WebService;
+import jetserver.server.web.*;
+import jetserver.server.web.services.WebService;
 import jetserver.config.ServerConfig;
 
 public class ServletService implements WebService {

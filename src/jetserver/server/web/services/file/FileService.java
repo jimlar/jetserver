@@ -1,13 +1,13 @@
 
 
-package jetserver.web.services.file;
+package jetserver.server.web.services.file;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import jetserver.web.*;
-import jetserver.web.services.WebService;
+import jetserver.server.web.*;
+import jetserver.server.web.services.WebService;
 
 public class FileService implements WebService {
 

@@ -1,5 +1,5 @@
 
-package jetserver.server;
+package jetserver.util;
 
 import java.io.*;
 import java.nio.*;

@@ -1,5 +1,5 @@
 
-package jetserver.web;
+package jetserver.server.web;
 
 import java.io.*;
 import java.net.*;
@@ -8,7 +8,7 @@ import java.util.*;
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
 
 import jetserver.config.ServerConfig;
-import jetserver.web.services.Dispatcher;
+import jetserver.server.web.services.Dispatcher;
 
 public class WebServer extends Thread {
     

@@ -1,10 +1,10 @@
 
 
-package jetserver.web.services;
+package jetserver.server.web.services;
 
 import java.io.IOException;
 
-import jetserver.web.*;
+import jetserver.server.web.*;
 
 public interface WebService {
 
