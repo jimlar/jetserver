@@ -10,7 +10,7 @@ import jetserver.util.Log;
  * This is classloader for servlets
  */
 
-public class ServletClassLoader extends ClassLoader {
+class ServletClassLoader extends ClassLoader {
 
     private WebAppConfig config;
     private Log log;

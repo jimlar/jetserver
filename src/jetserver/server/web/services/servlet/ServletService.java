@@ -21,13 +21,14 @@ public class ServletService {
 
     private WebAppConfig config;
     private Log log;
-    private ServletClassLoader classLoader;
+
+    private ServletInstanceFactory servletInstanceFactory;
 
 
     public ServletService(WebAppConfig config) {
 	this.config = config;
 	this.log = Log.getInstance(this);
-	this.classLoader = new ServletClassLoader(config);
+	this.servletInstanceFactory = new ServletInstanceFactory(config);
     }
     
     /**
@@ -41,20 +42,17 @@ public class ServletService {
 	if (mapping == null) {
 	    return false;
 	}
-	
-	String servletClassName 
-	    = config.getServletDeclaration(mapping.getServletName()).getClassName();
 
-	log.debug("running servlet " + servletClassName);
+	HttpServlet servlet = servletInstanceFactory.getServletInstance(mapping.getServletName());
 
-	try {
-	    Class servletClass = classLoader.loadClass(servletClassName);	
-	    HttpServlet servlet = (HttpServlet) servletClass.newInstance();
-	} catch (Exception e) {
-	    throw new IOException("cant run servlet " + e);
+	if (servlet != null) {
+	    HttpServletRequest httpServletRequest = new JetServerHttpServletRequest(request);
+	    HttpServletResponse httpServletResponse = new JetServerHttpServletResponse(request);
+	    servlet.service(httpServletRequest, httpServletResponse);
+	    
+	} else {
+	    throw new IOException("could not start servlet");
 	}
-
-	log.debug("servlet " + servletClassName + " done");
 
 	return true;
     }
@@ -71,6 +69,7 @@ public class ServletService {
 
 	    /* Should actually test with the contextpath prepended to the mapping */
 	    if (mapping.getUrlPattern().equals(request.getURI())) {
+		log.debug("found servlet mapping " + mapping);
 		return mapping;
 	    }
 	}
