@@ -43,7 +43,7 @@ class ServletClassLoader extends ClassLoader {
                 } catch (ClassNotFoundException e) {
                     if (!ejbJars.hasNext()) {
                         /* Class not found there either */
-                         throw e;
+                        throw e;
                     }
                 }
             }

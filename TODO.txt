@@ -1,3 +1,0 @@
-
-
-* ServletContext ersätter valda delar av WebAppConfig

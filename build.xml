@@ -7,15 +7,7 @@
   <property name="classpath" value="src:
 				                    build/classes:
                                     lib/xerces.jar:
-                                    lib/concurrent.jar:
-                                    lib/servlet.jar" />
-
-  <!-- jetserver -->
-  <target name="jetserver" depends="compile">
-    <jar jarfile="build/jetserver.jar"
-         basedir="build/classes"
-         manifest="src/MANIFEST.MF"/>
-  </target>
+                                    lib/concurrent.jar" />
 
   <!-- clean -->
   <target name="clean">
@@ -33,22 +25,21 @@
     <javac destdir="build/classes"
 	   classpath="${classpath}"
 	   includes="**/*.java">
-
       <src path="src"/>
     </javac>
+  </target>
+
+  <!-- jetserver -->
+  <target name="jetserver" depends="compile">
 
     <copy todir="build/classes">
       <fileset dir="src" includes="**/*.dtd" />
     </copy>
 
-    <copy todir="build">
-      <fileset dir="." includes="lib/*.jar" />
-      <fileset dir="." includes="config/*.xml,config/mime.types" />
-      <fileset dir="." includes="html/*.html" />
-    </copy>
-
+    <jar jarfile="build/jetserver.jar"
+         basedir="build/classes"
+         manifest="src/MANIFEST.MF"/>
   </target>
-
 
   <!-- test application -->
   <target name="testapplication">
@@ -76,21 +67,33 @@
          basedir="testapplication/web" />
 
     <!-- Ear it together -->
-    <mkdir dir="build/dropzone"/>
-    <jar jarfile="build/dropzone/testapplication.ear"
+    <jar jarfile="build/testapplication.ear"
          basedir="testapplication"
          includes="*web.war, ejb.jar, META-INF/*.xml" />
 
   </target>
 
+  <target name="prepare-runtime" depends="jetserver, testapplication">
+
+    <mkdir dir="build/runtime"/>
+    <copy todir="build/runtime">
+      <fileset dir="." includes="lib/*.jar" />
+      <fileset dir="." includes="config/*.xml,config/mime.types" />
+      <fileset dir="build" includes="jetserver.jar"/>
+    </copy>
+
+    <mkdir dir="build/runtime/dropzone"/>
+    <copy todir="build/runtime/dropzone">
+      <fileset dir="build" includes="testapplication.ear"/>
+    </copy>
+
+  </target>
 
   <!-- start server -->
-  <target name="start" depends="jetserver, testapplication">
-    <java classname="jetserver.server.JetServer"
-          classpath="${classpath}"
+  <target name="start" depends="prepare-runtime">
+    <java jar="build/runtime/jetserver.jar"
           fork="true"
-          dir="build">
-    </java>
+          dir="build/runtime"/>
   </target>
 
   <!-- start benchmarking -->
