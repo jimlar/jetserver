@@ -250,7 +250,7 @@ public class JetServerContext implements Context {
         /* Check if new name exists */
         if (bindings.get(newKey) != null) {
             throw new NameAlreadyBoundException(newName.toString() +
-                    " is already bound");
+                                                " is already bound");
         }
 
         /* Check if old name is bound */
@@ -307,9 +307,9 @@ public class JetServerContext implements Context {
         Object target = lookup(name);
         if (target instanceof Context) {
             try {
-                return ((Context)target).list("");
+                return ((Context) target).list("");
             } finally {
-                ((Context)target).close();
+                ((Context) target).close();
             }
         }
         throw new NotContextException(name + " cannot be listed");
@@ -360,9 +360,9 @@ public class JetServerContext implements Context {
         Object target = lookup(name);
         if (target instanceof Context) {
             try {
-                return ((Context)target).listBindings("");
+                return ((Context) target).listBindings("");
             } finally {
-                ((Context)target).close();
+                ((Context) target).close();
             }
         }
         throw new NotContextException(name + " cannot be listed");
@@ -538,7 +538,7 @@ public class JetServerContext implements Context {
         // Do lookup to verify name exists
         Object obj = lookup(name);
         if (obj instanceof Context) {
-            ((Context)obj).close();
+            ((Context) obj).close();
         }
         return nameParser;
     }
@@ -592,7 +592,7 @@ public class JetServerContext implements Context {
      * @see #composeName(String, String)
      */
     public Name composeName(Name name, Name prefix) throws NamingException {
-        Name result = (Name)(prefix.clone());
+        Name result = (Name) (prefix.clone());
         result.addAll(name);
         return result;
     }
@@ -613,7 +613,7 @@ public class JetServerContext implements Context {
             throws NamingException {
 
         return composeName(new CompositeName(name),
-                new CompositeName(prefix)).toString();
+                           new CompositeName(prefix)).toString();
     }
 
     /**
@@ -721,7 +721,7 @@ public class JetServerContext implements Context {
         if (name instanceof CompositeName) {
             if (name.size() > 1) {
                 throw new InvalidNameException(name.toString() +
-                        " has more components than namespace can handle");
+                                               " has more components than namespace can handle");
             }
             return name.get(0);
         } else {
@@ -734,7 +734,7 @@ public class JetServerContext implements Context {
     class ListOfNames implements NamingEnumeration {
         protected Iterator names;
 
-        ListOfNames (Iterator names) {
+        ListOfNames(Iterator names) {
             this.names = names;
         }
 

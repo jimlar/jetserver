@@ -1,7 +1,7 @@
 package jetserver.server.ejb.config;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * This represents the superset of configuration

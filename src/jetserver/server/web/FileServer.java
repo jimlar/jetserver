@@ -1,16 +1,11 @@
 
-
 package jetserver.server.web;
-
-import java.io.*;
-import java.net.*;
-import java.util.*;
 
 import jetserver.util.Log;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 
 class FileServer {
 
@@ -25,8 +20,7 @@ class FileServer {
 
     public void serveFile(HttpServletRequest req,
                           HttpServletResponse res)
-            throws IOException
-    {
+            throws IOException {
         JSHttpServletRequest request = (JSHttpServletRequest) req;
         JSHttpServletResponse response = (JSHttpServletResponse) res;
 
@@ -64,15 +58,13 @@ class FileServer {
 
     private void sendNotFoundResponse(HttpServletRequest request,
                                       HttpServletResponse response)
-            throws IOException
-    {
+            throws IOException {
         log.debug("Sending '404 Not found' for: " + request.getRequestURI());
     }
 
     private void sendDirectoryIndexResponse(HttpServletRequest request,
                                             HttpServletResponse response)
-            throws IOException
-    {
+            throws IOException {
         log.debug("Sending directory for: " + request.getRequestURI());
     }
 }

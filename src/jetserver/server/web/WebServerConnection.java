@@ -1,13 +1,11 @@
-
 package jetserver.server.web;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import jetserver.server.config.ServerConfig;
 import jetserver.server.Deployer;
 import jetserver.util.Log;
+
+import java.io.*;
+import java.net.Socket;
+import java.util.Iterator;
 
 class WebServerConnection implements Runnable {
 
@@ -42,7 +40,8 @@ class WebServerConnection implements Runnable {
                 }
 
                 socket.close();
-            } catch (IOException e) {}
+            } catch (IOException e) {
+            }
         }
     }
 
@@ -51,8 +50,7 @@ class WebServerConnection implements Runnable {
      */
     private void dispatchRequest(JSHttpServletRequest request,
                                  JSHttpServletResponse response)
-            throws IOException
-    {
+            throws IOException {
         WebApplication application = findApplication(request);
         if (application != null) {
             request.setWebApplication(application);

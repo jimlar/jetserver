@@ -3,7 +3,7 @@
  * User: jimmy
  * Date: Dec 8, 2001
  * Time: 10:16:15 PM
- * To change template for new class use 
+ * To change template for new class use
  * Code Style | Class Templates options (Tools | IDE Options).
  */
 package jetserver.server.ejb;

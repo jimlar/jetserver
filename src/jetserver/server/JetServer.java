@@ -1,15 +1,10 @@
-
 package jetserver.server;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
 import jetserver.server.web.WebServer;
-import jetserver.server.naming.JetServerContext;
 import jetserver.util.Log;
 
 import javax.naming.Context;
+import java.io.IOException;
 
 public class JetServer {
 
@@ -19,8 +14,7 @@ public class JetServer {
     private WebServer webServer;
 
     public JetServer()
-            throws IOException
-    {
+            throws IOException {
         this.log = Log.getInstance(this);
         this.deployer = new Deployer();
         this.dropZoneWatch = new DropZoneWatch(deployer);
@@ -46,7 +40,8 @@ public class JetServer {
         while (true) {
             try {
                 Thread.sleep(3600000);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         }
     }
 

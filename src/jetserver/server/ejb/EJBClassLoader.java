@@ -3,17 +3,14 @@
  * User: jimmy
  * Date: Dec 12, 2001
  * Time: 11:27:14 PM
- * To change template for new class use 
+ * To change template for new class use
  * Code Style | Class Templates options (Tools | IDE Options).
  */
 package jetserver.server.ejb;
 
 import jetserver.util.Log;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * The classloader used foe EJBs
@@ -53,7 +50,7 @@ public class EJBClassLoader extends ClassLoader {
                                  + ".class");
 
             if (!classFile.exists()) {
-                throw new ClassNotFoundException("cant find class "+ name);
+                throw new ClassNotFoundException("cant find class " + name);
             }
         }
 
@@ -68,7 +65,7 @@ public class EJBClassLoader extends ClassLoader {
             return classData;
         } catch (IOException e) {
             throw new ClassNotFoundException("caught io error while reading class "
-                    + name + ": " + e);
+                                             + name + ": " + e);
         }
     }
 }

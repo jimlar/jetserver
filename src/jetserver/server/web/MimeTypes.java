@@ -1,11 +1,11 @@
 
-
 package jetserver.server.web;
+
+import jetserver.server.config.ServerConfig;
+import jetserver.server.config.WebConfig;
 
 import java.io.*;
 import java.util.*;
-
-import jetserver.server.config.ServerConfig;
 
 class MimeTypes {
 
@@ -19,9 +19,10 @@ class MimeTypes {
 
         try {
             ServerConfig config = ServerConfig.getInstance();
-            this.defaultMimeType = config.getString(DEFAULTMIMETYPE_PROPERTY);
+            WebConfig webConfig = config.getWeb();
+            this.defaultMimeType = webConfig.getDefaultMimeType();
 
-            BufferedReader reader = new BufferedReader(new FileReader(config.getFile(MIMETYPES_PROPERTY)));
+            BufferedReader reader = new BufferedReader(new FileReader(webConfig.getMimeTypesFile()));
 
             this.typesByExtension = new HashMap();
 

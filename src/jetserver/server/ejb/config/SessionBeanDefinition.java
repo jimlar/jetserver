@@ -3,7 +3,7 @@
  * User: jimmy
  * Date: Dec 12, 2001
  * Time: 10:42:46 PM
- * To change template for new class use 
+ * To change template for new class use
  * Code Style | Class Templates options (Tools | IDE Options).
  */
 package jetserver.server.ejb.config;
@@ -20,7 +20,8 @@ public class SessionBeanDefinition extends BeanDefinition {
     private String sessionType;
     private String transactionType;
 
-    public SessionBeanDefinition() {}
+    public SessionBeanDefinition() {
+    }
 
     public Class getRemoteHomeClass() {
         return remoteHomeClass;

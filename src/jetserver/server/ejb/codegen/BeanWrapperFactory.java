@@ -1,20 +1,15 @@
 package jetserver.server.ejb.codegen;
 
-import jetserver.server.ejb.config.EntityBeanDefinition;
-import jetserver.server.ejb.config.CMPField;
 import jetserver.server.ejb.EJBJar;
+import jetserver.server.ejb.config.CMPField;
+import jetserver.server.ejb.config.EntityBeanDefinition;
 import jetserver.util.Log;
 
 import javax.ejb.*;
+import java.io.*;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.io.IOException;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.File;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.rmi.RemoteException;
+import java.util.Iterator;
 
 public class BeanWrapperFactory {
 
@@ -27,7 +22,7 @@ public class BeanWrapperFactory {
     public BeanWrapperFactory(EJBJar ejbJar) {
         this.ejbJar = ejbJar;
         this.log = Log.getInstance(this);
-        this.wrappersDir =  ejbJar.getWrappersDir();
+        this.wrappersDir = ejbJar.getWrappersDir();
         this.compiler = new Compiler(this.wrappersDir,
                                      "..:../../../../jetserver.jar");
     }
@@ -36,8 +31,7 @@ public class BeanWrapperFactory {
      * Generate and compile wrapper for entity
      */
     public void wrapEntity(EntityBeanDefinition entityBean)
-            throws IOException
-    {
+            throws IOException {
         log.debug("Generating wrappers for " + entityBean.getEJBName());
         createRemoteProxy(entityBean);
         createRemoteHome(entityBean);
@@ -46,8 +40,7 @@ public class BeanWrapperFactory {
 
 
     private void createRemoteProxy(EntityBeanDefinition entityBean)
-            throws IOException
-    {
+            throws IOException {
         String className = entityBean.getEJBName() + "_JetServerRemoteProxy";
         File sourceFile = new File(this.wrappersDir,
                                    className + ".java");
@@ -56,7 +49,7 @@ public class BeanWrapperFactory {
 
         sourceWriter.startClass(className,
                                 null,
-                                new Class[] {entityBean.getRemoteClass()});
+                                new Class[]{entityBean.getRemoteClass()});
 
         /*** Implement the business mtehods ***/
         Method[] remoteMethods = entityBean.getRemoteClass().getDeclaredMethods();
@@ -90,7 +83,7 @@ public class BeanWrapperFactory {
         sourceWriter.startMethod(EJBHome.class,
                                  "getEJBHome",
                                  null,
-                                 new Class[] { RemoteException.class });
+                                 new Class[]{RemoteException.class});
         sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"getEJBHome called\");");
         sourceWriter.newLine();
         sourceWriter.write("return null;");
@@ -100,7 +93,7 @@ public class BeanWrapperFactory {
         sourceWriter.startMethod(Object.class,
                                  "getPrimaryKey",
                                  null,
-                                 new Class[] { RemoteException.class });
+                                 new Class[]{RemoteException.class});
         sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"getPrimaryKey called\");");
         sourceWriter.newLine();
         sourceWriter.write("return null;");
@@ -110,7 +103,7 @@ public class BeanWrapperFactory {
         sourceWriter.startMethod(Void.TYPE,
                                  "remove",
                                  null,
-                                 new Class[] { RemoteException.class, RemoveException.class });
+                                 new Class[]{RemoteException.class, RemoveException.class});
         sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"remove called\");");
         sourceWriter.endMethod();
 
@@ -118,7 +111,7 @@ public class BeanWrapperFactory {
         sourceWriter.startMethod(Handle.class,
                                  "getHandle",
                                  null,
-                                 new Class[] { RemoteException.class });
+                                 new Class[]{RemoteException.class});
         sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"getHandle called\");");
         sourceWriter.newLine();
         sourceWriter.write("return null;");
@@ -127,8 +120,8 @@ public class BeanWrapperFactory {
         /*public boolean isIdentical(EJBObject ejbobject_0_) throws RemoteException;*/
         sourceWriter.startMethod(Boolean.TYPE,
                                  "isIdentical",
-                                 new Class[] { EJBObject.class },
-                                 new Class[] { RemoteException.class });
+                                 new Class[]{EJBObject.class},
+                                 new Class[]{RemoteException.class});
         sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"isIdentical called\");");
         sourceWriter.newLine();
         sourceWriter.write("return false;");
@@ -147,8 +140,7 @@ public class BeanWrapperFactory {
     }
 
     private void createRemoteHome(EntityBeanDefinition entityBean)
-            throws IOException
-    {
+            throws IOException {
         String className = entityBean.getEJBName() + "_JetServerRemoteHome";
         File sourceFile = new File(this.wrappersDir,
                                    className + ".java");
@@ -157,7 +149,7 @@ public class BeanWrapperFactory {
 
         sourceWriter.startClass(className,
                                 null,
-                                new Class[] {entityBean.getRemoteHomeClass()});
+                                new Class[]{entityBean.getRemoteHomeClass()});
 
         /*** Implement userdefined methods ***/
         Method[] homeMethods = entityBean.getRemoteHomeClass().getDeclaredMethods();
@@ -182,16 +174,16 @@ public class BeanWrapperFactory {
         /*public void remove(Handle handle) throws RemoteException, RemoveException;*/
         sourceWriter.startMethod(Void.TYPE,
                                  "remove",
-                                 new Class[] { Handle.class },
-                                 new Class[] { RemoteException.class, RemoveException.class });
+                                 new Class[]{Handle.class},
+                                 new Class[]{RemoteException.class, RemoveException.class});
         sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"remove(Handle) called\");");
         sourceWriter.endMethod();
 
         /*public void remove(Object object) throws RemoteException, RemoveException;*/
         sourceWriter.startMethod(Void.TYPE,
                                  "remove",
-                                 new Class[] { Object.class },
-                                 new Class[] { RemoteException.class, RemoveException.class });
+                                 new Class[]{Object.class},
+                                 new Class[]{RemoteException.class, RemoveException.class});
         sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"remove(Object) called\");");
         sourceWriter.endMethod();
 
@@ -199,7 +191,7 @@ public class BeanWrapperFactory {
         sourceWriter.startMethod(EJBMetaData.class,
                                  "getEJBMetaData",
                                  null,
-                                 new Class[] { RemoteException.class });
+                                 new Class[]{RemoteException.class});
         sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"getEJBMetaData called\");");
         sourceWriter.newLine();
         sourceWriter.write("return null;");
@@ -209,7 +201,7 @@ public class BeanWrapperFactory {
         sourceWriter.startMethod(HomeHandle.class,
                                  "getHomeHandle",
                                  null,
-                                 new Class[] { RemoteException.class });
+                                 new Class[]{RemoteException.class});
         sourceWriter.write("jetserver.util.Log.getInstance(this).debug(\"getHomeHandle called\");");
         sourceWriter.newLine();
         sourceWriter.write("return null;");
@@ -228,8 +220,7 @@ public class BeanWrapperFactory {
     }
 
     private void createBeanSubClass(EntityBeanDefinition entityBean)
-            throws IOException
-    {
+            throws IOException {
         String className = entityBean.getEJBName() + "_JetServerEJBWrapper";
         File sourceFile = new File(this.wrappersDir,
                                    className + ".java");
@@ -323,9 +314,9 @@ public class BeanWrapperFactory {
         Method[] methods = clazz.getMethods();
         if (methods != null) {
             for (int i = 0; i < methods.length; i++) {
-               if (methods[i].getName().equals(methodName)) {
-                   return methods[i];
-               }
+                if (methods[i].getName().equals(methodName)) {
+                    return methods[i];
+                }
             }
         }
         return null;

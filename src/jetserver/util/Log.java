@@ -1,12 +1,12 @@
 
-
 package jetserver.util;
 
 import jetserver.server.config.ServerConfig;
 
 import java.io.*;
-import java.util.*;
-import java.text.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * This is a logging service for the JetServer system
@@ -57,25 +57,25 @@ public class Log {
                 isConfigured = true;
                 ServerConfig config = ServerConfig.getInstance();
 
-                File infoFile = config.getFile("jetserver.logs.message-log.file");
+                File infoFile = config.getLog().getInfoLog().getLogFile();
                 infoFile.getParentFile().mkdirs();
                 infoWriter = new PrintWriter(new FileOutputStream(infoFile.getAbsolutePath(), true), true);
-                if (config.getString("jetserver.logs.message-log.stdout").equals("true")) {
+                if (config.getLog().getInfoLog().getCopyToStandardOut()) {
                     secondInfoWriter = new PrintWriter(System.out);
                 }
 
-                File errorFile = config.getFile("jetserver.logs.error-log.file");
+                File errorFile = config.getLog().getErrorLog().getLogFile();
                 errorFile.getParentFile().mkdirs();
                 errorWriter = new PrintWriter(new FileOutputStream(errorFile.getAbsolutePath(), true));
-                if (config.getString("jetserver.logs.error-log.stderr").equals("true")) {
+                if (config.getLog().getErrorLog().getCopyToStandardOut()) {
                     secondErrorWriter = new PrintWriter(System.err);
                 }
 
-                if (config.getString("jetserver.logs.debug-log.enabled").equals("true")) {
-                    File debugFile = config.getFile("jetserver.logs.debug-log.file");
+                if (config.getLog().getDebugLog().getEnabled()) {
+                    File debugFile = config.getLog().getDebugLog().getLogFile();
                     debugFile.getParentFile().mkdirs();
                     debugWriter = new PrintWriter(new FileOutputStream(debugFile.getAbsolutePath(), true));
-                    if (config.getString("jetserver.logs.debug-log.stdout").equals("true")) {
+                    if (config.getLog().getDebugLog().getCopyToStandardOut()) {
                         secondDebugWriter = new PrintWriter(System.out);
                     }
                 }
@@ -147,7 +147,7 @@ public class Log {
      */
     private static String getDateLazy() {
         if (timeString == null
-                || (lastDateUpdateMillis + DATE_UPDATE_INTERVAL) <  System.currentTimeMillis()) {
+                || (lastDateUpdateMillis + DATE_UPDATE_INTERVAL) < System.currentTimeMillis()) {
 
             lastDateUpdateMillis = System.currentTimeMillis();
             Date date = new Date(lastDateUpdateMillis);

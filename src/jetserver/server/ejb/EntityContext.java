@@ -3,19 +3,16 @@
  * User: jimmy
  * Date: Dec 8, 2001
  * Time: 10:10:03 PM
- * To change template for new class use 
+ * To change template for new class use
  * Code Style | Class Templates options (Tools | IDE Options).
  */
 package jetserver.server.ejb;
 
-import javax.ejb.EJBHome;
-import javax.ejb.EJBLocalHome;
-import javax.ejb.EJBLocalObject;
-import javax.ejb.EJBObject;
+import javax.ejb.*;
 import javax.transaction.UserTransaction;
-import java.util.Properties;
 import java.security.Identity;
 import java.security.Principal;
+import java.util.Properties;
 
 public class EntityContext implements javax.ejb.EntityContext {
     public EJBLocalObject getEJBLocalObject() throws IllegalStateException {

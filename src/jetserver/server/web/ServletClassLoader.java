@@ -1,11 +1,10 @@
-
 package jetserver.server.web;
-
-import java.io.*;
-import java.util.Iterator;
 
 import jetserver.server.ejb.EJBJar;
 import jetserver.util.Log;
+
+import java.io.*;
+import java.util.Iterator;
 
 /**
  * This is classloader for servlets
@@ -61,7 +60,7 @@ class ServletClassLoader extends ClassLoader {
                                   + ".class");
 
         if (!classFile.exists()) {
-            throw new ClassNotFoundException("cant find class "+ name);
+            throw new ClassNotFoundException("cant find class " + name);
         }
 
         try {

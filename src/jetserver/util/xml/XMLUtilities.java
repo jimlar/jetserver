@@ -1,12 +1,33 @@
 package jetserver.util.xml;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.parsers.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
 
 public class XMLUtilities {
+
+    /**
+     * @return the child element, throws exception if the parent does not
+     *          have exactly one sub element with name
+     */
+    public static Element getSingleSubElement(Element parentElement, String name) {
+        NodeList nodes = parentElement.getElementsByTagName(name);
+        if (nodes.getLength() != 1) {
+            throw new IllegalArgumentException("Expected the element "
+                                               + parentElement.getNodeName()
+                                               + " to have one child called "
+                                               + name
+                                               + " but found " + nodes.getLength());
+        }
+        return (Element) nodes.item(0);
+    }
 
     /**
      * @return true if the node has a child named "childName"
@@ -63,12 +84,7 @@ public class XMLUtilities {
         Node child = findFirstChildElement(node, propertyName);
         if (child != null) {
             /* Extract the body of the child */
-            String bodyValue = "";
-            NodeList bodies = child.getChildNodes();
-            for (int j = 0; j < bodies.getLength(); j++) {
-                bodyValue += bodies.item(j).getNodeValue();
-            }
-            return bodyValue;
+            return getNodeBodyValue(child);
         }
 
         /* Try attributes */
@@ -79,6 +95,18 @@ public class XMLUtilities {
             }
         }
         return null;
+    }
+
+    /**
+     * Get the body value of a node
+     */
+    public static String getNodeBodyValue(Node child) {
+        String bodyValue = "";
+        NodeList bodies = child.getChildNodes();
+        for (int j = 0; j < bodies.getLength(); j++) {
+            bodyValue += bodies.item(j).getNodeValue();
+        }
+        return bodyValue;
     }
 
     /**
@@ -101,5 +129,46 @@ public class XMLUtilities {
         return null;
     }
 
+    /**
+     * Create a new DOM document
+     */
+    public static Document newDocument() throws IOException {
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            return builder.newDocument();
+        } catch (ParserConfigurationException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+
+    /**
+     * Load a DOM document
+     */
+    public static Document loadDocument(InputStream in) throws IOException {
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            return builder.parse(in);
+        } catch (ParserConfigurationException e) {
+            throw new IOException(e.getMessage());
+        } catch (SAXException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+
+    /**
+     * Save a DOM document
+     */
+    public static void saveDocument(Document document, OutputStream out, boolean indent) throws IOException {
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            if (indent) {
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            }
+            transformer.transform(new DOMSource(document), new StreamResult(out));
+        } catch (TransformerException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
 }
 

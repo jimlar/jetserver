@@ -1,14 +1,13 @@
-
 package jetserver.server.web;
-
-import java.io.*;
-import java.util.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
 
 import jetserver.util.Log;
 import jetserver.util.Strings;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.*;
 
 /**
  * This is an implementation of servlet response
@@ -30,7 +29,6 @@ class JSHttpServletResponse implements HttpServletResponse {
     private Map headers;
 
     private boolean headersFlushed = false;
-
 
 
     public JSHttpServletResponse(OutputStream out) {

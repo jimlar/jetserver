@@ -3,7 +3,7 @@
  * User: jimmy
  * Date: Dec 12, 2001
  * Time: 10:49:23 PM
- * To change template for new class use 
+ * To change template for new class use
  * Code Style | Class Templates options (Tools | IDE Options).
  */
 package jetserver.server.ejb.config;
@@ -17,7 +17,8 @@ public class MessageBeanDefinition extends BeanDefinition {
     private String destinationType;
     private String subscriptionDurability;
 
-    public MessageBeanDefinition() {}
+    public MessageBeanDefinition() {
+    }
 
     public String getTransactionType() {
         return transactionType;

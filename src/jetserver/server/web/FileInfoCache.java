@@ -1,14 +1,12 @@
 
-
 package jetserver.server.web;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.*;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
- * 
+ *
  * Caches info about a file to speed up request handling
  * caches files data if filesize smaller the the configured size
  *
@@ -17,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 class FileInfoCache {
 
     private static final int MAX_FILE_SIZE = 50 * 1024;
-    private static final int ENTRY_TIME_TO_LIVE = 5000; 
+    private static final int ENTRY_TIME_TO_LIVE = 5000;
 
 
     private final WebApplication webApp;
@@ -30,17 +28,16 @@ class FileInfoCache {
     }
 
     /**
-     * 
+     *
      * Fetch info about a file requested
      *
      */
     public FileInfo getFileInfo(HttpServletRequest request)
-            throws IOException
-    {
+            throws IOException {
         FileInfo fileInfo = (FileInfo) fileInfoByRequestURI.get(request.getRequestURI());
         if (fileInfo == null || fileInfo.isOutDated()) {
             fileInfo = updateFileInfo(fileInfo, request);
-            fileInfoByRequestURI.put(request.getRequestURI(),  fileInfo);
+            fileInfoByRequestURI.put(request.getRequestURI(), fileInfo);
         }
         return fileInfo;
     }
@@ -52,8 +49,7 @@ class FileInfoCache {
      */
 
     private FileInfo updateFileInfo(FileInfo oldInfo, HttpServletRequest request)
-            throws IOException
-    {
+            throws IOException {
         if (oldInfo == null || oldInfo.hasChangedOnDisk()) {
             return createFileInfo(request);
         } else {
@@ -62,13 +58,12 @@ class FileInfoCache {
     }
 
     /**
-     * 
+     *
      * Create new info from disk
      *
      */
     private FileInfo createFileInfo(HttpServletRequest request)
-            throws IOException
-    {
+            throws IOException {
         String localRequestURI = request.getRequestURI().substring(webApp.getContextRoot().length());
         File requestedFile = new File(webApp.getDeployDir(), localRequestURI);
         boolean isDirectoryIndexRequest = false;

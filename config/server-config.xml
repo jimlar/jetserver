@@ -3,21 +3,26 @@
 <jetserver>
 
   <!-- logging options -->
-  <logs>
-    <message-log file="../logs/messages.txt" stdout="true"/>
-    <error-log file="../logs/errors.txt" stderr="true"/>
+  <log>
+    <info-log copy-to-standard-out="true">
+        <log-file>../logs/messages.txt</log-file>
+    </info-log>
+    <error-log copy-to-standard-out="true">
+        <log-file>../logs/errors.txt</log-file>
+    </error-log>
 
     <!-- set enabled to true if you want debugging info -->
-    <debug-log file="../logs/debug.txt" enabled="true" stdout="true"/>
-  </logs>
+    <debug-log enabled="true" copy-to-standard-out="true">
+        <log-file>../logs/debug.txt</log-file>
+    </debug-log>
+  </log>
 
   <!-- The dropzone is where you put your war/ear/ejb-jar file to deploy it -->
-  <dropzonewatch dropzone="../dropzone"/>
+  <drop-zone>../dropzone</drop-zone>
 
-  <deployer deploy-dir="../deployments"/>
+  <deploy-dir>../deployments</deploy-dir>
 
-  <webcontainer>
-
+  <web>
     <!-- timeout is socket timeout in seconds -->
     <socket port="8080" timeout="10"/>
 
@@ -27,6 +32,6 @@
     <mime-types-file>mime.types</mime-types-file>
     <default-mime-type>text/plain</default-mime-type>
 
-  </webcontainer>
+  </web>
 </jetserver>
 

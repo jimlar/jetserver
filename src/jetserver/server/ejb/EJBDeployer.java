@@ -1,8 +1,8 @@
 package jetserver.server.ejb;
 
-import jetserver.server.ejb.config.EntityBeanDefinition;
-import jetserver.server.ejb.codegen.BeanWrapperFactory;
 import jetserver.server.Application;
+import jetserver.server.ejb.codegen.BeanWrapperFactory;
+import jetserver.server.ejb.config.EntityBeanDefinition;
 import jetserver.util.Log;
 
 import javax.naming.InitialContext;
@@ -10,7 +10,6 @@ import javax.naming.NamingException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.lang.reflect.Method;
 
 public class EJBDeployer {
     private Log log;

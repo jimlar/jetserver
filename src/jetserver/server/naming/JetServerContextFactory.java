@@ -2,9 +2,9 @@ package jetserver.server.naming;
 
 import jetserver.util.Log;
 
-import javax.naming.spi.InitialContextFactory;
 import javax.naming.Context;
 import javax.naming.NamingException;
+import javax.naming.spi.InitialContextFactory;
 import java.util.Hashtable;
 
 public class JetServerContextFactory implements InitialContextFactory {

@@ -1,15 +1,16 @@
 
-
 package jetserver.server;
 
-import java.io.*;
-import java.util.*;
-
-import jetserver.server.web.*;
-import jetserver.server.ejb.EJBDeployer;
 import jetserver.server.config.ServerConfig;
-import jetserver.util.Log;
+import jetserver.server.ejb.EJBDeployer;
+import jetserver.server.web.WebApplication;
+import jetserver.server.web.WebDeployer;
 import jetserver.util.EnterpriseJar;
+import jetserver.util.Log;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * This class manages all containers in JetServer, you can add all types of supported
@@ -35,7 +36,7 @@ public class Deployer {
         this.log = Log.getInstance(this);
 
         ServerConfig config = ServerConfig.getInstance();
-        this.deployDir = config.getFile("jetserver.deployer.deploy-dir");
+        this.deployDir = config.getDeployDir();
     }
 
     /**
@@ -93,7 +94,7 @@ public class Deployer {
      * Deploy a web application as part of an application
      */
     private Application deployWebApplication(Application application,
-                                            EnterpriseJar jar) throws IOException {
+                                             EnterpriseJar jar) throws IOException {
         File webAppDir = new File(application.getDeployDir(),
                                   stripSuffix(jar.getFile().getName()));
         jar.unpackTo(webAppDir);
@@ -114,9 +115,9 @@ public class Deployer {
      * Deploy an EJB jar as part of an application
      */
     private Application deployEJBJar(Application application,
-                             EnterpriseJar jar) throws IOException {
+                                     EnterpriseJar jar) throws IOException {
         File ejbJarDir = new File(application.getDeployDir(),
-                                   stripSuffix(jar.getFile().getName()));
+                                  stripSuffix(jar.getFile().getName()));
         jar.unpackTo(ejbJarDir);
         ejbDeployer.deploy(ejbJarDir, application);
         return application;

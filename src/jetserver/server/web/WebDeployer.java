@@ -1,24 +1,16 @@
 
-
 package jetserver.server.web;
 
-import java.io.*;
-import java.util.*;
-
+import jetserver.server.Application;
 import jetserver.util.Log;
 import jetserver.util.xml.JetServerEntityResolver;
 import jetserver.util.xml.XMLUtilities;
-import jetserver.server.Application;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.FactoryConfigurationError;
-
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.*;
+import java.io.File;
+import java.io.IOException;
 
 public class WebDeployer {
 
@@ -73,8 +65,7 @@ public class WebDeployer {
     }
 
     private void processWebXML(WebApplication webApplication, Document document)
-            throws IOException
-    {
+            throws IOException {
         Node root = XMLUtilities.findFirstChildElement(document, "web-app");
 
         /** Fetch war info */
@@ -137,8 +128,7 @@ public class WebDeployer {
     }
 
     private void processJetServerWebXML(WebApplication webApplication, Document document)
-            throws IOException
-    {
+            throws IOException {
         Node root = XMLUtilities.findFirstChildElement(document, "web-app");
         webApplication.setContextRoot(XMLUtilities.findValue(root, "root"));
     }

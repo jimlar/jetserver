@@ -1,15 +1,12 @@
-
 package jetserver.server;
 
-import java.io.*;
-import java.util.*;
-
 import jetserver.server.config.ServerConfig;
-import jetserver.server.Deployer;
 import jetserver.util.*;
 
+import java.io.File;
+
 public class DropZoneWatch implements DirectoryListener {
-    
+
     private Deployer deployer;
     private DirectoryWatch directoryWatch;
     private File dropZone;
@@ -20,7 +17,7 @@ public class DropZoneWatch implements DirectoryListener {
     public DropZoneWatch(Deployer deployer) {
         ServerConfig config = ServerConfig.getInstance();
         this.deployer = deployer;
-        this.dropZone = config.getFile("jetserver.dropzonewatch.dropzone");
+        this.dropZone = config.getDropZone();
         this.directoryWatch = new DirectoryWatch(dropZone, 1000);
         this.directoryWatch.addListener(this);
         this.log = Log.getInstance(this);

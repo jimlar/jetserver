@@ -1,19 +1,14 @@
-
 package jetserver.server.web;
-
-import java.io.*;
-import java.util.*;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 import jetserver.server.Application;
 import jetserver.util.Log;
 
+import javax.servlet.*;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletContext;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * This represent a web application instance (a .war file that is deployed)
@@ -38,8 +33,7 @@ public class WebApplication implements ServletContext {
     private Map attributes;
 
     public WebApplication(Application application, File deployDir)
-            throws IOException
-    {
+            throws IOException {
         this.application = application;
         this.deployDir = deployDir;
 
@@ -100,8 +94,7 @@ public class WebApplication implements ServletContext {
 
     void handleRequest(JSHttpServletRequest request,
                        JSHttpServletResponse response)
-            throws IOException
-    {
+            throws IOException {
         /* search for a servlet mapping */
         ServletMapping mapping = getMapping(request.getRequestURI());
         if (mapping == null) {

@@ -1,8 +1,9 @@
 package jetserver.util;
 
 import java.io.*;
-import java.util.*;
-import java.util.jar.*;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 
 public class EnterpriseJar {
@@ -61,8 +62,7 @@ public class EnterpriseJar {
     }
 
     private void extractFile(JarEntry entry, File outFile)
-            throws IOException
-    {
+            throws IOException {
         byte[] buffer = new byte[1024];
         InputStream in = jarFile.getInputStream(entry);
         OutputStream out = new FileOutputStream(outFile);

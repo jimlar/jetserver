@@ -1,9 +1,8 @@
-
 package jetserver.server.web;
 
-import java.io.*;
+import jetserver.util.Strings;
 
-import jetserver.util.*;
+import java.io.*;
 
 class FileInfo {
 
@@ -17,14 +16,14 @@ class FileInfo {
     private long lastChanged;
     private byte headerBytes[];
 
-    public FileInfo(File    requestedFile,
-                    String  mimeType,
-                    int     size,
+    public FileInfo(File requestedFile,
+                    String mimeType,
+                    int size,
                     boolean fileExists,
                     boolean isDirectoryIndexRequest,
-                    int     timeToLive,
-                    long    lastChanged,
-                    byte    fileData[]) {
+                    int timeToLive,
+                    long lastChanged,
+                    byte fileData[]) {
 
         this.requestedFile = requestedFile;
         this.mimeType = mimeType;
@@ -55,8 +54,7 @@ class FileInfo {
     }
 
     public InputStream getInputStream()
-            throws IOException
-    {
+            throws IOException {
         if (fileData != null) {
             return new ByteArrayInputStream(fileData);
         } else {

@@ -1,15 +1,12 @@
 package jetserver.util.xml;
 
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import jetserver.util.Log;
+import org.xml.sax.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.HashMap;
-
-import jetserver.util.Log;
+import java.util.Map;
 
 /**
  * This lets us have the dtd for web.xml locally.
@@ -49,8 +46,7 @@ public class JetServerEntityResolver implements EntityResolver {
      */
     public InputSource resolveEntity(String publicId,
                                      String systemId)
-            throws SAXException, IOException
-    {
+            throws SAXException, IOException {
         if (resourcesByPublicId.containsKey(publicId)) {
             String resourceName = (String) resourcesByPublicId.get(publicId);
             InputStream resource = getClass().getResourceAsStream(resourceName);

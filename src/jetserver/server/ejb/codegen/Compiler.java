@@ -1,13 +1,7 @@
 package jetserver.server.ejb.codegen;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
+import java.io.*;
+import java.util.*;
 
 /**
  * This is an interface the compiler
@@ -34,7 +28,7 @@ public class Compiler {
      */
     public void compile(Collection sourceFiles) throws IOException {
 
-        String[] environment = new String[] {};
+        String[] environment = new String[]{};
 
         List commands = new ArrayList();
         commands.add("javac");
@@ -85,7 +79,7 @@ public class Compiler {
         public void run() {
             try {
                 int read = 0;
-                while((read = in.read()) != -1) {
+                while ((read = in.read()) != -1) {
                     out.write(read);
                 }
             } catch (IOException e) {

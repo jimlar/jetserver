@@ -1,8 +1,6 @@
 package jetserver.server.ejb.codegen;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 
 class SourceWriter extends BufferedWriter {
 
@@ -22,8 +20,7 @@ class SourceWriter extends BufferedWriter {
     public void startClass(String name,
                            Class extendsClass,
                            Class[] implementsInterfaces)
-            throws IOException
-    {
+            throws IOException {
         write("public class " + name + " ");
         if (extendsClass != null) {
             write("extends " + extendsClass.getName() + " ");
@@ -51,8 +48,7 @@ class SourceWriter extends BufferedWriter {
                             String name,
                             Class[] parameterTypes,
                             Class[] exceptionTypes)
-            throws IOException
-    {
+            throws IOException {
         write("public " + returnType.getName() + " ");
         write(name + "(");
 

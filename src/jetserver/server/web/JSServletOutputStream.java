@@ -1,10 +1,9 @@
-
 package jetserver.server.web;
 
 
-import java.io.*;
-
-import javax.servlet.*;
+import javax.servlet.ServletOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 
 class JSServletOutputStream extends ServletOutputStream {
@@ -13,8 +12,7 @@ class JSServletOutputStream extends ServletOutputStream {
     private OutputStream out;
 
     public JSServletOutputStream(JSHttpServletResponse response)
-            throws IOException
-    {
+            throws IOException {
         this.response = response;
         this.out = response.getSocketOutputStream();
     }

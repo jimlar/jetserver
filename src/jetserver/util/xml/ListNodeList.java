@@ -1,7 +1,7 @@
 package jetserver.util.xml;
 
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.util.List;
 

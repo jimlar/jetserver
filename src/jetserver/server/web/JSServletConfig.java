@@ -1,12 +1,8 @@
-
 package jetserver.server.web;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
+import java.util.*;
 
 
 class JSServletConfig implements ServletConfig {

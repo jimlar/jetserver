@@ -1,7 +1,7 @@
 package jetserver.server.ejb.config;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * This represents the configuration of an entitybean (from ejb-jar.xml)
@@ -32,7 +32,8 @@ public class EntityBeanDefinition extends BeanDefinition {
 
     private Collection queries = new ArrayList();
 
-    public EntityBeanDefinition() {}
+    public EntityBeanDefinition() {
+    }
 
     public Class getRemoteHomeClass() {
         return remoteHomeClass;

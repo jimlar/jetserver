@@ -3,7 +3,7 @@
  * User: jimmy
  * Date: Dec 8, 2001
  * Time: 10:11:30 PM
- * To change template for new class use 
+ * To change template for new class use
  * Code Style | Class Templates options (Tools | IDE Options).
  */
 package jetserver.server.ejb;
@@ -11,7 +11,6 @@ package jetserver.server.ejb;
 import javax.ejb.EJBHome;
 
 public class EJBMetaData implements javax.ejb.EJBMetaData {
-
 
 
     public EJBHome getEJBHome() {

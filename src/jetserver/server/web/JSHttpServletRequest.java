@@ -1,15 +1,14 @@
-
 package jetserver.server.web;
-
-import java.io.*;
-import java.util.*;
-import java.net.Socket;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
 
 import jetserver.util.Log;
 import jetserver.util.Strings;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.*;
+import java.io.*;
+import java.net.Socket;
+import java.util.*;
 
 /**
  * This is the implementation of servlet request
@@ -87,8 +86,7 @@ class JSHttpServletRequest implements HttpServletRequest {
     }
 
     public void setCharacterEncoding(String env)
-            throws UnsupportedEncodingException
-    {
+            throws UnsupportedEncodingException {
         logUnsupportedMehod();
     }
 
@@ -334,8 +332,7 @@ class JSHttpServletRequest implements HttpServletRequest {
     }
 
     private String readLine(InputStream in)
-            throws IOException
-    {
+            throws IOException {
         int totalRead = 0;
         byte b[] = new byte[1];
 

@@ -3,13 +3,12 @@
  * User: jimmy
  * Date: Dec 8, 2001
  * Time: 10:22:48 PM
- * To change template for new class use 
+ * To change template for new class use
  * Code Style | Class Templates options (Tools | IDE Options).
  */
 package jetserver.server.transaction;
 
 import javax.transaction.*;
-import javax.transaction.Synchronization;
 import javax.transaction.xa.XAResource;
 
 public class Transaction implements javax.transaction.Transaction {

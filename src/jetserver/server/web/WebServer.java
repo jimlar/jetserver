@@ -1,18 +1,17 @@
-
 package jetserver.server.web;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
 import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
-
-import jetserver.server.config.ServerConfig;
 import jetserver.server.Deployer;
+import jetserver.server.config.ServerConfig;
+import jetserver.server.config.ThreadsConfig;
 import jetserver.util.Log;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 public class WebServer extends Thread {
-    
+
     private Deployer deployer;
 
     private int port;
@@ -22,19 +21,19 @@ public class WebServer extends Thread {
     private PooledExecutor executor;
 
     public WebServer(Deployer deployer)
-            throws IOException
-    {
+            throws IOException {
         this.deployer = deployer;
 
         ServerConfig config = ServerConfig.getInstance();
-        this.socketTimeout = config.getInteger("jetserver.webcontainer.socket.timeout") * 1000;
-        this.port = config.getInteger("jetserver.webcontainer.socket.port");
+        this.socketTimeout = config.getWeb().getSocket().getTimeout() * 1000;
+        this.port = config.getWeb().getSocket().getPort();
         this.serverSocket = new ServerSocket(port);
 
-        int maxThreads = config.getInteger("jetserver.webcontainer.threads.max");
-        int minThreads = config.getInteger("jetserver.webcontainer.threads.min");
-        int startThreads = config.getInteger("jetserver.webcontainer.threads.start");
-        int keepAliveTime = config.getInteger("jetserver.webcontainer.threads.keep-alive-time") * 1000;
+        ThreadsConfig threadsConfig = config.getWeb().getThreads();
+        int maxThreads = threadsConfig.getMax();
+        int minThreads = threadsConfig.getMin();
+        int startThreads = threadsConfig.getStart();
+        int keepAliveTime = threadsConfig.getKeepAliveTime() * 1000;
 
         this.executor = new PooledExecutor(maxThreads);
         this.executor.runWhenBlocked();
@@ -70,6 +69,7 @@ public class WebServer extends Thread {
             if (socket != null) {
                 socket.close();
             }
-        } catch (IOException e) {}
+        } catch (IOException e) {
+        }
     }
 }

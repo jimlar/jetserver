@@ -3,7 +3,7 @@
  * User: jimmy
  * Date: Dec 8, 2001
  * Time: 10:16:56 PM
- * To change template for new class use 
+ * To change template for new class use
  * Code Style | Class Templates options (Tools | IDE Options).
  */
 package jetserver.server.ejb;
@@ -11,9 +11,9 @@ package jetserver.server.ejb;
 import javax.ejb.EJBHome;
 import javax.ejb.EJBLocalHome;
 import javax.transaction.UserTransaction;
-import java.util.Properties;
 import java.security.Identity;
 import java.security.Principal;
+import java.util.Properties;
 
 public class MessageDrivenContext implements javax.ejb.MessageDrivenContext {
     public EJBHome getEJBHome() {

@@ -1,14 +1,12 @@
 package jetserver.server.naming;
 
-import javax.naming.NameParser;
-import javax.naming.Name;
-import javax.naming.NamingException;
-import javax.naming.CompoundName;
+import javax.naming.*;
 import java.util.Properties;
 
 public class JetServerNameParser implements NameParser {
 
     private static final Properties properties = new Properties();
+
     static {
         properties.put("jndi.syntax.direction", "right_to_left");
         properties.put("jndi.syntax.separator", ".");

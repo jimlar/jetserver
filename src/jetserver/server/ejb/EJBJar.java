@@ -4,20 +4,14 @@ import jetserver.server.ejb.config.*;
 import jetserver.util.Log;
 import jetserver.util.xml.JetServerEntityResolver;
 import jetserver.util.xml.XMLUtilities;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.ArrayList;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
+import java.util.Collection;
 
 /**
  * This class represents the contents of and ejb-jar file
@@ -106,8 +100,7 @@ public class EJBJar {
     }
 
     private void processDocument(Document document)
-            throws IOException
-    {
+            throws IOException {
         /* Fetch general info */
         NodeList ejbJarNodes = document.getElementsByTagName("ejb-jar");
         if (ejbJarNodes != null) {
@@ -154,10 +147,9 @@ public class EJBJar {
      * Process an entity bean declaration
      */
     private void processEntityBean(Node entityBeanNode, Document document)
-            throws IOException
-    {
+            throws IOException {
         EntityBeanDefinition entityBean = new EntityBeanDefinition();
-        processBeanCommons(entityBean,  entityBeanNode, document);
+        processBeanCommons(entityBean, entityBeanNode, document);
 
         entityBean.setRemoteHomeClass(findClassProperty(entityBeanNode, "home"));
         entityBean.setRemoteClass(findClassProperty(entityBeanNode, "remote"));
@@ -198,10 +190,9 @@ public class EJBJar {
      * Process a session bean declaration
      */
     private void processSessionBean(Node sessionBeanNode, Document document)
-            throws IOException
-    {
+            throws IOException {
         SessionBeanDefinition sessionBean = new SessionBeanDefinition();
-        processBeanCommons(sessionBean,  sessionBeanNode, document);
+        processBeanCommons(sessionBean, sessionBeanNode, document);
 
         sessionBean.setRemoteHomeClass(findClassProperty(sessionBeanNode, "home"));
         sessionBean.setRemoteClass(findClassProperty(sessionBeanNode, "remote"));
@@ -219,10 +210,9 @@ public class EJBJar {
      * Process an entity bean declaration
      */
     private void processMessageBean(Node messageBeanNode, Document document)
-            throws IOException
-    {
+            throws IOException {
         MessageBeanDefinition messageBean = new MessageBeanDefinition();
-        processBeanCommons(messageBean,  messageBeanNode, document);
+        processBeanCommons(messageBean, messageBeanNode, document);
 
         messageBean.setTransactionType(XMLUtilities.findValue(messageBeanNode, "transaction-type"));
         messageBean.setMessageSelector(XMLUtilities.findValue(messageBeanNode, "message-selector"));
@@ -242,8 +232,7 @@ public class EJBJar {
      * Process an entity bean declaration
      */
     private void processBeanCommons(BeanDefinition bean, Node beanNode, Document document)
-            throws IOException
-    {
+            throws IOException {
         bean.setDescription(XMLUtilities.findValue(beanNode, "description"));
         bean.setDisplayName(XMLUtilities.findValue(beanNode, "display-name"));
         bean.setSmallIcon(XMLUtilities.findValue(beanNode, "small-icon"));
@@ -271,8 +260,7 @@ public class EJBJar {
      * @throws IOException on class loading problems
      */
     private Class findClassProperty(Node node, String propertyName)
-            throws IOException
-    {
+            throws IOException {
         String className = XMLUtilities.findValue(node, propertyName);
         if (className == null) {
             return null;
