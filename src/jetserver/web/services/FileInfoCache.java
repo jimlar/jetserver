@@ -74,7 +74,6 @@ class FileInfoCache {
 	throws IOException
     {
 	if (oldInfo == null || oldInfo.hasChangedOnDisk()) {	   
-	    System.out.println("Creating new fileInfo instance..");
 	    return createFileInfo(request);
 	} else {
 	    return oldInfo;

@@ -15,7 +15,7 @@
       <welcome-file>index.htm</welcome-file>
     </welcome-file-list>
 
-    <cache max-file-size="50" time-to-live="2000" />
+    <cache max-file-size="50" time-to-live="5000" />
 
   </webserver>
 </jetserver>

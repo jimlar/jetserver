@@ -3,6 +3,9 @@ package jetserver.web.services;
 
 import java.io.*;
 
+import jetserver.util.*;
+import jetserver.web.*;
+
 class FileInfo {
 
     private File requestedFile;
@@ -13,6 +16,7 @@ class FileInfo {
     private byte fileData[];
     private long outDatedOn;
     private long lastChanged;
+    private byte headerBytes[];
     
     public FileInfo(File    requestedFile,
 		    String  mimeType,
@@ -31,6 +35,16 @@ class FileInfo {
 	this.outDatedOn = System.currentTimeMillis() + timeToLive;
 	this.lastChanged = lastChanged;
 	this.fileData = fileData;
+
+	/* Setup header bytes */
+	StringBuffer buffer = new StringBuffer(256);
+	buffer.append("Content-type: ");
+	buffer.append(mimeType);
+	buffer.append(HttpResponse.HEADER_NEWLINE);
+	buffer.append("Content-length: ");
+	buffer.append(size);
+	buffer.append(HttpResponse.HEADER_NEWLINE);
+	this.headerBytes = Strings.getAsciiBytes(buffer.toString());
     }
     
     public boolean fileExists() {
@@ -65,5 +79,9 @@ class FileInfo {
     
     public boolean hasChangedOnDisk() {
 	return requestedFile.lastModified() != lastChanged;
+    }
+
+    public byte[] getHeaderBytes() {
+	return headerBytes;
     }
 }

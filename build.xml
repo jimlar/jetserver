@@ -58,7 +58,7 @@
   </target>
 
   <target name="benchmark">
-    <echo message="http://localhost/index.html" file=".build/benchmark_urls"/>
+    <echo message="http://localhost:8080/index.html" file=".build/benchmark_urls"/>
     <exec executable="./tools/http_load">
       <arg value="-parallel"/>
       <arg value="30"/>
