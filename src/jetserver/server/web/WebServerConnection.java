@@ -7,8 +7,6 @@ import java.util.*;
 
 import jetserver.server.config.ServerConfig;
 import jetserver.server.Deployer;
-import jetserver.server.web.servlet.JSHttpServletRequest;
-import jetserver.server.web.servlet.JSHttpServletResponse;
 import jetserver.util.Log;
 
 public class WebServerConnection implements Runnable {
@@ -22,12 +20,14 @@ public class WebServerConnection implements Runnable {
     }
 
     public void run() {
+        JSHttpServletResponse response = null;
+
         try {
             InputStream in = new BufferedInputStream(socket.getInputStream());
             JSHttpServletRequest request = new JSHttpServletRequest(in);
 
             OutputStream out = new BufferedOutputStream(socket.getOutputStream());
-            JSHttpServletResponse response = new JSHttpServletResponse(out);
+            response = new JSHttpServletResponse(out);
 
             /* Ok, now find the correct web application instance */
             dispatchRequest(request, response);
@@ -38,6 +38,10 @@ public class WebServerConnection implements Runnable {
             Log.getInstance(this).error("Error serving web request", e);
         } finally {
             try {
+                if (response != null) {
+                    response.close();
+                }
+
                 socket.close();
             } catch (IOException e) {}
         }
@@ -54,7 +58,7 @@ public class WebServerConnection implements Runnable {
         if (application != null) {
             request.setWebApplication(application);
             response.setWebApplication(application);
-            application.dispatchRequest(request, response);
+            application.handleRequest(request, response);
         } else {
             Log.getInstance(this).info("No application mapped for request: " + request.getRequestURI());
         }

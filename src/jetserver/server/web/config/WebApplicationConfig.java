@@ -1,5 +1,5 @@
 
-package jetserver.server.web;
+package jetserver.server.web.config;
 
 import org.xml.sax.*;
 
@@ -10,8 +10,6 @@ import java.util.*;
 
 import jetserver.util.xml.JetServerEntityResolver;
 import jetserver.util.Log;
-import jetserver.server.web.servlet.ServletDeclaration;
-import jetserver.server.web.servlet.ServletMapping;
 
 public class WebApplicationConfig {
 

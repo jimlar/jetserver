@@ -1,5 +1,5 @@
 
-package jetserver.server.web.servlet;
+package jetserver.server.web;
 
 import java.io.*;
 import java.util.*;
@@ -7,8 +7,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import jetserver.server.web.WebApplicationConfig;
-import jetserver.server.web.WebApplication;
+import jetserver.server.web.config.WebApplicationConfig;
 import jetserver.util.Log;
 import jetserver.util.Strings;
 
@@ -87,7 +86,7 @@ public class JSHttpServletRequest implements HttpServletRequest {
     }
 
     public void setCharacterEncoding(String env)
-            throws java.io.UnsupportedEncodingException
+            throws UnsupportedEncodingException
     {
         logUnsupportedMehod();
     }

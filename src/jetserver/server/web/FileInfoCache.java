@@ -1,11 +1,11 @@
 
 
-package jetserver.server.web.file;
+package jetserver.server.web;
 
 import java.io.*;
 import java.util.*;
 
-import jetserver.server.web.*;
+import jetserver.server.web.config.MimeTypes;
 
 import javax.servlet.http.HttpServletRequest;
 

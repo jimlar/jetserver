@@ -1,5 +1,5 @@
 
-package jetserver.server.web.servlet;
+package jetserver.server.web;
 
 import java.io.*;
 import java.util.*;
@@ -7,14 +7,13 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import jetserver.server.web.WebApplication;
 import jetserver.util.Log;
 
 /**
  * This is a factory where you fetch the servlet instances
  */
 
-class ServletInstanceFactory {
+public class ServletInstanceFactory {
 
     private WebApplication webApp;
     private Log log;
@@ -22,7 +21,7 @@ class ServletInstanceFactory {
     private ServletClassLoader classLoader;
     private Map instancesByName;
 
-    ServletInstanceFactory(WebApplication webApp) {
+    public ServletInstanceFactory(WebApplication webApp) {
         this.webApp = webApp;
         this.log = Log.getInstance(this);
         this.classLoader = new ServletClassLoader(webApp);
@@ -33,7 +32,7 @@ class ServletInstanceFactory {
      * Fetch a servlet instance with the name of a servlet
      */
 
-    public HttpServlet getServletInstance(String servletName) {
+    public HttpServlet getServletInstance(String servletName) throws IOException {
 
         HttpServlet servlet = (HttpServlet) instancesByName.get(servletName);
 
@@ -45,15 +44,13 @@ class ServletInstanceFactory {
                 }
 
                 servlet = createInstance(servletName);
-                if (servlet != null) {
-                    instancesByName.put(servletName, servlet);
-                }
+                instancesByName.put(servletName, servlet);
             }
         }
         return servlet;
     }
 
-    private HttpServlet createInstance(String servletName) {
+    private HttpServlet createInstance(String servletName) throws IOException {
         try {
             String servletClassName = webApp.getConfig().getServletDeclaration(servletName).getClassName();
             Class servletClass = classLoader.loadClass(servletClassName);
@@ -64,12 +61,11 @@ class ServletInstanceFactory {
             return servlet;
 
         } catch (ClassNotFoundException e) {
-            log.error("Cant load servlet class", e);
+            throw new IOException("Cant load servlet class: " + e);
         } catch (IllegalAccessException e) {
-            log.error("Cant load servlet class", e);
+            throw new IOException("Cant load servlet class: " + e);
         } catch (InstantiationException e) {
-            log.error("Cant instantiate servlet", e);
+            throw new IOException("Cant instantiate servlet: " + e);
         }
-        return null;
     }
 }

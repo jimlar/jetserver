@@ -1,10 +1,9 @@
 
-package jetserver.server.web.servlet;
+package jetserver.server.web;
 
 import java.io.*;
 import java.util.Iterator;
 
-import jetserver.server.web.WebApplication;
 import jetserver.server.ejb.EJBJar;
 import jetserver.util.Log;
 

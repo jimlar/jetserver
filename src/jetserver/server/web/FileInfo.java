@@ -1,11 +1,9 @@
 
-package jetserver.server.web.file;
+package jetserver.server.web;
 
 import java.io.*;
 
 import jetserver.util.*;
-import jetserver.server.web.*;
-import jetserver.server.web.servlet.JSHttpServletResponse;
 
 class FileInfo {
 

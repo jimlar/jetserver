@@ -1,14 +1,11 @@
 
 
-package jetserver.server.web.file;
+package jetserver.server.web;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import jetserver.server.web.*;
-import jetserver.server.web.servlet.JSHttpServletRequest;
-import jetserver.server.web.servlet.JSHttpServletResponse;
 import jetserver.util.Log;
 
 import javax.servlet.http.HttpServlet;

@@ -7,6 +7,7 @@ import java.util.*;
 
 import jetserver.util.Log;
 import jetserver.server.application.Application;
+import jetserver.server.web.config.WebApplicationConfig;
 
 public class WebDeployer {
 
