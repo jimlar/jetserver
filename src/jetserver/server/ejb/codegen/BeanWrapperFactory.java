@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.File;
+import java.util.Arrays;
 
 public class BeanWrapperFactory {
 
@@ -102,22 +103,46 @@ public class BeanWrapperFactory {
         SourceWriter sourceWriter = new SourceWriter(new FileWriter(sourceFile));
 
         sourceWriter.startClass(className,
-                                null,
-                                new Class[] {entityBean.getEjbClass()});
+                                entityBean.getEjbClass(),
+                                null);
 
+        /*
+         * We only need to subclass the methods that appear
+         * in the remote interface
+         */
         Method[] ejbMethods = entityBean.getEjbClass().getDeclaredMethods();
         if (ejbMethods != null) {
             for (int i = 0; i < ejbMethods.length; i++) {
-                sourceWriter.startMethod(ejbMethods[i].getReturnType(),
-                                         ejbMethods[i].getName(),
-                                         ejbMethods[i].getParameterTypes(),
-                                         ejbMethods[i].getExceptionTypes());
+                if (isBusinessMethod(ejbMethods[i], entityBean.getRemoteClass())) {
+                    sourceWriter.startMethod(ejbMethods[i].getReturnType(),
+                                             ejbMethods[i].getName(),
+                                             ejbMethods[i].getParameterTypes(),
+                                             ejbMethods[i].getExceptionTypes());
 
-                sourceWriter.write("System.out.println(\"" + ejbMethods[i].getName() + " called\");");
-                sourceWriter.endMethod();
+                    sourceWriter.write("System.out.println(\"" + ejbMethods[i].getName() + " called\");");
+                    sourceWriter.endMethod();
+                }
             }
         }
         sourceWriter.endClass();
         sourceWriter.close();
+    }
+
+    /**
+     * @return true if the method matches the signature of a businenss method
+     * in the ejbInterface class
+     */
+    private boolean isBusinessMethod(Method method, Class ejbInterface) {
+        Method[] businessMethods = ejbInterface.getDeclaredMethods();
+        if (businessMethods != null) {
+            for (int i = 0; i < businessMethods.length; i++) {
+                if (method.getReturnType().equals(businessMethods[i].getReturnType())
+                        && method.getName().equals(businessMethods[i].getName())
+                        && Arrays.equals(method.getParameterTypes(), businessMethods[i].getParameterTypes())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
