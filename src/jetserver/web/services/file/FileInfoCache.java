@@ -24,7 +24,7 @@ class FileInfoCache {
 
     private final File baseDir;
     private final MimeTypes mimeTypes;
-    private final String welcomeFiles[];
+    private final Collection welcomeFiles;
     private final Map fileInfoByRequestURI;
     private final int maxFileSize;
 
@@ -33,16 +33,13 @@ class FileInfoCache {
 
     public FileInfoCache() throws IOException {
 	ServerConfig config = ServerConfig.getInstance();
-	this.baseDir = config.getFileProperty(ROOT_PROPERTY);
-	if (config.getNumValues(WELCOMEFILES_PROPERTY) > 0) {
-	    this.welcomeFiles = config.getPropertyValues(WELCOMEFILES_PROPERTY);
-	} else {
-	    this.welcomeFiles = null;
-	}
-	/* property given i kilobytes */
-	this.maxFileSize = config.getIntProperty(CACHEFILESIZE_PROPERTY) * 1024;
+	this.baseDir = config.getFile(ROOT_PROPERTY);
+	this.welcomeFiles = config.getStrings(WELCOMEFILES_PROPERTY);
 
-	this.entryTimeToLive = config.getIntProperty(CACHETTL_PROPERTY);
+	/* property given i kilobytes */
+	this.maxFileSize = config.getInteger(CACHEFILESIZE_PROPERTY) * 1024;
+
+	this.entryTimeToLive = config.getInteger(CACHETTL_PROPERTY);
 
 	this.mimeTypes = new MimeTypes();
 	this.fileInfoByRequestURI = Collections.synchronizedMap(new WeakHashMap());
@@ -139,12 +136,11 @@ class FileInfoCache {
 
     private File getExistingWelcomeFile(File requestedFile) {
 	
-	if (welcomeFiles != null) {
-	    for (int i = 0; i < welcomeFiles.length; i++) {
-		File candidate = new File(requestedFile, welcomeFiles[i]);
-		if (candidate.exists() && candidate.isFile()) {
-		    return candidate;
-		}
+	Iterator iter = welcomeFiles.iterator();
+	while (iter.hasNext()) {
+	    File candidate = new File(requestedFile, (String) iter.next());
+	    if (candidate.exists() && candidate.isFile()) {
+		return candidate;
 	    }
 	}
 

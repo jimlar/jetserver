@@ -6,7 +6,8 @@
 
   <property name="classpath" value="src:
 				    .build/classes:
-                                    lib/xerces.jar" />
+                                    lib/xerces.jar:
+                                    lib/concurrent.jar" />
 
   <!-- jetserver -->
   <target name="jetserver" depends="compile">

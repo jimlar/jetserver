@@ -8,18 +8,13 @@ import java.util.*;
 
 import jetserver.web.*;
 import jetserver.web.services.WebService;
-import jetserver.config.ServerConfig;
 
 public class FileService extends WebService {
 
-    private static final String BUFFERSIZE_PROPERTY = "jetserver.webserver.buffersize";
-
-    private final int bufferSize;
+    private static final int BUFFER_SIZE = 1024;
     private final FileInfoCache fileInfoCache;
 
     public FileService() throws IOException {
-	ServerConfig config = ServerConfig.getInstance();
-	this.bufferSize = config.getIntProperty(BUFFERSIZE_PROPERTY);
 	this.fileInfoCache = new FileInfoCache();
     }
 
@@ -40,7 +35,7 @@ public class FileService extends WebService {
 
 	    OutputStream out = response.getOutputStream();
 	    InputStream fileIn = fileInfo.getInputStream();
-	    byte outputBuffer[] = new byte[bufferSize];
+	    byte outputBuffer[] = new byte[BUFFER_SIZE];
 	    int readLen = 0;
 	    
 	    while (readLen != -1) {

@@ -17,8 +17,8 @@ class MimeTypes {
 
     public MimeTypes() throws IOException {
 	ServerConfig config = ServerConfig.getInstance();
-	this.defaultMimeType = config.getProperty(DEFAULTMIMETYPE_PROPERTY);
-	BufferedReader reader = new BufferedReader(new FileReader(config.getFileProperty(MIMETYPES_PROPERTY)));
+	this.defaultMimeType = config.getString(DEFAULTMIMETYPE_PROPERTY);
+	BufferedReader reader = new BufferedReader(new FileReader(config.getFile(MIMETYPES_PROPERTY)));
 	
 	this.typesByExtension = new HashMap();
 

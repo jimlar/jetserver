@@ -5,7 +5,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import jetserver.config.ServerConfig;
 import jetserver.web.WebServer;
 
 public class JetServer {
@@ -15,7 +14,6 @@ public class JetServer {
     public JetServer() 
 	throws IOException
     {
-	ServerConfig config = ServerConfig.getInstance();
 	this.webServer = new WebServer();
 	System.out.println("WebServer started on port " + webServer.getPort());
     }

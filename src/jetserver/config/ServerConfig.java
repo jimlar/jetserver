@@ -57,89 +57,42 @@ public class ServerConfig {
 	    System.err.println("Cant parse config: " + e);
 	    throw new RuntimeException("cant parse config: " + e);
 	}
-
-	/* Debug */
-//  	Iterator iter = properties.keySet().iterator();
-//  	while(iter.hasNext()) {
-//  	    String key = (String) iter.next();
-// 	    Iterator values = ((List) properties.get(key)).iterator();
-// 	    for(int i = 0; values.hasNext(); i++) {
-// 		String value = (String) values.next();
-// 		System.out.println(key + "[" + i + "]=" + value);
-// 	    }
-//  	}
     }
 
-
-    public int getNumValues(String name) {
-	List values = (List) properties.get(name);
-	if (values == null) {
-	    throw new RuntimeException("no value for property " + name);
-	}
-	return values.size();
-    }
-
-    public String[] getPropertyValues(String name) {
+    public List getStrings(String name) {
 	List values = (List) properties.get(name);
 	if (values == null) {
 	    throw new RuntimeException("no value for property " + name);
 	}
 	
-	String valuesArray[] = new String[values.size()];
-	for (int i = 0; i < valuesArray.length; i++) {
-	    valuesArray[i] = (String) values.get(i);
-	}
-
-	return valuesArray;
+	return values;
     }
 
-    public String getProperty(String name, int index) {
-	List values = (List) properties.get(name);
-	if (values == null) {
-	    throw new RuntimeException("no value for property " + name);
-	}
-
-	if (index < 0 || index >= values.size()) {
-	    throw new RuntimeException("index " + index + " is out of bounds for property " + name);
-	}
-
-	return (String) values.get(index);
-    }
-
-    public String getProperty(String name) {
-	return getProperty(name, 0);
+    public String getString(String name) {
+	return (String) getStrings(name).get(0);
     }
 
     /* 
      * Return a file, always absolute file relative filename values are translated 
      * (Interpreted as relative to the config file)
      */ 
-    public File getFileProperty(String name, int index) {
+    public File getFile(String name) {
 
-	File value = new File(getProperty(name, index));
+	File value = new File(getString(name));
 	if (value.isAbsolute()) {
 	    return value;
 	}
 
 	/* it's relative, translate it */
-	return new File(CONFIG_DIR, getProperty(name, index));
+	return new File(CONFIG_DIR, getString(name));
     }
 
-    public File getFileProperty(String name) {
-	return getFileProperty(name, 0);
-    }
-
-    public int getIntProperty(String name, int index) {
+    public int getInteger(String name) {
 	try {
-	    return Integer.parseInt(getProperty(name, index));
+	    return Integer.parseInt(getString(name));
 	} catch (NumberFormatException e) {
-	    throw new RuntimeException("config value not integer: " 
-				       + name + "=" + getProperty(name)
-				       + ", index=" + index);
+	    throw new RuntimeException("value not integer: " 
+				       + name + "=" + getString(name));
 	}
-    }
-
-    public int getIntProperty(String name) {
-	return getIntProperty(name, 0);
     }
 }

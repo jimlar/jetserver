@@ -2,8 +2,13 @@
 
 <jetserver>
 
-  <!-- timeout is socket timeout in seconds -->
-  <webserver port="8080" buffersize="1024" threads="50" timeout="10">
+  <webserver>
+
+    <!-- timeout is socket timeout in seconds -->
+    <socket port="8080" timeout="10"/>
+
+    <!-- keep alive time is in seconds -->
+    <threads max="10" min="1" start="1" keep-alive-time="60"/>  
 
     <root>../html</root>
 

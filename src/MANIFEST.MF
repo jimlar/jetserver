@@ -1,2 +1,2 @@
 Main-Class: jetserver.server.JetServer
-Class-Path: lib/xerces.jar .
+Class-Path: lib/xerces.jar . lib/concurrent.jar
