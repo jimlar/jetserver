@@ -1,6 +1,4 @@
-/* XAException - Decompiled by JODE
- * Visit http://jode.sourceforge.net/
- */
+
 package javax.transaction.xa;
 
 public class XAException extends Exception
@@ -33,7 +31,6 @@ public class XAException extends Exception
     public static final int XAER_OUTSIDE = -9;
     
     public XAException() {
-	/* empty */
     }
     
     public XAException(String s) {

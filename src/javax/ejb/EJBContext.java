@@ -1,4 +1,4 @@
-/* EJBContext - Decompiled by JODE
+/* EntityContext - Decompiled by JODE
  * Visit http://jode.sourceforge.net/
  */
 package javax.ejb;

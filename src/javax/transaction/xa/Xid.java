@@ -1,6 +1,4 @@
-/* Xid - Decompiled by JODE
- * Visit http://jode.sourceforge.net/
- */
+
 package javax.transaction.xa;
 
 public interface Xid
