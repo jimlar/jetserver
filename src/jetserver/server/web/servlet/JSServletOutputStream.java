@@ -7,12 +7,12 @@ import java.io.*;
 import javax.servlet.*;
 
 
-class JetServerServletOutputStream extends ServletOutputStream {
+class JSServletOutputStream extends ServletOutputStream {
 
-    private JetServerHttpServletResponse response;
+    private JSHttpServletResponse response;
     private OutputStream out;
 
-    public JetServerServletOutputStream(JetServerHttpServletResponse response)
+    public JSServletOutputStream(JSHttpServletResponse response)
             throws IOException
     {
         this.response = response;

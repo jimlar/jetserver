@@ -15,32 +15,38 @@ public class MimeTypes {
     private Map typesByExtension;
     private String defaultMimeType;
 
-    public MimeTypes() throws IOException {
-        ServerConfig config = ServerConfig.getInstance();
-        this.defaultMimeType = config.getString(DEFAULTMIMETYPE_PROPERTY);
-        BufferedReader reader = new BufferedReader(new FileReader(config.getFile(MIMETYPES_PROPERTY)));
+    public MimeTypes() {
 
-        this.typesByExtension = new HashMap();
+        try {
+            ServerConfig config = ServerConfig.getInstance();
+            this.defaultMimeType = config.getString(DEFAULTMIMETYPE_PROPERTY);
 
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            line = line.trim();
-            if (!line.startsWith("#") && !line.equals("")) {
-                StringTokenizer st = new StringTokenizer(line, "\t ");
-                if (st.countTokens() >= 2) {
-                    String type = st.nextToken();
-                    List extensions = new ArrayList();
-                    while (st.hasMoreTokens()) {
-                        extensions.add(st.nextToken());
-                    }
+            BufferedReader reader = new BufferedReader(new FileReader(config.getFile(MIMETYPES_PROPERTY)));
 
-                    Iterator iter = extensions.iterator();
-                    while (iter.hasNext()) {
-                        String ext = ((String) iter.next()).trim();
-                        typesByExtension.put(ext, type);
+            this.typesByExtension = new HashMap();
+
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (!line.startsWith("#") && !line.equals("")) {
+                    StringTokenizer st = new StringTokenizer(line, "\t ");
+                    if (st.countTokens() >= 2) {
+                        String type = st.nextToken();
+                        List extensions = new ArrayList();
+                        while (st.hasMoreTokens()) {
+                            extensions.add(st.nextToken());
+                        }
+
+                        Iterator iter = extensions.iterator();
+                        while (iter.hasNext()) {
+                            String ext = ((String) iter.next()).trim();
+                            typesByExtension.put(ext, type);
+                        }
                     }
                 }
             }
+        } catch (IOException e) {
+            throw new RuntimeException("Cant initialize mimetypes: " + e);
         }
     }
 

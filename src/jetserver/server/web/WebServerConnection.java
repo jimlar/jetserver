@@ -7,6 +7,8 @@ import java.util.*;
 
 import jetserver.server.config.ServerConfig;
 import jetserver.server.Deployer;
+import jetserver.server.web.servlet.JSHttpServletRequest;
+import jetserver.server.web.servlet.JSHttpServletResponse;
 import jetserver.util.Log;
 
 public class WebServerConnection implements Runnable {
@@ -22,12 +24,12 @@ public class WebServerConnection implements Runnable {
     public void run() {
         try {
             InputStream in = new BufferedInputStream(socket.getInputStream());
-            HttpRequest request = HttpRequest.decodeRequest(in);
+            JSHttpServletRequest request = new JSHttpServletRequest(in);
 
             OutputStream out = new BufferedOutputStream(socket.getOutputStream());
-            HttpResponse response = HttpResponse.createResponse(out);
+            JSHttpServletResponse response = new JSHttpServletResponse(out);
 
-            /* Ok, now find the correct web container instance */
+            /* Ok, now find the correct web application instance */
             dispatchRequest(request, response);
 
         } catch (IOException e) {
@@ -44,25 +46,30 @@ public class WebServerConnection implements Runnable {
     /**
      * Dispatch an incoming request to the right web application
      */
-    private void dispatchRequest(HttpRequest request, HttpResponse response) throws IOException {
+    private void dispatchRequest(JSHttpServletRequest request,
+                                 JSHttpServletResponse response)
+            throws IOException
+    {
         WebApplication application = findApplication(request);
         if (application != null) {
-            application.service(request, response);
+            request.setWebApplication(application);
+            response.setWebApplication(application);
+            application.dispatchRequest(request, response);
         } else {
-            Log.getInstance(this).info("No application mapped for request: " + request.getURI());
+            Log.getInstance(this).info("No application mapped for request: " + request.getRequestURI());
         }
     }
 
     /**
      * Find the application handling a request
      */
-    private WebApplication findApplication(HttpRequest request) {
+    private WebApplication findApplication(JSHttpServletRequest request) {
 
         /* This is TOOO slow, change it later on */
         Iterator iter = deployer.getAllWebApplications().iterator();
         while (iter.hasNext()) {
             WebApplication application = (WebApplication) iter.next();
-            if (request.getURI().startsWith(application.getConfig().getHttpRoot())) {
+            if (request.getRequestURI().startsWith(application.getConfig().getHttpRoot())) {
                 return application;
             }
         }

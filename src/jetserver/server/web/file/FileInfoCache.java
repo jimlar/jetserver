@@ -6,7 +6,8 @@ import java.io.*;
 import java.util.*;
 
 import jetserver.server.web.*;
-import jetserver.server.web.HttpRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 
@@ -26,7 +27,7 @@ class FileInfoCache {
     private final Map fileInfoByRequestURI;
 
 
-    public FileInfoCache(WebApplication webApp) throws IOException {
+    public FileInfoCache(WebApplication webApp) {
         this.webApp = webApp;
         this.mimeTypes = new MimeTypes();
         this.fileInfoByRequestURI = Collections.synchronizedMap(new WeakHashMap());
@@ -37,13 +38,13 @@ class FileInfoCache {
      * Fetch info about a file requested
      *
      */
-    public FileInfo getFileInfo(HttpRequest request)
+    public FileInfo getFileInfo(HttpServletRequest request)
             throws IOException
     {
-        FileInfo fileInfo = (FileInfo) fileInfoByRequestURI.get(request.getURI());
+        FileInfo fileInfo = (FileInfo) fileInfoByRequestURI.get(request.getRequestURI());
         if (fileInfo == null || fileInfo.isOutDated()) {
             fileInfo = updateFileInfo(fileInfo, request);
-            fileInfoByRequestURI.put(request.getURI(),  fileInfo);
+            fileInfoByRequestURI.put(request.getRequestURI(),  fileInfo);
         }
         return fileInfo;
     }
@@ -54,7 +55,7 @@ class FileInfoCache {
      * (a new info object is created if oldInfo is null)
      */
 
-    private FileInfo updateFileInfo(FileInfo oldInfo, HttpRequest request)
+    private FileInfo updateFileInfo(FileInfo oldInfo, HttpServletRequest request)
             throws IOException
     {
         if (oldInfo == null || oldInfo.hasChangedOnDisk()) {
@@ -69,10 +70,10 @@ class FileInfoCache {
      * Create new info from disk
      *
      */
-    private FileInfo createFileInfo(HttpRequest request)
+    private FileInfo createFileInfo(HttpServletRequest request)
             throws IOException
     {
-        String localRequestURI = request.getURI().substring(webApp.getConfig().getHttpRoot().length());
+        String localRequestURI = request.getRequestURI().substring(webApp.getConfig().getHttpRoot().length());
         File requestedFile = new File(webApp.getConfig().getFileRoot(), localRequestURI);
         boolean isDirectoryIndexRequest = false;
         boolean fileExists = requestedFile.exists();

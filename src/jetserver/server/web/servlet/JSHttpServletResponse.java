@@ -7,35 +7,101 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import jetserver.server.web.HttpResponse;
 import jetserver.server.web.WebApplicationConfig;
+import jetserver.server.web.WebApplication;
 import jetserver.util.Log;
+import jetserver.util.Strings;
 
 /**
  * This is an implementation of servlet response
  */
 
-class JetServerHttpServletResponse implements HttpServletResponse {
+public class JSHttpServletResponse implements HttpServletResponse {
 
-    private WebApplicationConfig config;
-    private Log log;
-    private HttpResponse httpResponse;
-
+    public static final String HEADER_NEWLINE = "\r\n";
     private String encoding = "iso-8859-1";
 
-    JetServerHttpServletResponse(HttpResponse httpResponse, WebApplicationConfig config) {
-        this.httpResponse = httpResponse;
-        this.config = config;
+    private WebApplication webApplication;
+    private Log log;
+
+    private OutputStream out;
+    private String protocol;
+    private String statusMessage;
+    private int statusCode;
+    private List headerBytes;
+    private Map headers;
+
+    private boolean headersFlushed = false;
+
+
+
+    public JSHttpServletResponse(OutputStream out) {
         this.log = Log.getInstance(this);
+
+        this.out = out;
+        this.protocol = "HTTP/1.0";
+        this.statusCode = 200;
+        this.statusMessage = "OK";
+        this.headers = new HashMap();
+        this.headers.put("Server", "jetserver");
+        this.headerBytes = new ArrayList();
+    }
+
+    public void setWebApplication(WebApplication webApplication) {
+        this.webApplication = webApplication;
     }
 
     OutputStream getSocketOutputStream() throws IOException {
-        return httpResponse.getOutputStream();
+        flushHeaders();
+        return out;
     }
 
-    void close() throws IOException {
-        httpResponse.close();
+    public void close() throws IOException {
+        flushHeaders();
+        out.close();
     }
+
+    public void addHeaderBytes(byte bytes[]) {
+        this.headerBytes.add(bytes);
+    }
+
+    public void flushHeaders() throws IOException {
+
+        if (!headersFlushed) {
+            StringBuffer buffer = new StringBuffer(256);
+
+            buffer.append(this.protocol);
+            buffer.append(" ");
+            buffer.append(statusCode);
+            buffer.append(" ");
+            buffer.append(statusMessage);
+            buffer.append(HEADER_NEWLINE);
+            out.write(Strings.getAsciiBytes(buffer.toString()));
+
+            Iterator iter = headerBytes.iterator();
+            while (iter.hasNext()) {
+                byte bytes[] = (byte[]) iter.next();
+                out.write(bytes);
+            }
+
+            buffer = new StringBuffer(1024);
+            iter = headers.keySet().iterator();
+            while (iter.hasNext()) {
+                String headerName = (String) iter.next();
+                buffer.append(headerName);
+                buffer.append(": ");
+                buffer.append(headers.get(headerName));
+                buffer.append(HEADER_NEWLINE);
+            }
+
+            buffer.append(HEADER_NEWLINE);
+
+            out.write(Strings.getAsciiBytes(buffer.toString()));
+            out.flush();
+            headersFlushed = true;
+        }
+    }
+
 
     /*======== The ServletResponse interface implementation =========*/
 
@@ -44,19 +110,19 @@ class JetServerHttpServletResponse implements HttpServletResponse {
     }
 
     public ServletOutputStream getOutputStream() throws IOException {
-        return new JetServerServletOutputStream(this);
+        return new JSServletOutputStream(this);
     }
 
     public PrintWriter getWriter() throws IOException, UnsupportedEncodingException {
         return new PrintWriter(new OutputStreamWriter(getOutputStream(), encoding));
     }
 
-    public void setContentLength(int len) {
-        httpResponse.setContentLength(len);
+    public void setContentLength(int length) {
+        setHeader("Content-length", "" + length);
     }
 
     public void setContentType(String type) {
-        httpResponse.setContentType(type);
+        setHeader("Content-type", type);
     }
 
     public void setBufferSize(int size) {
@@ -69,7 +135,7 @@ class JetServerHttpServletResponse implements HttpServletResponse {
     }
 
     public void flushBuffer() throws IOException {
-        httpResponse.flushHeaders();
+        flushHeaders();
     }
 
     public void resetBuffer() {
@@ -146,7 +212,7 @@ class JetServerHttpServletResponse implements HttpServletResponse {
     }
 
     public void setHeader(String name, String value) {
-        logUnsupportedMehod();
+        this.headers.put(name, value);
     }
 
     public void addHeader(String name, String value) {

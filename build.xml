@@ -32,13 +32,13 @@
   <!-- jetserver -->
   <target name="jetserver" depends="compile">
 
-    <copy todir="build/classes">
-      <fileset dir="src" includes="**/*.dtd" />
-    </copy>
-
     <jar jarfile="build/jetserver.jar"
-         basedir="build/classes"
-         manifest="src/MANIFEST.MF"/>
+         manifest="src/MANIFEST.MF">
+
+         <fileset dir="build/classes" includes="**/*.class"/>
+         <fileset dir="src" includes="**/*.dtd"/>
+         <fileset dir="src" includes="**/*.properties"/>
+    </jar>
   </target>
 
   <!-- test application -->

@@ -4,8 +4,10 @@ package jetserver.server.web;
 import java.io.*;
 import java.util.*;
 
-import jetserver.server.web.file.FileService;
-import jetserver.server.web.servlet.ServletService;
+import jetserver.server.web.file.FileServer;
+import jetserver.server.web.servlet.ServletDispatcher;
+import jetserver.server.web.servlet.JSHttpServletRequest;
+import jetserver.server.web.servlet.JSHttpServletResponse;
 import jetserver.server.application.Application;
 import jetserver.util.Log;
 
@@ -13,14 +15,12 @@ public class WebApplication {
 
     private Application application;
     private WebApplicationConfig config;
-    private FileService fileService;
-    private ServletService servletService;
+    private ServletDispatcher servletService;
 
     public WebApplication(Application application, WebApplicationConfig config) throws IOException {
         this.application = application;
         this.config = config;
-        this.fileService = new FileService(this);
-        this.servletService = new ServletService(this);
+        this.servletService = new ServletDispatcher(this);
     }
 
     public Application getApplication() {
@@ -31,14 +31,11 @@ public class WebApplication {
         return this.config;
     }
 
-    public void service(HttpRequest request, HttpResponse response)
+    public void dispatchRequest(JSHttpServletRequest request,
+                                JSHttpServletResponse response)
             throws IOException
     {
-        if (servletService.service(request, response)) {
-            return;
-        }
-
-        fileService.service(request, response);
+        servletService.dispatch(request, response);
     }
 
     public String toString() {

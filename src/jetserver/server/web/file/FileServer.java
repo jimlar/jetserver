@@ -7,24 +7,32 @@ import java.net.*;
 import java.util.*;
 
 import jetserver.server.web.*;
-import jetserver.server.web.HttpRequest;
-import jetserver.server.web.HttpResponse;
+import jetserver.server.web.servlet.JSHttpServletRequest;
+import jetserver.server.web.servlet.JSHttpServletResponse;
 import jetserver.util.Log;
 
-public class FileService  {
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class FileServer {
 
     private Log log;
     private static final int BUFFER_SIZE = 1024;
     private final FileInfoCache fileInfoCache;
 
-    public FileService(WebApplication webApp) throws IOException {
-        this.fileInfoCache = new FileInfoCache(webApp);
+    public FileServer(WebApplication webApplication) {
+        this.fileInfoCache = new FileInfoCache(webApplication);
         this.log = Log.getInstance(this);
     }
 
-    public void service(HttpRequest request, HttpResponse response)
+    public void serveFile(HttpServletRequest req,
+                          HttpServletResponse res)
             throws IOException
     {
+        JSHttpServletRequest request = (JSHttpServletRequest) req;
+        JSHttpServletResponse response = (JSHttpServletResponse) res;
+
         FileInfo fileInfo = fileInfoCache.getFileInfo(request);
 
         if (fileInfo.fileExists()) {
@@ -57,15 +65,17 @@ public class FileService  {
         }
     }
 
-    private void sendNotFoundResponse(HttpRequest request, HttpResponse response)
+    private void sendNotFoundResponse(HttpServletRequest request,
+                                      HttpServletResponse response)
             throws IOException
     {
-        log.debug("Sending '404 Not found' for: " + request.getURI());
+        log.debug("Sending '404 Not found' for: " + request.getRequestURI());
     }
 
-    private void sendDirectoryIndexResponse(HttpRequest request, HttpResponse response)
+    private void sendDirectoryIndexResponse(HttpServletRequest request,
+                                            HttpServletResponse response)
             throws IOException
     {
-        log.debug("Sending directory for: " + request.getURI());
+        log.debug("Sending directory for: " + request.getRequestURI());
     }
 }

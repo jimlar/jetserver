@@ -7,34 +7,67 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import jetserver.server.web.HttpRequest;
 import jetserver.server.web.WebApplicationConfig;
+import jetserver.server.web.WebApplication;
 import jetserver.util.Log;
+import jetserver.util.Strings;
 
 /**
  * This is the implementation of servlet request
  */
 
-class JetServerHttpServletRequest implements HttpServletRequest {
+public class JSHttpServletRequest implements HttpServletRequest {
 
-    /**
-     * This is an enumeration without contents
-     */
+    private static final int MAX_HEADER_LENGTH = 2048;
+    private static final byte ASCII_CR = 0xd;
+    private static final byte ASCII_LF = 0xa;
     private static final Enumeration EMPTY_ENUMERATION = new Enumeration() {
         public boolean hasMoreElements() { return false; }
         public Object nextElement() { return null; }
     };
 
-    private WebApplicationConfig config;
+    private byte readLineBuffer[] = new byte[MAX_HEADER_LENGTH];
+    private WebApplication webApplication;
     private Log log;
-    private HttpRequest httpRequest;
 
+    private String method;
+    private String uri;
+    private String protocol;
+    private Map headers;
     private Map attributes = new HashMap();
 
-    JetServerHttpServletRequest(HttpRequest httpRequest, WebApplicationConfig config) {
-        this.httpRequest = httpRequest;
-        this.config = config;
+    /**
+     * Create a request instance, the request is decoded from the input stream
+     */
+    public JSHttpServletRequest(InputStream in) throws IOException {
         this.log = Log.getInstance(this);
+
+        String line = readLine(in);
+
+        int i = line.indexOf(" ");
+        this.method = line.substring(0, i);
+
+        int j = line.indexOf(" ", i + 1);
+        this.uri = line.substring(i + 1, j);
+        this.protocol = line.substring(j + 1);
+
+        /* Fetch headers */
+        this.headers = new HashMap();
+        line = readLine(in);
+        while (line != null && !line.equals("")) {
+
+            i = line.indexOf(":");
+            String headerKey = line.substring(0, i);
+            String headerValue = line.substring(i + 2);
+            this.headers.put(headerKey.toLowerCase(), headerValue);
+
+            line = readLine(in);
+        }
+
+    }
+
+    public void setWebApplication(WebApplication webApplication) {
+        this.webApplication = webApplication;
     }
 
 
@@ -60,7 +93,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
     }
 
     public int getContentLength() {
-        String header = httpRequest.getHeader("content-length");
+        String header = getHeader("content-length");
         if (header == null) {
             return -1;
         }
@@ -72,7 +105,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
     }
 
     public String getContentType() {
-        return httpRequest.getHeader("content-type");
+        return getHeader("content-type");
     }
 
     public ServletInputStream getInputStream() throws IOException {
@@ -101,7 +134,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
     }
 
     public String getProtocol() {
-        return httpRequest.getProtocol();
+        return this.protocol;
     }
 
     public String getScheme() {
@@ -185,7 +218,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
     }
 
     public String getHeader(String name) {
-        return httpRequest.getHeader(name);
+        return (String) headers.get(name.toLowerCase());
     }
 
     public Enumeration getHeaders(String name) {
@@ -194,11 +227,11 @@ class JetServerHttpServletRequest implements HttpServletRequest {
     }
 
     public Enumeration getHeaderNames() {
-        return Collections.enumeration(httpRequest.getHeaderNames());
+        return Collections.enumeration(headers.keySet());
     }
 
     public int getIntHeader(String name) throws NumberFormatException {
-        String header = httpRequest.getHeader(name);
+        String header = getHeader(name);
         if (header == null) {
             return -1;
         }
@@ -206,7 +239,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
     }
 
     public String getMethod() {
-        return httpRequest.getMethod();
+        return this.method;
     }
 
     public String getPathInfo() {
@@ -220,7 +253,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
     }
 
     public String getContextPath() {
-        return config.getHttpRoot();
+        return webApplication.getConfig().getHttpRoot();
     }
 
     public String getQueryString() {
@@ -249,7 +282,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
     }
 
     public String getRequestURI() {
-        return this.httpRequest.getURI();
+        return this.uri;
     }
 
     public StringBuffer getRequestURL() {
@@ -291,6 +324,9 @@ class JetServerHttpServletRequest implements HttpServletRequest {
         return isRequestedSessionIdFromURL();
     }
 
+    public String toString() {
+        return "[JSHttpServletRequest method=" + method + ", uri=" + uri + ", protocol=" + protocol + "]";
+    }
 
     private void logUnsupportedMehod() {
         try {
@@ -298,5 +334,26 @@ class JetServerHttpServletRequest implements HttpServletRequest {
         } catch (RuntimeException e) {
             log.debug("mehod not implemented", e);
         }
+    }
+
+    private String readLine(InputStream in)
+            throws IOException
+    {
+        int totalRead = 0;
+        byte b[] = new byte[1];
+
+        int numRead = in.read(b);
+        while (numRead != -1 && numRead != 0 && b[0] != ASCII_LF && b[0] != ASCII_CR) {
+            readLineBuffer[totalRead] = b[0];
+            totalRead += numRead;
+            numRead = in.read(b);
+        }
+
+        /* if last char was a CR, read the LF */
+        if (b[0] == ASCII_CR) {
+            in.read(b);
+        }
+
+        return Strings.toStringFromAscii(readLineBuffer, 0, totalRead);
     }
 }

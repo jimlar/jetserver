@@ -10,8 +10,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import jetserver.server.web.*;
-import jetserver.server.web.HttpRequest;
-import jetserver.server.web.HttpResponse;
+import jetserver.server.web.file.FileServer;
 import jetserver.util.Log;
 
 /**
@@ -19,43 +18,46 @@ import jetserver.util.Log;
  * We have one instance per application instance
  */
 
-public class ServletService {
+public class ServletDispatcher {
 
-    private WebApplication webApp;
     private Log log;
 
+    private WebApplication webApplication;
     private ServletInstanceFactory servletInstanceFactory;
+    private FileServer fileServer;
 
+    public ServletDispatcher(WebApplication webApplication) {
+        this.webApplication = webApplication;
+        this.fileServer = new FileServer(webApplication);
+        this.servletInstanceFactory = new ServletInstanceFactory(webApplication);
 
-    public ServletService(WebApplication webApp) {
-        this.webApp = webApp;
         this.log = Log.getInstance(this);
-        this.servletInstanceFactory = new ServletInstanceFactory(webApp);
     }
 
     /**
      * @return true if we handled the request 
      */
-    public boolean service(HttpRequest request, HttpResponse response)
+    public void dispatch(JSHttpServletRequest request,
+                         JSHttpServletResponse response)
             throws IOException
     {
         /* search for a servlet mapping */
         ServletMapping mapping = getMapping(request);
         if (mapping == null) {
-            return false;
+
+            /* No mapping found, let the file server take over */
+            fileServer.serveFile(request, response);
+            response.close();
+            return;
         }
 
         HttpServlet servlet = servletInstanceFactory.getServletInstance(mapping.getServletName());
 
         if (servlet != null) {
-            JetServerHttpServletRequest httpServletRequest
-                    = new JetServerHttpServletRequest(request, webApp.getConfig());
-            JetServerHttpServletResponse httpServletResponse
-                    = new JetServerHttpServletResponse(response, webApp.getConfig());
 
             try {
-                servlet.service(httpServletRequest, httpServletResponse);
-                httpServletResponse.close();
+                servlet.service(request, response);
+                response.close();
 
             } catch (ServletException e) {
                 throw new IOException("got servlet exception: " + e);
@@ -63,22 +65,20 @@ public class ServletService {
         } else {
             throw new IOException("could not start servlet");
         }
-
-        return true;
     }
 
     /**
      * Fetch a mapping matching the request
      * @return the mapping found or null if no mapping
      */
-    private ServletMapping getMapping(HttpRequest request) {
+    private ServletMapping getMapping(JSHttpServletRequest request) {
 
-        Iterator mappings = webApp.getConfig().getServletMappings().iterator();
+        Iterator mappings = webApplication.getConfig().getServletMappings().iterator();
         while (mappings.hasNext()) {
             ServletMapping mapping = (ServletMapping) mappings.next();
 
             /* Should actually test with the contextpath prepended to the mapping */
-            if (mapping.getUrlPattern().equals(request.getURI())) {
+            if (mapping.getUrlPattern().equals(request.getRequestURI())) {
                 return mapping;
             }
         }
