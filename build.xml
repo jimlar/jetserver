@@ -7,6 +7,13 @@
   <property name="classpath" value="src:
 				    ./build/classes" />
 
+  <!-- jetserver -->
+  <target name="jetserver" depends="compile">
+    <jar jarfile="build/jetserver.jar" 
+         basedir="build/classes"
+         manifest="src/MANIFEST.MF"/>
+  </target>
+
   <!-- clean -->
   <target name="clean">
     <delete dir="build" />
@@ -30,11 +37,12 @@
 
   </target>
 
-  <!-- jetserver -->
-  <target name="jetserver" depends="compile">
-    <jar jarfile="build/jetserver.jar" 
-         basedir="build/classes"
-         manifest="src/MANIFEST.MF"/>
+  <!-- start benchmarking -->
+  <target name="benchmark" depends="compile">
+    <java classname="jetserver.benchmark.BenchMark"
+          classpath="${classpath}">
+      <arg value="http://localhost/index.html" />
+    </java>
   </target>
 
 </project>
