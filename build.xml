@@ -5,7 +5,7 @@
   <property name="build.compiler" value="jikes" />
 
   <property name="classpath" value="src:
-				    build/classes:
+				                    build/classes:
                                     lib/xerces.jar:
                                     lib/concurrent.jar:
                                     lib/servlet.jar" />
