@@ -57,9 +57,10 @@ public class WebServerThread extends Thread {
 		
 	    } catch (IOException e) {
 		e.printStackTrace();
-	    }
 
-	    threadPool.releaseThread(this);	    
+	    } finally {
+		threadPool.releaseThread(this);	    
+	    }
 	}
     }
 }
