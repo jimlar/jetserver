@@ -6,7 +6,7 @@
   <deploymanager dropzone="../dropzone" deploy-dir="../deployments"/>
 
 
-  <!-- Web container settings -->
+  <!-- Web server settings -->
   <webserver>
 
     <!-- timeout is socket timeout in seconds -->
@@ -15,18 +15,8 @@
     <!-- keep alive time is in seconds -->
     <threads max="10" min="1" start="1" keep-alive-time="60"/>  
 
-    <!-- The webserver root -->
-    <root>../html</root>
-
     <mime-types-file>mime.types</mime-types-file>
     <default-mime-type>text/plain</default-mime-type>
-
-    <welcome-file-list>
-      <welcome-file>index.html</welcome-file>
-      <welcome-file>index.htm</welcome-file>
-    </welcome-file-list>
-
-    <cache max-file-size="50" time-to-live="5000" />
 
   </webserver>
 </jetserver>
