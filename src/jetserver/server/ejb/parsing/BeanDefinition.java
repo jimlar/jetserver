@@ -15,7 +15,7 @@ class BeanDefinition {
     private String smallIcon;
     private String largeIcon;
 
-    private String name;
+    private String ejbName;
 
     private String ejbClass;
 
@@ -59,12 +59,12 @@ class BeanDefinition {
         this.largeIcon = largeIcon;
     }
 
-    public String getName() {
-        return name;
+    public String getEJBName() {
+        return ejbName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEJBName(String ejbName) {
+        this.ejbName = ejbName;
     }
 
     public String getEjbClass() {

@@ -23,10 +23,16 @@ import jetserver.util.Log;
 public class EJBJarXMLParser {
 
     private File ejbJarXML;
+    private Log log;
+
+    private String description;
+    private String displayName;
+    private String smallIcon;
+    private String largeIcon;
+
     private Collection entityBeans;
     private Collection sessionBeans;
     private Collection messageBeans;
-    private Log log;
 
     /**
      * Create a parser
@@ -73,24 +79,141 @@ public class EJBJarXMLParser {
 
     private void processDocument(Document document) {
 
+        /* Fetch general info */
+        NodeList ejbJarNodes = document.getElementsByTagName("ejb-jar");
+        if (ejbJarNodes != null) {
+            Node ejbJarNode = ejbJarNodes.item(0);
+            this.description = findProperty(ejbJarNode, "description");
+            this.displayName = findProperty(ejbJarNode, "display-name");
+            this.smallIcon = findProperty(ejbJarNode, "small-icon");
+            this.largeIcon = findProperty(ejbJarNode, "large-icon");
+        }
+
+        /* Fetch entity beans */
         NodeList entityBeans = document.getElementsByTagName("entity");
         if (entityBeans != null) {
             for (int i = 0; i < entityBeans.getLength(); i++) {
                 processEntityBean(entityBeans.item(i), document);
             }
         }
+
+        /* Fetch session beans */
+        NodeList sessionBeans = document.getElementsByTagName("session");
+        if (sessionBeans != null) {
+            for (int i = 0; i < sessionBeans.getLength(); i++) {
+                processSessionBean(sessionBeans.item(i), document);
+            }
+        }
+
+        /* Fetch message beans */
+        NodeList messageBeans = document.getElementsByTagName("message-driven");
+        if (messageBeans != null) {
+            for (int i = 0; i < messageBeans.getLength(); i++) {
+                processMessageBean(messageBeans.item(i), document);
+            }
+        }
+
+        /**
+         * TODO: handle these elements:
+         * - relationships
+         * - assembly-descriptor
+         * - ejb-client-jar
+         */
     }
 
     /**
      * Process an entity bean declaration
      */
-    private void processEntityBean(Node entityNode, Document document) {
-        EntityBeanDefinition entity = new EntityBeanDefinition();
-        entity.setDescription(findProperty(entityNode, "description"));
-        entity.setName(findProperty(entityNode, "ejb-name"));
+    private void processEntityBean(Node entityBeanNode, Document document) {
+        EntityBeanDefinition entityBean = new EntityBeanDefinition();
+        processBeanCommons(entityBean,  entityBeanNode, document);
 
-        this.entityBeans.add(entity);
-        log.debug("Found entity bean " + entity.getName());
+        entityBean.setRemoteHomeClass(findProperty(entityBeanNode, "home"));
+        entityBean.setRemoteClass(findProperty(entityBeanNode, "remote"));
+        entityBean.setLocalHomeClass(findProperty(entityBeanNode, "local-home"));
+        entityBean.setLocalClass(findProperty(entityBeanNode, "local"));
+
+        entityBean.setPersistenceType(findProperty(entityBeanNode, "persistence-type"));
+        entityBean.setPrimKeyClass(findProperty(entityBeanNode, "prim-key-class"));
+        entityBean.setPrimKeyClass(findProperty(entityBeanNode, "primkey-field"));
+        entityBean.setReentrant(findProperty(entityBeanNode, "reentrant").equalsIgnoreCase("true"));
+
+        entityBean.setCmpVersion(findProperty(entityBeanNode, "cmp-version"));
+        entityBean.setAbstractSchemaName(findProperty(entityBeanNode, "abstract-schema-name"));
+
+        /*
+         * TODO: handle these
+         * - queries
+         * - cmpFields
+         */
+
+        this.entityBeans.add(entityBean);
+        log.debug("Found entity bean " + entityBean.getEJBName());
+    }
+
+    /**
+     * Process a session bean declaration
+     */
+    private void processSessionBean(Node sessionBeanNode, Document document) {
+        SessionBeanDefinition sessionBean = new SessionBeanDefinition();
+        processBeanCommons(sessionBean,  sessionBeanNode, document);
+
+        sessionBean.setRemoteHomeClass(findProperty(sessionBeanNode, "home"));
+        sessionBean.setRemoteClass(findProperty(sessionBeanNode, "remote"));
+        sessionBean.setLocalHomeClass(findProperty(sessionBeanNode, "local-home"));
+        sessionBean.setLocalClass(findProperty(sessionBeanNode, "local"));
+
+        sessionBean.setSessionType(findProperty(sessionBeanNode, "session-type"));
+        sessionBean.setTransactionType(findProperty(sessionBeanNode, "transaction-type"));
+
+        this.sessionBeans.add(sessionBean);
+        log.debug("Found session bean " + sessionBean.getEJBName());
+    }
+
+    /**
+     * Process an entity bean declaration
+     */
+    private void processMessageBean(Node messageBeanNode, Document document) {
+        MessageBeanDefinition messageBean = new MessageBeanDefinition();
+        processBeanCommons(messageBean,  messageBeanNode, document);
+
+        messageBean.setTransactionType(findProperty(messageBeanNode, "transaction-type"));
+        messageBean.setMessageSelector(findProperty(messageBeanNode, "message-selector"));
+        messageBean.setAcknowledgeMode(findProperty(messageBeanNode, "acknowledge-mode"));
+
+        /*
+         * TODO: handle these
+         * - destinationType
+         * - subscriptionDurability;
+         */
+
+        this.messageBeans.add(messageBean);
+        log.debug("Found message bean " + messageBean.getEJBName());
+    }
+
+    /**
+     * Process an entity bean declaration
+     */
+    private void processBeanCommons(BeanDefinition bean, Node beanNode, Document document) {
+
+        bean.setDescription(findProperty(beanNode, "description"));
+        bean.setDisplayName(findProperty(beanNode, "display-name"));
+        bean.setSmallIcon(findProperty(beanNode, "small-icon"));
+        bean.setLargeIcon(findProperty(beanNode, "large-icon"));
+        bean.setEJBName(findProperty(beanNode, "ejb-name"));
+
+        bean.setEjbClass(findProperty(beanNode, "ejb-class"));
+
+        /*
+         * TODO: handle these
+         * - environmentEntries
+         * - ejbReferences
+         * - localEJBReferences
+         * - resourceReferences
+         * - resourceEnvReferences
+         * - roleReferences
+         */
+        bean.setSecurityIdentity(findProperty(beanNode, "security-identity"));
     }
 
     /**
