@@ -6,13 +6,11 @@ import java.net.*;
 import java.util.*;
 
 import jetserver.config.ServerConfig;
+import jetserver.web.services.WebService;
 
 public class WebServerThread extends Thread {
 
-    private static final File baseDir = ServerConfig.getInstance().getFileProperty("jetserver.webserver.root");
-
     private WebServerThreadPool threadPool;
-    private byte outputBuffer[] = new byte[1024];
     private Socket socket;
     private int threadNumber;
 
@@ -42,26 +40,8 @@ public class WebServerThread extends Thread {
 		    HttpRequest request = HttpRequest.decodeRequest(in);
 		    HttpResponse response = HttpResponse.createResponse(socket);
 		    
-		    File requestedFile = new File(baseDir, request.getURI());
-		    if (requestedFile.exists()) {
-			
-			response.setContentType("text/html");
-			response.setContentLength((int) requestedFile.length());
-			
-			OutputStream out = response.getOutputStream();
-			InputStream fileIn = new FileInputStream(requestedFile);
-			int readLen = 0;
-			
-			while (readLen != -1) {
-			    readLen = fileIn.read(outputBuffer);
-			    if (readLen != -1) {
-				out.write(outputBuffer, 0, readLen);
-			    }
-			}
-			
-			fileIn.close();
-			out.close();
-		    }
+		    WebService service = WebService.getServiceInstance(request);
+		    service.service(request, response);
 		    
 		    socket.close();
 		    

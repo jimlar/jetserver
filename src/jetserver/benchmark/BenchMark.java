@@ -288,9 +288,11 @@ public class BenchMark {
 	    bench = new BenchMark (url, numThreads);
 	}
 
-	try {
-	    Thread.sleep(20000);
-	} catch (InterruptedException e) {}
+	while (true) {
+	    try {
+		Thread.sleep(20000);
+	    } catch (InterruptedException e) {}
+	}
     }
 }
 

@@ -20,6 +20,14 @@ class ServerConfigHandler extends HandlerBase {
     /* Set value of the property define by the stack state */
     private void setElementValue(String value) {
 	
+	/* trim whitespace */
+	value = value.trim();
+	
+	/* Skip empty values */
+	if (value.equals("")) {
+	    return;
+	}
+
 	String propertyName = "";
 	Iterator iter = elementStack.iterator();
 	while (iter.hasNext()) {
@@ -28,8 +36,19 @@ class ServerConfigHandler extends HandlerBase {
 		propertyName += ".";
 	    }
 	}
-	properties.put(propertyName, value);
+
+	if (properties.containsKey(propertyName)) {
+
+	    List values = (List) properties.get(propertyName);
+	    values.add(value);
+	} else {
+
+	    List values = new ArrayList();
+	    values.add(value);
+	    properties.put(propertyName, values);
+	}
     }
+
 
     /* -- SAX interface implementation -- */
 
@@ -61,6 +80,7 @@ class ServerConfigHandler extends HandlerBase {
 
 	/* Clear charater buffer to receive new data */
 	characterBuffer = new StringBuffer();	
+	elementStack.pop();
     }
 
     public void characters(char[] ch,

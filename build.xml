@@ -5,34 +5,35 @@
   <property name="build.compiler" value="jikes" />
 
   <property name="classpath" value="src:
-				    ./build/classes" />
+				    .build/classes" />
 
   <!-- jetserver -->
   <target name="jetserver" depends="compile">
-    <jar jarfile="build/jetserver.jar" 
-         basedir="build/classes"
+    <jar jarfile=".build/jetserver.jar" 
+         basedir=".build/classes"
          manifest="src/MANIFEST.MF"/>
   </target>
 
   <!-- clean -->
   <target name="clean">
-    <delete dir="build" />
+    <delete dir=".build" />
   </target>
 
   <!-- compile -->
   <target name="compile">
-    <mkdir dir="build/classes"/>
+    <mkdir dir=".build/classes"/>
 
-    <javac destdir="build/classes"
+    <javac destdir=".build/classes"
 	   classpath="${classpath}"
 	   includes="**/*.java">
     
       <src path="src"/>
     </javac>
 
-    <copy todir="build">
+    <copy todir=".build">
       <fileset dir="." includes="lib/*.jar" />
-      <fileset dir="." includes="config/*.xml" />
+      <fileset dir="." includes="config/*.xml,config/mime.types" />
+      <fileset dir="." includes="html/*.html" />
     </copy>
 
   </target>
@@ -42,6 +43,7 @@
     <java classname="jetserver.benchmark.BenchMark"
           classpath="${classpath}">
       <arg value="http://localhost/index.html" />
+      <arg value="3" />
     </java>
   </target>
 

@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 
 <jetserver>
-  <webserver port="8080" root="/home/jimmy/orion/default-web-app" />
+  <webserver port="8080" buffersize="1024">
+
+    <root>../html</root>
+
+    <mime-types-file>mime.types</mime-types-file>
+
+    <welcome-file-list>
+      <welcome-file>index.html</welcome-file>
+      <welcome-file>index.htm</welcome-file>
+    </welcome-file-list>
+  </webserver>
+
 </jetserver>
 
