@@ -7,18 +7,19 @@ import java.util.*;
 
 import jetserver.server.web.WebServer;
 import jetserver.server.deploymanager.DeployManager;
+import jetserver.util.Log;
 
 public class JetServer {
 
-    private WebServer webServer;
     private DeployManager deployManager;
+    private ContainerManager containerManager;
 
     public JetServer() 
 	throws IOException
     {
-	this.webServer = new WebServer();
-	this.deployManager = new DeployManager(webServer.getWebContainerManager());
-	System.out.println("JetServer started.");
+	this.containerManager = new ContainerManager();
+	this.deployManager = new DeployManager(containerManager);
+	Log.getInstance(this).info("JetServer started.");
 
 	this.deployManager.start();
     }

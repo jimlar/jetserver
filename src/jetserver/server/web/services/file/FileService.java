@@ -7,14 +7,17 @@ import java.net.*;
 import java.util.*;
 
 import jetserver.server.web.*;
+import jetserver.util.Log;
 
 public class FileService  {
 
+    private Log log;
     private static final int BUFFER_SIZE = 1024;
     private final FileInfoCache fileInfoCache;
 
-    public FileService(File baseDir, Collection welcomeFiles) throws IOException {
-	this.fileInfoCache = new FileInfoCache(baseDir, welcomeFiles);
+    public FileService(WebApplicationConfig config) throws IOException {	
+	this.fileInfoCache = new FileInfoCache(config);
+	this.log = Log.getInstance(this);
     }
 
     public void service(HttpRequest request, HttpResponse response) 
@@ -55,13 +58,13 @@ public class FileService  {
     private void sendNotFoundResponse(HttpRequest request, HttpResponse response) 
 	throws IOException
     {
-	System.out.println("Sending '404 Not found' for: " + request.getURI());
+	log.debug("Sending '404 Not found' for: " + request.getURI());
     }
 
     private void sendDirectoryIndexResponse(HttpRequest request, HttpResponse response) 
 	throws IOException
     {
-	System.out.println("Sending directory for: " + request.getURI());
+	log.debug("Sending directory for: " + request.getURI());
     }
 
     

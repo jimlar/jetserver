@@ -9,8 +9,8 @@ import jetserver.config.ServerConfig;
 
 public class MimeTypes {
 
-    private static final String MIMETYPES_PROPERTY = "jetserver.webserver.mime-types-file";
-    private static final String DEFAULTMIMETYPE_PROPERTY = "jetserver.webserver.default-mime-type";
+    private static final String MIMETYPES_PROPERTY = "jetserver.webcontainer.mime-types-file";
+    private static final String DEFAULTMIMETYPE_PROPERTY = "jetserver.webcontainer.default-mime-type";
     
     private Map typesByExtension;
     private String defaultMimeType;

@@ -6,15 +6,16 @@ import java.net.*;
 import java.util.*;
 
 import jetserver.config.ServerConfig;
+import jetserver.util.Log;
 
 public class WebServerConnection implements Runnable {
 
     private Socket socket;
-    private WebContainerManager webContainerManager;
+    private WebContainer webContainer;
 
-    public WebServerConnection(Socket socket, WebContainerManager webContainerManager) {
+    public WebServerConnection(Socket socket, WebContainer webContainer) {
 	this.socket = socket;
-	this.webContainerManager = webContainerManager;
+	this.webContainer = webContainer;
     }
 
     public void run() {
@@ -26,10 +27,10 @@ public class WebServerConnection implements Runnable {
 	    HttpResponse response = HttpResponse.createResponse(out);
 	    
 	    /* Ok, now find the correct web container instance */
-	    webContainerManager.dispatchRequest(request, response);
+	    webContainer.dispatchRequest(request, response);
 	    
 	} catch (IOException e) {
-	    e.printStackTrace();	    
+	    Log.getInstance(this).error("Error serving web request", e);
 	} finally {
 	    try {
 		socket.close();

@@ -20,15 +20,14 @@ class FileInfoCache {
     private static final int MAX_FILE_SIZE = 50 * 1024;
     private static final int ENTRY_TIME_TO_LIVE = 5000; 
 
-    private final File baseDir;
+
+    private final WebApplicationConfig config;
     private final MimeTypes mimeTypes;
-    private final Collection welcomeFiles;
     private final Map fileInfoByRequestURI;
 
 
-    public FileInfoCache(File baseDir, Collection welcomeFiles) throws IOException {
-	this.baseDir = baseDir;
-	this.welcomeFiles = welcomeFiles;
+    public FileInfoCache(WebApplicationConfig config) throws IOException {
+	this.config = config;
 	this.mimeTypes = new MimeTypes();
 	this.fileInfoByRequestURI = Collections.synchronizedMap(new WeakHashMap());
     }
@@ -73,7 +72,8 @@ class FileInfoCache {
     private FileInfo createFileInfo(HttpRequest request) 
 	throws IOException
     {
-	File requestedFile = new File(baseDir, request.getURI());
+	String localRequestURI = request.getURI().substring(config.getHttpRoot().length());
+	File requestedFile = new File(config.getFileRoot(), localRequestURI);
 	boolean isDirectoryIndexRequest = false;
 	boolean fileExists = requestedFile.exists();
 	
@@ -124,7 +124,7 @@ class FileInfoCache {
 
     private File getExistingWelcomeFile(File requestedFile) {
 	
-	Iterator iter = welcomeFiles.iterator();
+	Iterator iter = config.getWelcomeFiles().iterator();
 	while (iter.hasNext()) {
 	    File candidate = new File(requestedFile, (String) iter.next());
 	    if (candidate.exists() && candidate.isFile()) {

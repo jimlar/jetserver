@@ -5,24 +5,27 @@ import java.io.*;
 import java.util.*;
 
 import jetserver.config.ServerConfig;
-import jetserver.server.web.WebContainerManager;
-
+import jetserver.server.ContainerManager;
+import jetserver.util.Log;
 
 public class DeployManager implements DirectoryListener {
     
-    private WebContainerManager webContainerManager;
+    private ContainerManager containerManager;
     private DirectoryWatch dropZoneWatch;
     private File dropZone;
     private File deployDir;
 
-    public DeployManager(WebContainerManager webContainerManager) {
+    private Log log;
+
+    public DeployManager(ContainerManager containerManager) {
 	ServerConfig config = ServerConfig.getInstance();
-	this.webContainerManager = webContainerManager;
+	this.containerManager = containerManager;
 	this.deployDir = config.getFile("jetserver.deploymanager.deploy-dir");
 	this.dropZone = config.getFile("jetserver.deploymanager.dropzone");
 	this.dropZoneWatch = new DirectoryWatch(dropZone, 1000);
 	this.dropZoneWatch.addListener(this);
-	System.out.println("Deplymanager initialized, dropZone=" + dropZone.getAbsolutePath());
+	this.log = Log.getInstance(this);
+	log.info("Deplymanager initialized, dropZone=" + dropZone.getAbsolutePath());
     }
     
     public void start() {
@@ -36,19 +39,18 @@ public class DeployManager implements DirectoryListener {
 	    try {
 		File unpackDir = new File(deployDir, file.getName());
 		jar.unpackTo(unpackDir);
-		webContainerManager.deployWebApplication(unpackDir);
+		containerManager.deployWebApplication(unpackDir);
 	    } catch (IOException e) {
-		System.out.println("Cant unpack and deploy " + file);
-		e.printStackTrace();
+		log.error("Cant unpack and deploy " + file, e);
 	    }
 	}
     }
 
     public void fileChanged(File file) {
-	System.out.println("fileChanged " + file);
+	log.debug("fileChanged " + file);
     }
 
     public void fileLost(File file) {
-	System.out.println("fileLost " + file);
+	log.debug("fileLost " + file);
     }
 }

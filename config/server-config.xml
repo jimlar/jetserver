@@ -6,8 +6,8 @@
   <deploymanager dropzone="../dropzone" deploy-dir="../deployments"/>
 
 
-  <!-- Web server settings -->
-  <webserver>
+  <!-- Web container settings -->
+  <webcontainer>
 
     <!-- timeout is socket timeout in seconds -->
     <socket port="8080" timeout="10"/>
@@ -18,6 +18,6 @@
     <mime-types-file>mime.types</mime-types-file>
     <default-mime-type>text/plain</default-mime-type>
 
-  </webserver>
+  </webcontainer>
 </jetserver>
 
