@@ -35,6 +35,8 @@ class FileService extends WebService {
 		return;			
 	    }
 
+	    //response.addHeaderBytes(fileInfo.getHeaderBytes());
+
 	    response.setContentType(fileInfo.getMimeType());
 	    response.setContentLength(fileInfo.getSize());
 	    

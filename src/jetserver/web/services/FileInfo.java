@@ -11,12 +11,16 @@ class FileInfo {
     private boolean fileExists;
     private boolean isDirectoryIndexRequest;
     private byte fileData[];
+    private long outDatedOn;
+    private long lastChanged;
     
     public FileInfo(File    requestedFile,
 		    String  mimeType,
 		    int     size,
 		    boolean fileExists, 
 		    boolean isDirectoryIndexRequest,
+		    int     timeToLive,
+		    long    lastChanged,
 		    byte    fileData[]) {
 	
 	this.requestedFile = requestedFile;
@@ -24,6 +28,8 @@ class FileInfo {
 	this.size = size;
 	this.fileExists = fileExists;
 	this.isDirectoryIndexRequest = isDirectoryIndexRequest;
+	this.outDatedOn = System.currentTimeMillis() + timeToLive;
+	this.lastChanged = lastChanged;
 	this.fileData = fileData;
     }
     
@@ -51,5 +57,13 @@ class FileInfo {
 
     public int getSize() {
 	return this.size;
+    }
+
+    public boolean isOutDated() {
+	return System.currentTimeMillis() > outDatedOn;
+    }
+    
+    public boolean hasChangedOnDisk() {
+	return requestedFile.lastModified() != lastChanged;
     }
 }

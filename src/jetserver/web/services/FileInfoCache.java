@@ -20,12 +20,16 @@ class FileInfoCache {
     private static final String ROOT_PROPERTY = "jetserver.webserver.root";
     private static final String WELCOMEFILES_PROPERTY = "jetserver.webserver.welcome-file-list.welcome-file";
     private static final String CACHEFILESIZE_PROPERTY = "jetserver.webserver.cache.max-file-size";
+    private static final String CACHETTL_PROPERTY = "jetserver.webserver.cache.time-to-live";
 
     private final File baseDir;
     private final MimeTypes mimeTypes;
     private final String welcomeFiles[];
     private final Map fileInfoByRequestURI;
     private final int maxFileSize;
+
+    /* Milliseconds */
+    private final int entryTimeToLive;
 
     public FileInfoCache() throws IOException {
 	ServerConfig config = ServerConfig.getInstance();
@@ -37,6 +41,8 @@ class FileInfoCache {
 	}
 	/* property given i kilobytes */
 	this.maxFileSize = config.getIntProperty(CACHEFILESIZE_PROPERTY) * 1024;
+
+	this.entryTimeToLive = config.getIntProperty(CACHETTL_PROPERTY);
 
 	this.mimeTypes = new MimeTypes();
 	this.fileInfoByRequestURI = Collections.synchronizedMap(new WeakHashMap());
@@ -51,11 +57,28 @@ class FileInfoCache {
 	throws IOException
     {
 	FileInfo fileInfo = (FileInfo) fileInfoByRequestURI.get(request.getURI());
-	if (fileInfo == null) {
-	    fileInfo = createFileInfo(request);
-	    fileInfoByRequestURI.put(request.getURI(), fileInfo);
+	if (fileInfo == null || fileInfo.isOutDated()) {
+	    fileInfo = updateFileInfo(fileInfo, request);
+	    fileInfoByRequestURI.put(request.getURI(),  fileInfo);
 	}	
 	return fileInfo;
+    }
+
+
+    /**
+     * Updated a fileinfo object if needed
+     * (a new info object is created if oldInfo is null)
+     */
+
+    private FileInfo updateFileInfo(FileInfo oldInfo, HttpRequest request)
+	throws IOException
+    {
+	if (oldInfo == null || oldInfo.hasChangedOnDisk()) {	   
+	    System.out.println("Creating new fileInfo instance..");
+	    return createFileInfo(request);
+	} else {
+	    return oldInfo;
+	}
     }
 
     /**
@@ -104,6 +127,8 @@ class FileInfoCache {
 			    size,
 			    fileExists, 
 			    isDirectoryIndexRequest,
+			    entryTimeToLive,
+			    requestedFile.lastModified(),
 			    data);
     }
 

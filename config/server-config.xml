@@ -15,8 +15,7 @@
       <welcome-file>index.htm</welcome-file>
     </welcome-file-list>
 
-    <!-- max size of files to cache in memory (kilobytes) -->
-    <cache max-file-size="50"/>
+    <cache max-file-size="50" time-to-live="2000" />
 
   </webserver>
 </jetserver>
