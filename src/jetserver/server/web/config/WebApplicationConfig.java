@@ -85,7 +85,7 @@ public class WebApplicationConfig {
     private void processWebXML(Document document)
             throws IOException
     {
-        Node root = XMLUtilities.findChildElement(document, "web-app");
+        Node root = XMLUtilities.findFirstChildElement(document, "web-app");
 
         /** Fetch war info */
         this.displayName = XMLUtilities.findValue(root, "display-name");
@@ -94,13 +94,7 @@ public class WebApplicationConfig {
         this.servletConfigsByName = new HashMap();
         NodeList servletNodes = document.getElementsByTagName("servlet");
         for (int i = 0; i < servletNodes.getLength(); i++) {
-            Node node = servletNodes.item(i);
-            JSServletConfig servlet = new JSServletConfig(XMLUtilities.findValue(node,
-                                                                                    "servlet-name"),
-                                                          XMLUtilities.findValue(node,
-                                                                                    "servlet-class"));
-            this.servletConfigsByName.put(servlet.getServletName(),
-                                          servlet);
+            processServletNode(servletNodes.item(i));
         }
 
         /** Fetch servlet mappings */
@@ -122,10 +116,42 @@ public class WebApplicationConfig {
         }
     }
 
+    private void processServletNode(Node node) {
+        String servletName = XMLUtilities.findValue(node, "servlet-name");
+        String servletClass = XMLUtilities.findValue(node, "servlet-class");
+
+        /** Load on startup has an optional integer value which is the priority (we default to zero) */
+        boolean loadOnStartup = XMLUtilities.hasChildElement(node, "load-on-startup");
+        int loadPriority = -1;
+        if (loadOnStartup) {
+            loadPriority = 0;
+            Integer value = XMLUtilities.findIntegerValue(node, "load-on-startup");
+            if (value != null) {
+                loadPriority = value.intValue();
+            }
+        }
+
+        JSServletConfig servletConfig = new JSServletConfig(servletName,
+                                                            servletClass,
+                                                            loadOnStartup,
+                                                            loadPriority);
+
+        /** Fetch init parameters */
+        NodeList paramNodes = XMLUtilities.findChildElements(node, "init-param");
+        for (int i = 0; i < paramNodes.getLength(); i++) {
+            Node paramNode = paramNodes.item(i);
+            String paramName = XMLUtilities.findValue(paramNode, "param-name");
+            String paramValue = XMLUtilities.findValue(paramNode, "param-value");
+            servletConfig.addInitParameter(paramName, paramValue);
+        }
+
+        this.servletConfigsByName.put(servletName, servletConfig);
+    }
+
     private void processJetServerWebXML(Document document)
             throws IOException
     {
-        Node root = XMLUtilities.findChildElement(document, "web-app");
+        Node root = XMLUtilities.findFirstChildElement(document, "web-app");
         this.httpRoot = XMLUtilities.findValue(root, "root");
     }
 }
