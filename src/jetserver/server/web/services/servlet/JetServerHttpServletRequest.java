@@ -21,8 +21,8 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      * This is an enumeration without contents
      */
     private static final Enumeration EMPTY_ENUMERATION = new Enumeration() {
-	public boolean hasMoreElements() { return false; }
-	public Object nextElement() { return null; }	
+        public boolean hasMoreElements() { return false; }
+        public Object nextElement() { return null; }
     };
 
     private WebAppConfig config;
@@ -32,9 +32,9 @@ class JetServerHttpServletRequest implements HttpServletRequest {
     private Map attributes = new HashMap();
 
     JetServerHttpServletRequest(HttpRequest httpRequest, WebAppConfig config) {
-	this.httpRequest = httpRequest;
-	this.config = config;
-	this.log = Log.getInstance(this);
+        this.httpRequest = httpRequest;
+        this.config = config;
+        this.log = Log.getInstance(this);
     }
 
 
@@ -68,10 +68,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public Object getAttribute(String name) {
-	return attributes.get(name);
+        return attributes.get(name);
     }
-    
-   
+
+
     /**
      * Returns an <code>Enumeration</code> containing the
      * names of the attributes available to this request. 
@@ -86,9 +86,9 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public Enumeration getAttributeNames() {
-	return Collections.enumeration(attributes.keySet());
+        return Collections.enumeration(attributes.keySet());
     }
-   
+
     /**
      * Returns the name of the character encoding used in the body of this
      * request. This method returns <code>null</code> if the request
@@ -102,8 +102,8 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getCharacterEncoding() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
 
     /**
@@ -117,12 +117,12 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      * @throws		java.io.UnsupportedEncodingException if this is not a valid encoding
      */
 
-    public void setCharacterEncoding(String env) 
-	throws java.io.UnsupportedEncodingException
+    public void setCharacterEncoding(String env)
+            throws java.io.UnsupportedEncodingException
     {
-	logUnsupportedMehod();	
+        logUnsupportedMehod();
     }
-  
+
     /**
      * Returns the length, in bytes, of the request body 
      * and made available by the input stream, or -1 if the
@@ -135,17 +135,17 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public int getContentLength() {
-	String header = httpRequest.getHeader("content-length");
-	if (header == null) {
-	    return -1;
-	}
-	try {
-	    return Integer.parseInt(header);
-	} catch (NumberFormatException e) {
-	    return -1;
-	}
+        String header = httpRequest.getHeader("content-length");
+        if (header == null) {
+            return -1;
+        }
+        try {
+            return Integer.parseInt(header);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
-    
+
     /**
      * Returns the MIME type of the body of the request, or 
      * <code>null</code> if the type is not known. For HTTP servlets, 
@@ -158,9 +158,9 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getContentType() {
-	return httpRequest.getHeader("content-type");
+        return httpRequest.getHeader("content-type");
     }
-    
+
     /**
      * Retrieves the body of the request as binary data using
      * a {@link ServletInputStream}.  Either this method or 
@@ -177,10 +177,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public ServletInputStream getInputStream() throws IOException {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-     
+
     /**
      * Returns the value of a request parameter as a <code>String</code>,
      * or <code>null</code> if the parameter does not exist. Request parameters
@@ -211,8 +211,8 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getParameter(String name) {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
 
     /**
@@ -230,10 +230,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *			request has no parameters
      *
      */
-     
+
     public Enumeration getParameterNames() {
-	logUnsupportedMehod();
-	return EMPTY_ENUMERATION;
+        logUnsupportedMehod();
+        return EMPTY_ENUMERATION;
     }
 
     /**
@@ -255,10 +255,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String[] getParameterValues(String name) {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
- 
+
     /** Returns a java.util.Map of the parameters of this request.
      * Request parameters
      * are extra information sent with the request.  For HTTP servlets,
@@ -272,10 +272,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public Map getParameterMap() {
-	logUnsupportedMehod();
-	return new HashMap();
+        logUnsupportedMehod();
+        return new HashMap();
     }
- 
+
     /**
      * Returns the name and version of the protocol the request uses
      * in the form <i>protocol/majorVersion.minorVersion</i>, for 
@@ -287,11 +287,11 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *			name and version number
      *
      */
-    
+
     public String getProtocol() {
-	return httpRequest.getProtocol();
+        return httpRequest.getProtocol();
     }
-    
+
     /**
      * Returns the name of the scheme used to make this request, 
      * for example,
@@ -305,10 +305,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getScheme() {
-	logUnsupportedMehod();
-	return "http";
+        logUnsupportedMehod();
+        return "http";
     }
-    
+
     /**
      * Returns the host name of the server that received the request.
      * For HTTP servlets, same as the value of the CGI variable 
@@ -319,10 +319,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getServerName() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      * Returns the port number on which this request was received.
      * For HTTP servlets, same as the value of the CGI variable 
@@ -333,10 +333,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public int getServerPort() {
-	logUnsupportedMehod();
-	return -1;
+        logUnsupportedMehod();
+        return -1;
     }
-    
+
     /**
      * Retrieves the body of the request as character data using
      * a <code>BufferedReader</code>.  The reader translates the character
@@ -362,10 +362,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public BufferedReader getReader() throws IOException {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      * Returns the Internet Protocol (IP) address of the client 
      * that sent the request.  For HTTP servlets, same as the value of the 
@@ -375,12 +375,12 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *			IP address of the client that sent the request
      *
      */
-    
+
     public String getRemoteAddr() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      * Returns the fully qualified name of the client that sent the
      * request. If the engine cannot or chooses not to resolve the hostname 
@@ -394,10 +394,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getRemoteHost() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      *
      * Stores an attribute in this request.
@@ -420,10 +420,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *
      */
 
-    public void setAttribute(String name, Object o) {    
-	attributes.put(name, o);
+    public void setAttribute(String name, Object o) {
+        attributes.put(name, o);
     }
-    
+
     /**
      *
      * Removes an attribute from this request.  This method is not
@@ -442,9 +442,9 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public void removeAttribute(String name) {
-	attributes.remove(name);
+        attributes.remove(name);
     }
-    
+
     /**
      *
      * Returns the preferred <code>Locale</code> that the client will 
@@ -458,10 +458,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public Locale getLocale() {
-	logUnsupportedMehod();
-	return Locale.getDefault();
+        logUnsupportedMehod();
+        return Locale.getDefault();
     }
-    
+
     /**
      *
      * Returns an <code>Enumeration</code> of <code>Locale</code> objects
@@ -479,10 +479,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public Enumeration getLocales() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      *
      * Returns a boolean indicating whether this request was made using a
@@ -495,10 +495,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public boolean isSecure() {
-	logUnsupportedMehod();
-	return false;
+        logUnsupportedMehod();
+        return false;
     }
-   
+
     /**
      *
      * Returns a {@link RequestDispatcher} object that acts as a wrapper for
@@ -530,10 +530,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public RequestDispatcher getRequestDispatcher(String path) {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      * 
      * @deprecated 	As of Version 2.1 of the Java Servlet API,
@@ -542,11 +542,11 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getRealPath(String path) {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
-    
+
+
 
     /*======== The HttpServletRequest interface implementation =========*/
 
@@ -569,11 +569,11 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *			not authenticated.     
      *
      */
-   
+
     public String getAuthType() {
-	logUnsupportedMehod();
-	return null;
-    }           
+        logUnsupportedMehod();
+        return null;
+    }
 
     /**
      *
@@ -589,10 +589,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public Cookie[] getCookies() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      *
      * Returns the value of the specified request header
@@ -629,10 +629,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public long getDateHeader(String name) {
-	logUnsupportedMehod();
-	return -1;
+        logUnsupportedMehod();
+        return -1;
     }
-    
+
     /**
      *
      * Returns the value of the specified request header
@@ -650,10 +650,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *				if the request does not
      *				have a header of that name
      *
-     */			
+     */
 
     public String getHeader(String name) {
-	return httpRequest.getHeader(name);
+        return httpRequest.getHeader(name);
     }
 
     /**
@@ -682,13 +682,13 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *                  	the container does not allow access to
      *                  	header information, return null
      *
-     */			
+     */
 
     public Enumeration getHeaders(String name) {
-	logUnsupportedMehod();
-	return EMPTY_ENUMERATION;
+        logUnsupportedMehod();
+        return EMPTY_ENUMERATION;
     }
-    
+
     /**
      *
      * Returns an enumeration of all the header names
@@ -711,9 +711,9 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public Enumeration getHeaderNames() {
-	return Collections.enumeration(httpRequest.getHeaderNames());
+        return Collections.enumeration(httpRequest.getHeaderNames());
     }
-    
+
     /**
      *
      * Returns the value of the specified request header
@@ -738,13 +738,13 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public int getIntHeader(String name) throws NumberFormatException {
-	String header = httpRequest.getHeader(name);
-	if (header == null) {
-	    return -1;	    
-	}
-	return Integer.parseInt(header);
+        String header = httpRequest.getHeader(name);
+        if (header == null) {
+            return -1;
+        }
+        return Integer.parseInt(header);
     }
-    
+
     /**
      *
      * Returns the name of the HTTP method with which this 
@@ -757,9 +757,9 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *				this request was made
      *
      */
- 
+
     public String getMethod() {
-	return httpRequest.getMethod();
+        return httpRequest.getMethod();
     }
 
     /**
@@ -783,12 +783,12 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *			any extra path information
      *
      */
-     
+
     public String getPathInfo() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-   
+
     /**
      *
      * Returns any extra path information after the servlet name
@@ -810,10 +810,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getPathTranslated() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      *
      * Returns the portion of the request URI that indicates the context
@@ -831,9 +831,9 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getContextPath() {
-	return config.getHttpRoot();
+        return config.getHttpRoot();
     }
-    
+
     /**
      *
      * Returns the query string that is contained in the request
@@ -849,10 +849,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getQueryString() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      *
      * Returns the login of the user making this request, if the
@@ -869,10 +869,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getRemoteUser() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      *
      * Returns a boolean indicating whether the authenticated user is included
@@ -891,10 +891,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public boolean isUserInRole(String role) {
-	logUnsupportedMehod();
-	return false;
+        logUnsupportedMehod();
+        return false;
     }
-    
+
     /**
      *
      * Returns a <code>java.security.Principal</code> object containing
@@ -909,10 +909,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public java.security.Principal getUserPrincipal() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      *
      * Returns the session ID specified by the client. This may
@@ -933,10 +933,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getRequestedSessionId() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-        
+
     /**
      *
      * Returns the part of this request's URL from the protocol
@@ -944,7 +944,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      * The web container does not decode this String.
      * For example:
      *
-     * 
+     *
 
      * <table>
      * <tr align=left><th>First line of HTTP request      </th>
@@ -967,9 +967,9 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getRequestURI() {
-	return this.httpRequest.getURI();
+        return this.httpRequest.getURI();
     }
-    
+
     /**
      *
      * Reconstructs the URL the client used to make the request.
@@ -989,8 +989,8 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *
      */
     public StringBuffer getRequestURL() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
 
     /**
@@ -1011,10 +1011,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getServletPath() {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      *
      * Returns the current <code>HttpSession</code>
@@ -1052,10 +1052,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public HttpSession getSession(boolean create) {
-	logUnsupportedMehod();
-	return null;
+        logUnsupportedMehod();
+        return null;
     }
-    
+
     /**
      *
      * Returns the current session associated with this request,
@@ -1069,9 +1069,9 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public HttpSession getSession() {
-	logUnsupportedMehod();
-	return null;
-    }    
+        logUnsupportedMehod();
+        return null;
+    }
 
     /**
      *
@@ -1089,10 +1089,10 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public boolean isRequestedSessionIdValid() {
-	logUnsupportedMehod();
-	return false;
+        logUnsupportedMehod();
+        return false;
     }
-    
+
 
     /**
      *
@@ -1105,13 +1105,13 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *
      * @see			#getSession
      *
-     */ 
+     */
 
     public boolean isRequestedSessionIdFromCookie() {
-	logUnsupportedMehod();
-	return false;
+        logUnsupportedMehod();
+        return false;
     }
-    
+
     /**
      *
      * Checks whether the requested session ID came in as part of the 
@@ -1125,12 +1125,12 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      * @see			#getSession
      *
      */
-    
+
     public boolean isRequestedSessionIdFromURL() {
-	logUnsupportedMehod();
-	return false;
+        logUnsupportedMehod();
+        return false;
     }
-        
+
     /**
      *
      * @deprecated		As of Version 2.1 of the Java Servlet
@@ -1140,15 +1140,15 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public boolean isRequestedSessionIdFromUrl() {
-	return isRequestedSessionIdFromURL();
+        return isRequestedSessionIdFromURL();
     }
 
 
     private void logUnsupportedMehod() {
-	try {
-	    throw new RuntimeException("method not yet implemented");
-	} catch (RuntimeException e) {
-	    log.debug("mehod not implemented", e);
-	}
+        try {
+            throw new RuntimeException("method not yet implemented");
+        } catch (RuntimeException e) {
+            log.debug("mehod not implemented", e);
+        }
     }
 }

@@ -27,43 +27,43 @@ public class ServletService {
 
 
     public ServletService(WebAppConfig config) {
-	this.config = config;
-	this.log = Log.getInstance(this);
-	this.servletInstanceFactory = new ServletInstanceFactory(config);
+        this.config = config;
+        this.log = Log.getInstance(this);
+        this.servletInstanceFactory = new ServletInstanceFactory(config);
     }
-    
+
     /**
      * @return true if we handled the request 
      */
-    public boolean service(HttpRequest request, HttpResponse response) 
-	throws IOException
-    {	
-	/* search for a servlet mapping */
-	ServletMapping mapping = getMapping(request);
-	if (mapping == null) {
-	    return false;
-	}
+    public boolean service(HttpRequest request, HttpResponse response)
+            throws IOException
+    {
+        /* search for a servlet mapping */
+        ServletMapping mapping = getMapping(request);
+        if (mapping == null) {
+            return false;
+        }
 
-	HttpServlet servlet = servletInstanceFactory.getServletInstance(mapping.getServletName());
+        HttpServlet servlet = servletInstanceFactory.getServletInstance(mapping.getServletName());
 
-	if (servlet != null) {
-	    JetServerHttpServletRequest httpServletRequest 
-		= new JetServerHttpServletRequest(request, config);
-	    JetServerHttpServletResponse httpServletResponse 
-		= new JetServerHttpServletResponse(response, config);
+        if (servlet != null) {
+            JetServerHttpServletRequest httpServletRequest
+                    = new JetServerHttpServletRequest(request, config);
+            JetServerHttpServletResponse httpServletResponse
+                    = new JetServerHttpServletResponse(response, config);
 
-	    try {
-		servlet.service(httpServletRequest, httpServletResponse);
-		httpServletResponse.close();
+            try {
+                servlet.service(httpServletRequest, httpServletResponse);
+                httpServletResponse.close();
 
-	    } catch (ServletException e) {
-		throw new IOException("got servlet exception: " + e);
-	    }
-	} else {
-	    throw new IOException("could not start servlet");
-	}
+            } catch (ServletException e) {
+                throw new IOException("got servlet exception: " + e);
+            }
+        } else {
+            throw new IOException("could not start servlet");
+        }
 
-	return true;
+        return true;
     }
 
     /**
@@ -72,15 +72,15 @@ public class ServletService {
      */
     private ServletMapping getMapping(HttpRequest request) {
 
-	Iterator mappings = config.getServletMappings().iterator();
-	while (mappings.hasNext()) {
-	    ServletMapping mapping = (ServletMapping) mappings.next();
+        Iterator mappings = config.getServletMappings().iterator();
+        while (mappings.hasNext()) {
+            ServletMapping mapping = (ServletMapping) mappings.next();
 
-	    /* Should actually test with the contextpath prepended to the mapping */
-	    if (mapping.getUrlPattern().equals(request.getURI())) {
-		return mapping;
-	    }
-	}
-	return null;
+            /* Should actually test with the contextpath prepended to the mapping */
+            if (mapping.getUrlPattern().equals(request.getURI())) {
+                return mapping;
+            }
+        }
+        return null;
     }
 }
