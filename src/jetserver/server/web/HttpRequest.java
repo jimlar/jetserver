@@ -39,7 +39,7 @@ public class HttpRequest {
 	    i = line.indexOf(":");
 	    String headerKey = line.substring(0, i);
 	    String headerValue = line.substring(i + 2);		
-	    this.headers.put(headerKey, headerValue);
+	    this.headers.put(headerKey.toLowerCase(), headerValue);
 		
 	    line = readLine(in);
 	}	
@@ -57,7 +57,13 @@ public class HttpRequest {
 	return this.protocol;
     }
 
+    public String getHeader(String name) {
+	return (String) headers.get(name.toLowerCase());
+    }
 
+    public Collection getHeaderNames() {
+	return headers.keySet();
+    }
 
     public String toString() {
 	return "[HttpRequest method=" + method + ", uri=" + uri + ", protocol=" + protocol + "]";

@@ -17,10 +17,11 @@ public class HttpResponse {
     private int statusCode;
     private List headerBytes;
     private Map headers;
+
+    private boolean headersFlushed = false;
     
     public static HttpResponse createResponse(OutputStream out)
-	throws IOException 
-    {
+	throws IOException {
 	return new HttpResponse(out);
     }
 
@@ -51,36 +52,45 @@ public class HttpResponse {
 	this.headers.put("Content-type", type);
     }
 
-    private void flushHeaders() throws IOException {
+    public void flushHeaders() throws IOException {
 
-	StringBuffer buffer = new StringBuffer(256);
-
-	buffer.append(this.protocol);
-	buffer.append(" ");
-	buffer.append(statusCode);
-	buffer.append(" ");
-	buffer.append(statusMessage);
-	buffer.append(HEADER_NEWLINE);
-	out.write(Strings.getAsciiBytes(buffer.toString()));
-	
-	Iterator iter = headerBytes.iterator();
-	while (iter.hasNext()) {
-	    byte bytes[] = (byte[]) iter.next();
-	    out.write(bytes);
-	}
-
-	buffer = new StringBuffer(1024);
-	iter = headers.keySet().iterator();
-	while (iter.hasNext()) {
-	    String headerName = (String) iter.next();
-	    buffer.append(headerName);
-	    buffer.append(": ");
-	    buffer.append(headers.get(headerName));
+	if (!headersFlushed) {
+	    StringBuffer buffer = new StringBuffer(256);
+	    
+	    buffer.append(this.protocol);
+	    buffer.append(" ");
+	    buffer.append(statusCode);
+	    buffer.append(" ");
+	    buffer.append(statusMessage);
 	    buffer.append(HEADER_NEWLINE);
+	    out.write(Strings.getAsciiBytes(buffer.toString()));
+	    
+	    Iterator iter = headerBytes.iterator();
+	    while (iter.hasNext()) {
+		byte bytes[] = (byte[]) iter.next();
+		out.write(bytes);
+	    }
+	    
+	    buffer = new StringBuffer(1024);
+	    iter = headers.keySet().iterator();
+	    while (iter.hasNext()) {
+		String headerName = (String) iter.next();
+		buffer.append(headerName);
+		buffer.append(": ");
+		buffer.append(headers.get(headerName));
+		buffer.append(HEADER_NEWLINE);
+	    }
+	    
+	    buffer.append(HEADER_NEWLINE);
+	    
+	    out.write(Strings.getAsciiBytes(buffer.toString()));
+	    out.flush();
+	    headersFlushed = true;
 	}
-	
-	buffer.append(HEADER_NEWLINE);
+    }
 
-	out.write(Strings.getAsciiBytes(buffer.toString()));
+    public void close() throws IOException {
+	flushHeaders();
+	out.close();
     }
 }

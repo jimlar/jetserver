@@ -47,11 +47,15 @@ public class ServletService {
 	HttpServlet servlet = servletInstanceFactory.getServletInstance(mapping.getServletName());
 
 	if (servlet != null) {
-	    HttpServletRequest httpServletRequest = new JetServerHttpServletRequest(request, config);
-	    //HttpServletResponse httpServletResponse = new JetServerHttpServletResponse(request);
+	    JetServerHttpServletRequest httpServletRequest 
+		= new JetServerHttpServletRequest(request, config);
+	    JetServerHttpServletResponse httpServletResponse 
+		= new JetServerHttpServletResponse(response, config);
 
 	    try {
-		servlet.service(httpServletRequest, null);
+		servlet.service(httpServletRequest, httpServletResponse);
+		httpServletResponse.close();
+
 	    } catch (ServletException e) {
 		throw new IOException("got servlet exception: " + e);
 	    }

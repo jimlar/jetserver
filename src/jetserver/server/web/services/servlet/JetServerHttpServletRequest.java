@@ -12,11 +12,14 @@ import jetserver.server.web.config.*;
 import jetserver.util.Log;
 
 /**
- * This is a cache where you fetch the servlet instances
+ * This is the implementation of servlet request
  */
 
 class JetServerHttpServletRequest implements HttpServletRequest {
 
+    /**
+     * This is an enumeration without contents
+     */
     private static final Enumeration EMPTY_ENUMERATION = new Enumeration() {
 	public boolean hasMoreElements() { return false; }
 	public Object nextElement() { return null; }	
@@ -24,8 +27,9 @@ class JetServerHttpServletRequest implements HttpServletRequest {
 
     private WebAppConfig config;
     private Log log;
-
     private HttpRequest httpRequest;
+
+    private Map attributes = new HashMap();
 
     JetServerHttpServletRequest(HttpRequest httpRequest, WebAppConfig config) {
 	this.httpRequest = httpRequest;
@@ -64,8 +68,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public Object getAttribute(String name) {
-	logUnsupportedMehod();
-	return null;
+	return attributes.get(name);
     }
     
    
@@ -83,8 +86,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public Enumeration getAttributeNames() {
-	logUnsupportedMehod();
-	return EMPTY_ENUMERATION;
+	return Collections.enumeration(attributes.keySet());
     }
    
     /**
@@ -133,8 +135,15 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public int getContentLength() {
-	logUnsupportedMehod();
-	return -1;
+	String header = httpRequest.getHeader("content-length");
+	if (header == null) {
+	    return -1;
+	}
+	try {
+	    return Integer.parseInt(header);
+	} catch (NumberFormatException e) {
+	    return -1;
+	}
     }
     
     /**
@@ -149,8 +158,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public String getContentType() {
-	logUnsupportedMehod();
-	return null;
+	return httpRequest.getHeader("content-type");
     }
     
     /**
@@ -413,7 +421,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public void setAttribute(String name, Object o) {    
-	logUnsupportedMehod();
+	attributes.put(name, o);
     }
     
     /**
@@ -434,7 +442,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public void removeAttribute(String name) {
-	logUnsupportedMehod();
+	attributes.remove(name);
     }
     
     /**
@@ -645,8 +653,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */			
 
     public String getHeader(String name) {
-	logUnsupportedMehod();
-	return null;
+	return httpRequest.getHeader(name);
     }
 
     /**
@@ -704,8 +711,7 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public Enumeration getHeaderNames() {
-	logUnsupportedMehod();
-	return EMPTY_ENUMERATION;
+	return Collections.enumeration(httpRequest.getHeaderNames());
     }
     
     /**
@@ -731,9 +737,12 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      *							to an <code>int</code>
      */
 
-    public int getIntHeader(String name) {
-	logUnsupportedMehod();
-	return -1;
+    public int getIntHeader(String name) throws NumberFormatException {
+	String header = httpRequest.getHeader(name);
+	if (header == null) {
+	    return -1;	    
+	}
+	return Integer.parseInt(header);
     }
     
     /**
@@ -1131,7 +1140,6 @@ class JetServerHttpServletRequest implements HttpServletRequest {
      */
 
     public boolean isRequestedSessionIdFromUrl() {
-	logUnsupportedMehod();
 	return isRequestedSessionIdFromURL();
     }
 
