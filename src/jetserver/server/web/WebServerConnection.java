@@ -23,8 +23,7 @@ class WebServerConnection implements Runnable {
         JSHttpServletResponse response = null;
 
         try {
-            InputStream in = new BufferedInputStream(socket.getInputStream());
-            JSHttpServletRequest request = new JSHttpServletRequest(in);
+            JSHttpServletRequest request = new JSHttpServletRequest(socket);
 
             OutputStream out = new BufferedOutputStream(socket.getOutputStream());
             response = new JSHttpServletResponse(out);

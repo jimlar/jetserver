@@ -2,7 +2,7 @@
 package jetserver.server.web;
 
 
-public class ServletMapping {
+class ServletMapping {
     private String servletName;
     private String urlPattern;
 

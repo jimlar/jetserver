@@ -118,7 +118,8 @@ public class WebDeployer {
             }
         }
 
-        JSServletConfig servletConfig = new JSServletConfig(servletName,
+        JSServletConfig servletConfig = new JSServletConfig(webApplication,
+                                                            servletName,
                                                             servletClass,
                                                             loadOnStartup,
                                                             loadPriority);

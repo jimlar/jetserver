@@ -7,7 +7,7 @@ import java.util.*;
 
 import jetserver.server.config.ServerConfig;
 
-public class MimeTypes {
+class MimeTypes {
 
     private static final String MIMETYPES_PROPERTY = "jetserver.webcontainer.mime-types-file";
     private static final String DEFAULTMIMETYPE_PROPERTY = "jetserver.webcontainer.default-mime-type";

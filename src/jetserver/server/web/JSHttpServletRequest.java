@@ -3,6 +3,7 @@ package jetserver.server.web;
 
 import java.io.*;
 import java.util.*;
+import java.net.Socket;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -19,15 +20,14 @@ class JSHttpServletRequest implements HttpServletRequest {
     private static final int MAX_HEADER_LENGTH = 2048;
     private static final byte ASCII_CR = 0xd;
     private static final byte ASCII_LF = 0xa;
-    private static final Enumeration EMPTY_ENUMERATION = new Enumeration() {
-        public boolean hasMoreElements() { return false; }
-        public Object nextElement() { return null; }
-    };
+    private static final Enumeration EMPTY_ENUMERATION = Collections.enumeration(Collections.EMPTY_LIST);
 
     private byte readLineBuffer[] = new byte[MAX_HEADER_LENGTH];
     private WebApplication webApplication;
     private Log log;
 
+    private Socket socket;
+    private JSServletInputStream inputStream;
     private String method;
     private String uri;
     private String protocol;
@@ -37,10 +37,12 @@ class JSHttpServletRequest implements HttpServletRequest {
     /**
      * Create a request instance, the request is decoded from the input stream
      */
-    public JSHttpServletRequest(InputStream in) throws IOException {
+    public JSHttpServletRequest(Socket socket) throws IOException {
         this.log = Log.getInstance(this);
+        this.socket = socket;
+        this.inputStream = new JSServletInputStream(socket.getInputStream());
 
-        String line = readLine(in);
+        String line = readLine(inputStream);
 
         int i = line.indexOf(" ");
         this.method = line.substring(0, i);
@@ -51,7 +53,7 @@ class JSHttpServletRequest implements HttpServletRequest {
 
         /* Fetch headers */
         this.headers = new HashMap();
-        line = readLine(in);
+        line = readLine(inputStream);
         while (line != null && !line.equals("")) {
 
             i = line.indexOf(":");
@@ -59,7 +61,7 @@ class JSHttpServletRequest implements HttpServletRequest {
             String headerValue = line.substring(i + 2);
             this.headers.put(headerKey.toLowerCase(), headerValue);
 
-            line = readLine(in);
+            line = readLine(inputStream);
         }
 
     }
@@ -107,8 +109,7 @@ class JSHttpServletRequest implements HttpServletRequest {
     }
 
     public ServletInputStream getInputStream() throws IOException {
-        logUnsupportedMehod();
-        return null;
+        return this.inputStream;
     }
 
     public String getParameter(String name) {
@@ -156,13 +157,11 @@ class JSHttpServletRequest implements HttpServletRequest {
     }
 
     public String getRemoteAddr() {
-        logUnsupportedMehod();
-        return null;
+        return socket.getInetAddress().getHostAddress();
     }
 
     public String getRemoteHost() {
-        logUnsupportedMehod();
-        return null;
+        return socket.getInetAddress().getHostName();
     }
 
     public void setAttribute(String name, Object o) {
@@ -194,7 +193,7 @@ class JSHttpServletRequest implements HttpServletRequest {
     }
 
     public String getRealPath(String path) {
-        logUnsupportedMehod();
+        /** We are allowed to return null if we are running in a war, which we are */
         return null;
     }
 

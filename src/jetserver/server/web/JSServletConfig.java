@@ -9,14 +9,17 @@ import java.util.HashMap;
 import java.util.Collections;
 
 
-public class JSServletConfig implements ServletConfig {
+class JSServletConfig implements ServletConfig {
+
+    private WebApplication webApplication;
     private String servletName;
     private String className;
     private boolean loadOnStartup;
     private int loadPriority;
     private Map initParameters;
 
-    public JSServletConfig(String servletName, String className, boolean loadOnStartup, int loadPriority) {
+    public JSServletConfig(WebApplication webApplication, String servletName, String className, boolean loadOnStartup, int loadPriority) {
+        this.webApplication = webApplication;
         this.servletName = servletName;
         this.className = className;
         this.loadOnStartup = loadOnStartup;
@@ -42,7 +45,7 @@ public class JSServletConfig implements ServletConfig {
 
     /*=== ServletConfig implementation ===*/
     public ServletContext getServletContext() {
-        return null;
+        return webApplication;
     }
 
     public String getInitParameter(String name) {
