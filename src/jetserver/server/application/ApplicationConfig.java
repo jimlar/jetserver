@@ -1,4 +1,4 @@
-package jetserver.server.ear;
+package jetserver.server.application;
 
 import org.xml.sax.SAXException;
 import org.w3c.dom.NodeList;
@@ -22,9 +22,9 @@ import jetserver.server.ejb.config.*;
 
 
 /**
- * Parser for ejb-jar.xml, creates objects for all elements
+ * Parser for application.xml, creates objects for all elements
  */
-public class EARConfig {
+public class ApplicationConfig {
 
     private Log log;
     private File earRoot;
@@ -32,10 +32,20 @@ public class EARConfig {
     private List ejbModules;
     private List webModules;
 
+    public static ApplicationConfig createEmptyConfig() {
+        return new ApplicationConfig(null);
+    }
+
+    public static ApplicationConfig createFromEARFile(File earRoot) throws IOException {
+        ApplicationConfig config = new ApplicationConfig(earRoot);
+        config.parse();
+        return config;
+    }
+
     /**
      * Create a parser
      */
-    public EARConfig(File earRoot) throws IOException {
+    private ApplicationConfig(File earRoot) throws IOException {
         this.earRoot = earRoot;
         this.ejbModules = new ArrayList();
         this.webModules = new ArrayList();

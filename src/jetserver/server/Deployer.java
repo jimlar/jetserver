@@ -7,8 +7,9 @@ import java.util.*;
 
 import jetserver.server.web.*;
 import jetserver.server.ejb.EJBDeployer;
-import jetserver.server.ear.EARConfig;
-import jetserver.server.ear.Module;
+import jetserver.server.application.ApplicationConfig;
+import jetserver.server.application.Module;
+import jetserver.server.application.Application;
 import jetserver.server.config.ServerConfig;
 import jetserver.util.Log;
 import jetserver.util.EnterpriseJar;
@@ -43,20 +44,21 @@ public class Deployer {
 
         try {
             EnterpriseJar jar = new EnterpriseJar(file);
+            Application newApplication = null;
 
             if (!jar.isValid()) {
                 log.error("The file " + file.getAbsoluteFile() + " is not a valid JAR");
                 return;
             }
 
-            if (jar.isWebApplication()) {
-                deployWebApplication(jar);
+            if (jar.isJ2EEApplication()) {
+                newApplication = deployEAR(jar);
+
+            } else if (jar.isWebApplication()) {
+                newApplication = deployWebApplication(jar);
 
             } else if (jar.isEJBJar()) {
-                deployEJBJar(jar);
-
-            } else if (jar.isJ2EEApplication()) {
-                deployEAR(jar);
+                newApplication = deployEJBJar(jar);
             }
 
         } catch (IOException e) {
@@ -66,44 +68,61 @@ public class Deployer {
 
 
     /**
-     * Deploy a web application
+     * Deploy a stand alone web application
      */
-    public void deployWebApplication(EnterpriseJar jar) throws IOException {
+    private Application deployWebApplication(EnterpriseJar jar) throws IOException {
+        Application application = new Application(ApplicationConfig.createEmptyConfig());
+        return deployWebApplication(application, jar);
+    }
+
+    /**
+     * Deploy a web application as part of an application
+     */
+    private Application deployWebApplication(Application application,
+                                            EnterpriseJar jar) throws IOException {
         File applicationRoot = new File(deployDir, jar.getFile().getName());
         jar.unpackTo(applicationRoot);
         webContainer.deploy(applicationRoot);
+        return application;
     }
 
     /**
      * Deploy an EJB jar
      */
-    public void deployEJBJar(EnterpriseJar jar) throws IOException {
+    private Application deployEJBJar(Application application,
+                             EnterpriseJar jar) throws IOException {
         File ejbJarRoot = new File(deployDir, jar.getFile().getName());
         jar.unpackTo(ejbJarRoot);
         ejbDeployer.deploy(ejbJarRoot);
+        return application;
     }
 
     /**
      * Deploy an EAR
      */
-    public void deployEAR(EnterpriseJar jar) throws IOException {
+    private Application deployEAR(EnterpriseJar jar) throws IOException {
         File earRoot = new File(deployDir, jar.getFile().getName());
         Log.getInstance(this).info("Deploying EAR (" + earRoot + ")");
 
         jar.unpackTo(earRoot);
-        EARConfig earConfig = new EARConfig(earRoot);
-        earConfig.parse();
+        ApplicationConfig applicationConfig = ApplicationConfig.createFromEARFile(earRoot);
+        applicationConfig.parse();
 
-        Iterator ejbModules = earConfig.getEJBModules().iterator();
+        Application application = new Application(applicationConfig);
+
+        Iterator ejbModules = applicationConfig.getEJBModules().iterator();
         while (ejbModules.hasNext()) {
             Module ejbModule = (Module) ejbModules.next();
-            deploy(ejbModule.getFile());
+            deployEJBJar(application,
+                         new EnterpriseJar(ejbModule.getFile()));
         }
 
-        Iterator webModules = earConfig.getWebModules().iterator();
+        Iterator webModules = applicationConfig.getWebModules().iterator();
         while (webModules.hasNext()) {
             Module webModule = (Module) webModules.next();
-            deploy(webModule.getFile());
+            deployWebApplication(application,
+                                 new EnterpriseJar(webModule.getFile()));
         }
+        return application;
     }
 }

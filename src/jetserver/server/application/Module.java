@@ -1,4 +1,4 @@
-package jetserver.server.ear;
+package jetserver.server.application;
 
 import java.io.File;
 
