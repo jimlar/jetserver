@@ -23,7 +23,7 @@ public class HttpResponse {
     }
 
     private HttpResponse(OutputStream out) {
-	this.out = out;
+	this.out = new BufferedOutputStream(out);
 	this.protocol = "HTTP/1.0";
 	this.statusCode = 200;
 	this.statusMessage = "OK";
@@ -46,7 +46,7 @@ public class HttpResponse {
 
     private void flushHeaders() throws IOException {
 
-	StringBuffer buffer = new StringBuffer(256);
+	StringBuffer buffer = new StringBuffer(1024);
 
 	buffer.append(this.protocol);
 	buffer.append(" ");

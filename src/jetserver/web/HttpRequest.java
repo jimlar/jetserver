@@ -28,7 +28,7 @@ public class HttpRequest {
     }
 
     public static HttpRequest decodeRequest(InputStream in) throws IOException {
-
+	in = new BufferedInputStream(in);
 	String line = readLine(in);
 	
 	int i = line.indexOf(" ");
@@ -57,7 +57,7 @@ public class HttpRequest {
     private static String readLine(InputStream in) 
 	throws IOException 
     {
-	StringBuffer buffer = new StringBuffer();
+	StringBuffer buffer = new StringBuffer(256);
 
 	int readChar = in.read();
 	while (readChar != -1 && readChar != '\r' && readChar != '\n') {

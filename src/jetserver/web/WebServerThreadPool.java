@@ -7,35 +7,46 @@ import java.util.*;
 public class WebServerThreadPool {
 
     private int poolSize;
-    private List freeThreads;
+    private WebServerThread[] threads;
+    private boolean[] threadFreeMark;
+
 
     public WebServerThreadPool(int poolSize) {
 	this.poolSize = poolSize;
-	this.freeThreads = new ArrayList();
+	this.threads = new WebServerThread[poolSize];
+	this.threadFreeMark = new boolean[poolSize];
+
+	/* Create all Threads */
 	for (int i = 0; i < poolSize; i++) {
-	    createNewThread();
+	    threads[i] = createNewThread(i);
+
+	    /* Threads will return themselves to the pool */
+	    threadFreeMark[i] = false;
+
+	    threads[i].start();
 	}
     }
     
     /**
      * Start a runnable with an available thread
-     *
      */
     public synchronized void startThread(Socket socket) {
 
-	if (freeThreads.isEmpty()) {
-	    createNewThread();
+	for (int i = 0; i < threads.length; i++) {
+	    if (threadFreeMark[i]) {
+		threadFreeMark[i] = false;
+		threads[i].setSocketAndStart(socket);
+		return;
+	    }
 	}
-	
-	WebServerThread thread = (WebServerThread) freeThreads.remove(0);
-	thread.setSocketAndStart(socket);
+	throw new RuntimeException("no free thread");
     }
 
     public synchronized void returnThread(WebServerThread thread) {
-	freeThreads.add(thread);
+	this.threadFreeMark[thread.getThreadNumber()] = true;
     }
 
-    private void createNewThread() {
-	new WebServerThread(this);
+    private WebServerThread createNewThread(int threadNumber) {
+	return new WebServerThread(this, threadNumber);
     }
 }

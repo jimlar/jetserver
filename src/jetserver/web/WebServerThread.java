@@ -7,14 +7,17 @@ import java.util.*;
 
 public class WebServerThread extends Thread {
 
+    private static final File baseDir = new File("/home/jimmy/orion/default-web-app");
+
     private WebServerThreadPool threadPool;
     private byte outputBuffer[] = new byte[1024];
     private Socket socket;
-    private static final File baseDir = new File("/home/jimmy/orion/default-web-app");
+    private int threadNumber;
 
-    public WebServerThread(WebServerThreadPool threadPool) {
+    public WebServerThread(WebServerThreadPool threadPool, int threadNumber) {
+	super("WebServerThread-" + threadNumber);
 	this.threadPool = threadPool;
-	this.start();
+	this.threadNumber = threadNumber;
     }
 
     public void setSocketAndStart(Socket socket) {
@@ -22,6 +25,10 @@ public class WebServerThread extends Thread {
 	synchronized (this) {
 	    this.notify();
 	}
+    }
+
+    public int getThreadNumber() {
+	return threadNumber;
     }
 
     public void run() {
