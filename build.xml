@@ -49,22 +49,10 @@
   </target>
 
   <!-- start benchmarking -->
-  <target name="javabenchmark" depends="compile">
-    <java classname="jetserver.benchmark.BenchMark"
-          classpath="${classpath}">
-      <arg value="http://localhost/index.html" />
-      <arg value="3" />
-    </java>
-  </target>
-
   <target name="benchmark">
     <echo message="http://localhost:8080/index.html" file=".build/benchmark_urls"/>
     <exec executable="./tools/http_load">
-      <arg value="-parallel"/>
-      <arg value="30"/>
-      <arg value="-fetches"/>
-      <arg value="2000"/>
-      <arg file=".build/benchmark_urls"/>
+      <arg line="-parallel 40 -fetches 2000 .build/benchmark_urls"/>
     </exec>
   </target>
 
