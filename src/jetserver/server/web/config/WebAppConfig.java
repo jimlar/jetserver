@@ -6,6 +6,7 @@ import java.util.*;
 
 public class WebAppConfig {
 
+    private String displayName;
     private String httpRoot;
     private File fileRoot;
     private Collection welcomeFiles = new ArrayList();    
@@ -14,11 +15,14 @@ public class WebAppConfig {
     private Map servletDeclarationsByName = new HashMap();
 
     
-    WebAppConfig(File fileRoot, 
+    WebAppConfig(String displayName,
+		 File fileRoot, 
 		 String httpRoot, 
 		 Collection welcomeFiles,
 		 Collection servletDeclarations,
 		 List servletMappings) {
+	
+	this.displayName = displayName;
 	this.httpRoot = httpRoot;
 	this.fileRoot = fileRoot;
 	this.welcomeFiles = welcomeFiles;
@@ -32,6 +36,10 @@ public class WebAppConfig {
 	    servletDeclarationsByName.put(d.getName(), d);
 	}
     } 
+
+    public String getDisplayName() {
+	return this.displayName;
+    }
 
     public String getHttpRoot() {
 	return this.httpRoot;

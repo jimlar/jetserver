@@ -6,6 +6,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import javax.servlet.http.*;
+
 import jetserver.server.web.*;
 import jetserver.server.web.config.*;
 import jetserver.util.Log;
@@ -18,9 +20,14 @@ import jetserver.util.Log;
 public class ServletService {
 
     private WebAppConfig config;
-    
+    private Log log;
+    private ServletClassLoader classLoader;
+
+
     public ServletService(WebAppConfig config) {
 	this.config = config;
+	this.log = Log.getInstance(this);
+	this.classLoader = new ServletClassLoader(config);
     }
     
     /**
@@ -34,9 +41,20 @@ public class ServletService {
 	if (mapping == null) {
 	    return false;
 	}
+	
+	String servletClassName 
+	    = config.getServletDeclaration(mapping.getServletName()).getClassName();
 
-	System.out.println("Running servlet " 
-			   + config.getServletDeclaration(mapping.getServletName()).getClassName());
+	log.debug("running servlet " + servletClassName);
+
+	try {
+	    Class servletClass = classLoader.loadClass(servletClassName);	
+	    HttpServlet servlet = (HttpServlet) servletClass.newInstance();
+	} catch (Exception e) {
+	    throw new IOException("cant run servlet " + e);
+	}
+
+	log.debug("servlet " + servletClassName + " done");
 
 	return true;
     }

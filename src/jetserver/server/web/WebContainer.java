@@ -46,7 +46,8 @@ public class WebContainer {
 	WebApplication webApplication = new WebApplication(config);
 	webApplications.add(webApplication);
 
-	log.info("Deployed " + webApplication);
+	log.info("Deployed " + config.getDisplayName());
+	System.out.println("Deployed " + config.getDisplayName());
     }
 
     /**

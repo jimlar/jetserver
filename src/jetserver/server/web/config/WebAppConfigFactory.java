@@ -31,7 +31,8 @@ public class WebAppConfigFactory {
 	    JetServerWebXMLHandler jetServerWebXMLHandler = new JetServerWebXMLHandler();	    
 	    parser.parse(new FileInputStream(jetServerWebXML), jetServerWebXMLHandler);
 
-	    return new WebAppConfig(applicationRoot, 
+	    return new WebAppConfig(webXMLHandler.displayName,
+				    applicationRoot, 
 				    jetServerWebXMLHandler.httpRoot,
 				    webXMLHandler.welcomeFiles,
 				    webXMLHandler.servletDeclarations,
@@ -51,6 +52,7 @@ public class WebAppConfigFactory {
     private static class WebXMLHandler extends HandlerBase {
 	private StringBuffer characterBuffer = new StringBuffer();
 
+	public String displayName;
 	public Collection welcomeFiles = new ArrayList();
 	
 	private String servletName;
@@ -69,6 +71,9 @@ public class WebAppConfigFactory {
 	    if (name.equals("welcome-file") && characterBuffer.length() > 0) {
 		welcomeFiles.add(characterBuffer.toString().trim());
 	    
+	    } else if (name.equals("display-name")) {
+		displayName = characterBuffer.toString().trim();
+
 	    } else if (name.equals("servlet-name")) {
 		servletName = characterBuffer.toString().trim();
 	    } else if (name.equals("servlet-class")) {

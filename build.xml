@@ -7,7 +7,8 @@
   <property name="classpath" value="src:
 				    build/classes:
                                     lib/xerces.jar:
-                                    lib/concurrent.jar" />
+                                    lib/concurrent.jar:
+                                    lib/servlet.jar" />
 
   <!-- jetserver -->
   <target name="jetserver" depends="compile">
@@ -19,6 +20,9 @@
   <!-- clean -->
   <target name="clean">
     <delete dir="build" />
+    <delete>
+      <fileset dir="test/testwebapp/WEB-INF/classes" includes="**/*.class"/>
+    </delete>
   </target>
 
   <!-- compile -->
@@ -43,6 +47,14 @@
 
   <!-- test web application -->
   <target name="testwebapp">
+
+    <javac destdir="test/testwebapp/WEB-INF/classes"
+	   classpath="${classpath}"
+	   includes="**/*.java">
+    
+      <src path="test/testwebapp/WEB-INF/classes"/>
+    </javac>
+
     <mkdir dir="build/dropzone"/>
     <jar jarfile="build/dropzone/testwebapp.war" 
          basedir="test/testwebapp" />
