@@ -23,7 +23,20 @@ public class DeployManager implements DirectoryListener {
     
 
     public void fileFound(File file) {
-	System.out.println("fileFound " + file);
+	JAR jar = new JAR(file);
+	if (!jar.isValid()) {
+	    System.out.println("Found non-jar file: " + file);
+	} else {
+	    if (jar.contains("META-INF/ejb-jar.xml")) {
+		System.out.println("Found EJB jar: " + file);
+	    } else if (jar.contains("WEB-INF/web.xml")) {
+		System.out.println("Found web application: " + file);
+	    } else if (jar.contains("META-INF/application.xml")) {
+		System.out.println("Found J2EE application EAR: " + file);
+	    } else {
+		System.out.println("Found unhandled file: " + file);
+	    }
+	}
     }
 
     public void fileChanged(File file) {
