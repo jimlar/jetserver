@@ -14,7 +14,11 @@ public class HelloContainerServlet extends HttpServlet {
 		      HttpServletResponse response)
 	throws ServletException, IOException {
 
-	System.out.println("Hello container!");
-    }
+	System.out.println("--Hello container!");
 
+	response.setContentType("text/html");
+	PrintWriter writer = response.getWriter();
+	writer.println("<b>--Hello container!</b>");
+	writer.flush();
+    }
 }
