@@ -24,8 +24,12 @@ public class JetServerEntityResolver implements EntityResolver {
 
     static {
         resourcesByPublicId = new HashMap();
-        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN", "web-app_2.2.dtd");
-        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN", "web-app_2.3.dtd");
+
+        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN", "web-app_2_2.dtd");
+        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN", "web-app_2_3.dtd");
+
+        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 1.1//EN", "ejb-jar_1_1.dtd");
+        resourcesByPublicId.put("-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN", "ejb-jar_2_0.dtd");
     }
 
     public JetServerEntityResolver() {
@@ -42,7 +46,7 @@ public class JetServerEntityResolver implements EntityResolver {
     {
         if (resourcesByPublicId.containsKey(publicId)) {
             String resourceName = (String) resourcesByPublicId.get(publicId);
-            InputStream resource = this.getClass().getClassLoader().getResourceAsStream(resourceName);
+            InputStream resource = getClass().getResourceAsStream(resourceName);
             if (resource == null) {
                 log.error("Loading handled resource failed (not found) " + resourceName);
                 return null;

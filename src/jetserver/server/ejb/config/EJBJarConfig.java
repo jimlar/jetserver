@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 import jetserver.util.Log;
+import jetserver.util.xml.JetServerEntityResolver;
 
 
 /**
@@ -70,8 +71,9 @@ public class EJBJarConfig {
     public void parse() throws IOException {
 
         try {
-            DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             File ejbJarXML = new File(ejbJarRoot, "META-INF" + File.separator + "ejb-jar.xml");
+            DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            parser.setEntityResolver(new JetServerEntityResolver());
             Document document = parser.parse(ejbJarXML.getAbsolutePath());
             processDocument(document);
 
