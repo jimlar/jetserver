@@ -1,15 +1,16 @@
 
 
-package jetserver.web.services;
+package jetserver.web.services.file;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
 import jetserver.web.*;
+import jetserver.web.services.WebService;
 import jetserver.config.ServerConfig;
 
-class FileService extends WebService {
+public class FileService extends WebService {
 
     private static final String BUFFERSIZE_PROPERTY = "jetserver.webserver.buffersize";
 

@@ -5,6 +5,8 @@ package jetserver.web.services;
 import java.io.*;
 
 import jetserver.web.*;
+import jetserver.web.services.file.*;
+import jetserver.web.services.servlet.*;
 
 public abstract class WebService {
 
@@ -27,7 +29,7 @@ public abstract class WebService {
 	fileService = new FileService();
     }
 
-    private boolean isInitialized() {
+    private static boolean isInitialized() {
 	return fileService != null;
     }
 
