@@ -15,7 +15,7 @@ import jetserver.util.Strings;
  * This is the implementation of servlet request
  */
 
-public class JSHttpServletRequest implements HttpServletRequest {
+class JSHttpServletRequest implements HttpServletRequest {
 
     private static final int MAX_HEADER_LENGTH = 2048;
     private static final byte ASCII_CR = 0xd;

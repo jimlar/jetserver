@@ -9,7 +9,7 @@ import jetserver.server.config.ServerConfig;
 import jetserver.server.Deployer;
 import jetserver.util.Log;
 
-public class WebServerConnection implements Runnable {
+class WebServerConnection implements Runnable {
 
     private Socket socket;
     private Deployer deployer;

@@ -15,7 +15,7 @@ import jetserver.util.Strings;
  * This is an implementation of servlet response
  */
 
-public class JSHttpServletResponse implements HttpServletResponse {
+class JSHttpServletResponse implements HttpServletResponse {
 
     public static final String HEADER_NEWLINE = "\r\n";
     private String encoding = "iso-8859-1";

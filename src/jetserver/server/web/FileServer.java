@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class FileServer {
+class FileServer {
 
     private Log log;
     private static final int BUFFER_SIZE = 1024;

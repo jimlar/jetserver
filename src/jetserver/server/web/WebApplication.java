@@ -4,7 +4,6 @@ package jetserver.server.web;
 import java.io.*;
 import java.util.*;
 
-import jetserver.server.web.servlet.*;
 import jetserver.server.web.config.WebApplicationConfig;
 import jetserver.server.web.config.ServletMapping;
 import jetserver.server.application.Application;
@@ -47,7 +46,7 @@ public class WebApplication {
             fileServer.serveFile(request, response);
 
         } else {
-            HttpServlet servlet = servletInstanceFactory.getServletInstance(mapping.getServletName());
+            HttpServlet servlet = servletInstanceFactory.getServletInstance(mapping);
             try {
                 servlet.service(request, response);
 

@@ -8,12 +8,13 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import jetserver.util.Log;
+import jetserver.server.web.config.ServletMapping;
 
 /**
  * This is a factory where you fetch the servlet instances
  */
 
-public class ServletInstanceFactory {
+class ServletInstanceFactory {
 
     private WebApplication webApp;
     private Log log;
@@ -32,8 +33,9 @@ public class ServletInstanceFactory {
      * Fetch a servlet instance with the name of a servlet
      */
 
-    public HttpServlet getServletInstance(String servletName) throws IOException {
+    public HttpServlet getServletInstance(ServletMapping servletMapping) throws IOException {
 
+        String servletName = servletMapping.getServletName();
         HttpServlet servlet = (HttpServlet) instancesByName.get(servletName);
 
         if (servlet == null) {
