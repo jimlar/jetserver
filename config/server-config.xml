@@ -10,6 +10,7 @@
     <!-- keep alive time is in seconds -->
     <threads max="10" min="1" start="1" keep-alive-time="60"/>  
 
+    <!-- The webserver root -->
     <root>../html</root>
 
     <mime-types-file>mime.types</mime-types-file>

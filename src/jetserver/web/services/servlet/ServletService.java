@@ -10,7 +10,7 @@ import jetserver.web.*;
 import jetserver.web.services.WebService;
 import jetserver.config.ServerConfig;
 
-public class ServletService extends WebService {
+public class ServletService implements WebService {
     
     public ServletService() throws IOException {
 	ServerConfig config = ServerConfig.getInstance();

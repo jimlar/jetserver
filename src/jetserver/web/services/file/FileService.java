@@ -9,7 +9,7 @@ import java.util.*;
 import jetserver.web.*;
 import jetserver.web.services.WebService;
 
-public class FileService extends WebService {
+public class FileService implements WebService {
 
     private static final int BUFFER_SIZE = 1024;
     private final FileInfoCache fileInfoCache;

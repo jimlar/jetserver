@@ -6,14 +6,16 @@ import java.net.*;
 import java.util.*;
 
 import jetserver.config.ServerConfig;
-import jetserver.web.services.WebService;
+import jetserver.web.services.Dispatcher;
 
-public class WebServerThread implements Runnable {
+public class WebServerConnection implements Runnable {
 
     private Socket socket;
+    private Dispatcher dispatcher;
 
-    public WebServerThread(Socket socket) {
+    public WebServerConnection(Socket socket, Dispatcher dispatcher) {
 	this.socket = socket;
+	this.dispatcher = dispatcher;
     }
 
     public void run() {
@@ -24,8 +26,7 @@ public class WebServerThread implements Runnable {
 	    OutputStream out = new BufferedOutputStream(socket.getOutputStream());
 	    HttpResponse response = HttpResponse.createResponse(out);
 	    
-	    WebService service = WebService.getServiceInstance(request);
-	    service.service(request, response);
+	    dispatcher.dispatch(request, response);
 	    
 	    socket.close();
 
