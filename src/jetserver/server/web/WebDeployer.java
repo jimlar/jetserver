@@ -23,7 +23,7 @@ public class WebDeployer {
     public WebApplication deploy(File applicationRoot, Application application) throws IOException {
         log.info("Deploying webapp in dir " + applicationRoot);
 
-        WebApplicationConfig config = WebApplicationConfig.decode(applicationRoot);
+        WebApplicationConfig config = new WebApplicationConfig(applicationRoot);
         WebApplication webApplication = new WebApplication(application, config);
         application.addWebApplication(webApplication);
 

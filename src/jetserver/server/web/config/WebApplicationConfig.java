@@ -19,15 +19,17 @@ public class WebApplicationConfig {
     private String displayName;
     private String httpRoot;
     private File fileRoot;
-    private Collection welcomeFiles = new ArrayList();
 
-    private List servletMappings = new ArrayList();
-    private Map servletDeclarationsByName = new HashMap();
+    private List welcomeFiles;
+    private List servletMappings;
+    private Map servletConfigsByName;
 
 
-    public WebApplicationConfig(File fileRoot) {
+    public WebApplicationConfig(File fileRoot) throws IOException {
         this.fileRoot = fileRoot;
+        parse();
     }
+
 
     public String getDisplayName() {
         return this.displayName;
@@ -49,14 +51,14 @@ public class WebApplicationConfig {
         return this.servletMappings;
     }
 
-    public JSServletConfig getServletDeclaration(String servletName) {
-        return (JSServletConfig) this.servletDeclarationsByName.get(servletName);
+    public JSServletConfig getServletConfig(String servletName) {
+        return (JSServletConfig) this.servletConfigsByName.get(servletName);
     }
 
     /**
      * Parse the xml
      */
-    public void parse() throws IOException {
+    private void parse() throws IOException {
         try {
             DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             parser.setEntityResolver(new JetServerEntityResolver());
@@ -68,7 +70,7 @@ public class WebApplicationConfig {
 
             /* parse jetserver web xml */
             File jetServerWebXML = new File(webINF, "jetserver-web.xml");
-            processJetServerWebXML(parser.parse(webXML.getAbsolutePath()));
+            processJetServerWebXML(parser.parse(jetServerWebXML.getAbsolutePath()));
 
 
         } catch (ParserConfigurationException e) {
@@ -83,63 +85,47 @@ public class WebApplicationConfig {
     private void processWebXML(Document document)
             throws IOException
     {
+        Node root = XMLUtilities.findChildElement(document, "web-app");
+
+        /** Fetch war info */
+        this.displayName = XMLUtilities.findValue(root, "display-name");
+
+        /** Fetch servlets */
+        this.servletConfigsByName = new HashMap();
         NodeList servletNodes = document.getElementsByTagName("servlet");
+        for (int i = 0; i < servletNodes.getLength(); i++) {
+            Node node = servletNodes.item(i);
+            JSServletConfig servlet = new JSServletConfig(XMLUtilities.findValue(node,
+                                                                                    "servlet-name"),
+                                                          XMLUtilities.findValue(node,
+                                                                                    "servlet-class"));
+            this.servletConfigsByName.put(servlet.getServletName(),
+                                          servlet);
+        }
+
+        /** Fetch servlet mappings */
+        this.servletMappings = new ArrayList();
         NodeList servletMappingNodes = document.getElementsByTagName("servlet-mapping");
+        for (int i = 0; i < servletMappingNodes.getLength(); i++) {
+            Node node = servletMappingNodes.item(i);
+            ServletMapping servletMapping = new ServletMapping(XMLUtilities.findValue(node, "servlet-name"),
+                                                               XMLUtilities.findValue(node, "url-pattern"));
+            this.servletMappings.add(servletMapping);
+        }
+
+        /** Fetch welcome files */
+        this.welcomeFiles = new ArrayList();
+        NodeList welcomeFileNodes = document.getElementsByTagName("welcome-file");
+        for (int i = 0; i < welcomeFileNodes.getLength(); i++) {
+            Node node = welcomeFileNodes.item(i);
+            this.welcomeFiles.add(node.getFirstChild().getNodeValue());
+        }
     }
 
     private void processJetServerWebXML(Document document)
             throws IOException
     {
-        this.httpRoot = XMLUtilities.findProperty(document.getFirstChild(), "root");
-    }
-
-
-    /* --- XML handler for web.xml --- */
-
-    private static class WebXMLHandler extends HandlerBase {
-        private StringBuffer characterBuffer = new StringBuffer();
-
-        public String displayName;
-        public Collection welcomeFiles = new ArrayList();
-
-        private String servletName;
-        private String servletClass;
-        private String urlPattern;
-
-        public List servletDeclarations = new ArrayList();;
-        public List servletMappings = new ArrayList();;
-
-        public void startElement(String name, AttributeList attributes) throws SAXException {
-            characterBuffer = new StringBuffer();
-        }
-
-        public void endElement(String name) throws SAXException {
-
-            if (name.equals("welcome-file") && characterBuffer.length() > 0) {
-                welcomeFiles.add(characterBuffer.toString().trim());
-
-            } else if (name.equals("display-name")) {
-                displayName = characterBuffer.toString().trim();
-
-            } else if (name.equals("servlet-name")) {
-                servletName = characterBuffer.toString().trim();
-            } else if (name.equals("servlet-class")) {
-                servletClass = characterBuffer.toString().trim();
-            } else if (name.equals("url-pattern")) {
-                urlPattern = characterBuffer.toString().trim();
-
-            } else if (name.equals("servlet")) {
-                servletDeclarations.add(new JSServletConfig(servletName, servletClass));
-
-            } else if (name.equals("servlet-mapping")) {
-                servletMappings.add(new ServletMapping(servletName, urlPattern));
-            }
-
-            characterBuffer = new StringBuffer();
-        }
-
-        public void characters(char[] ch, int start, int length) throws SAXException {
-            characterBuffer.append(ch, start, length);
-        }
+        Node root = XMLUtilities.findChildElement(document, "web-app");
+        this.httpRoot = XMLUtilities.findValue(root, "root");
     }
 }

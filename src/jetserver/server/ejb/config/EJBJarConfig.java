@@ -112,10 +112,10 @@ public class EJBJarConfig {
         NodeList ejbJarNodes = document.getElementsByTagName("ejb-jar");
         if (ejbJarNodes != null) {
             Node ejbJarNode = ejbJarNodes.item(0);
-            this.description = XMLUtilities.findProperty(ejbJarNode, "description");
-            this.displayName = XMLUtilities.findProperty(ejbJarNode, "display-name");
-            this.smallIcon = XMLUtilities.findProperty(ejbJarNode, "small-icon");
-            this.largeIcon = XMLUtilities.findProperty(ejbJarNode, "large-icon");
+            this.description = XMLUtilities.findValue(ejbJarNode, "description");
+            this.displayName = XMLUtilities.findValue(ejbJarNode, "display-name");
+            this.smallIcon = XMLUtilities.findValue(ejbJarNode, "small-icon");
+            this.largeIcon = XMLUtilities.findValue(ejbJarNode, "large-icon");
         }
 
         /* Fetch entity beans */
@@ -164,13 +164,13 @@ public class EJBJarConfig {
         entityBean.setLocalHomeClass(findClassProperty(entityBeanNode, "local-home"));
         entityBean.setLocalClass(findClassProperty(entityBeanNode, "local"));
 
-        entityBean.setPersistenceType(XMLUtilities.findProperty(entityBeanNode, "persistence-type"));
-        entityBean.setPrimKeyClass(XMLUtilities.findProperty(entityBeanNode, "prim-key-class"));
-        entityBean.setPrimKeyClass(XMLUtilities.findProperty(entityBeanNode, "primkey-field"));
-        entityBean.setReentrant(XMLUtilities.findProperty(entityBeanNode, "reentrant").equalsIgnoreCase("true"));
+        entityBean.setPersistenceType(XMLUtilities.findValue(entityBeanNode, "persistence-type"));
+        entityBean.setPrimKeyClass(XMLUtilities.findValue(entityBeanNode, "prim-key-class"));
+        entityBean.setPrimKeyClass(XMLUtilities.findValue(entityBeanNode, "primkey-field"));
+        entityBean.setReentrant(XMLUtilities.findValue(entityBeanNode, "reentrant").equalsIgnoreCase("true"));
 
-        entityBean.setCmpVersion(XMLUtilities.findProperty(entityBeanNode, "cmp-version"));
-        entityBean.setAbstractSchemaName(XMLUtilities.findProperty(entityBeanNode, "abstract-schema-name"));
+        entityBean.setCmpVersion(XMLUtilities.findValue(entityBeanNode, "cmp-version"));
+        entityBean.setAbstractSchemaName(XMLUtilities.findValue(entityBeanNode, "abstract-schema-name"));
 
         /*
          *  Fetch CMP fields
@@ -180,7 +180,7 @@ public class EJBJarConfig {
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             if (node.getNodeName().equals("cmp-field")) {
-                cmpFields.add(new CMPField(XMLUtilities.findProperty(node, "field-name")));
+                cmpFields.add(new CMPField(XMLUtilities.findValue(node, "field-name")));
             }
         }
         entityBean.setCmpFields(cmpFields);
@@ -208,8 +208,8 @@ public class EJBJarConfig {
         sessionBean.setLocalHomeClass(findClassProperty(sessionBeanNode, "local-home"));
         sessionBean.setLocalClass(findClassProperty(sessionBeanNode, "local"));
 
-        sessionBean.setSessionType(XMLUtilities.findProperty(sessionBeanNode, "session-type"));
-        sessionBean.setTransactionType(XMLUtilities.findProperty(sessionBeanNode, "transaction-type"));
+        sessionBean.setSessionType(XMLUtilities.findValue(sessionBeanNode, "session-type"));
+        sessionBean.setTransactionType(XMLUtilities.findValue(sessionBeanNode, "transaction-type"));
 
         this.sessionBeans.add(sessionBean);
         log.debug("Found session bean " + sessionBean.getEJBName());
@@ -224,9 +224,9 @@ public class EJBJarConfig {
         MessageBeanDefinition messageBean = new MessageBeanDefinition();
         processBeanCommons(messageBean,  messageBeanNode, document);
 
-        messageBean.setTransactionType(XMLUtilities.findProperty(messageBeanNode, "transaction-type"));
-        messageBean.setMessageSelector(XMLUtilities.findProperty(messageBeanNode, "message-selector"));
-        messageBean.setAcknowledgeMode(XMLUtilities.findProperty(messageBeanNode, "acknowledge-mode"));
+        messageBean.setTransactionType(XMLUtilities.findValue(messageBeanNode, "transaction-type"));
+        messageBean.setMessageSelector(XMLUtilities.findValue(messageBeanNode, "message-selector"));
+        messageBean.setAcknowledgeMode(XMLUtilities.findValue(messageBeanNode, "acknowledge-mode"));
 
         /*
          * TODO: handle these
@@ -244,11 +244,11 @@ public class EJBJarConfig {
     private void processBeanCommons(BeanDefinition bean, Node beanNode, Document document)
             throws IOException
     {
-        bean.setDescription(XMLUtilities.findProperty(beanNode, "description"));
-        bean.setDisplayName(XMLUtilities.findProperty(beanNode, "display-name"));
-        bean.setSmallIcon(XMLUtilities.findProperty(beanNode, "small-icon"));
-        bean.setLargeIcon(XMLUtilities.findProperty(beanNode, "large-icon"));
-        bean.setEJBName(XMLUtilities.findProperty(beanNode, "ejb-name"));
+        bean.setDescription(XMLUtilities.findValue(beanNode, "description"));
+        bean.setDisplayName(XMLUtilities.findValue(beanNode, "display-name"));
+        bean.setSmallIcon(XMLUtilities.findValue(beanNode, "small-icon"));
+        bean.setLargeIcon(XMLUtilities.findValue(beanNode, "large-icon"));
+        bean.setEJBName(XMLUtilities.findValue(beanNode, "ejb-name"));
 
         bean.setEjbClass(findClassProperty(beanNode, "ejb-class"));
 
@@ -261,7 +261,7 @@ public class EJBJarConfig {
          * - resourceEnvReferences
          * - roleReferences
          */
-        bean.setSecurityIdentity(XMLUtilities.findProperty(beanNode, "security-identity"));
+        bean.setSecurityIdentity(XMLUtilities.findValue(beanNode, "security-identity"));
     }
 
 
@@ -273,7 +273,7 @@ public class EJBJarConfig {
     private Class findClassProperty(Node node, String propertyName)
             throws IOException
     {
-        String className = XMLUtilities.findProperty(node, propertyName);
+        String className = XMLUtilities.findValue(node, propertyName);
         if (className == null) {
             return null;
         }

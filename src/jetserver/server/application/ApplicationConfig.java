@@ -98,7 +98,7 @@ public class ApplicationConfig {
     private void processModule(Node moduleNode) {
 
         /* Is it an ejb module? */
-        String ejbModuleURI = XMLUtilities.findProperty(moduleNode, "ejb");
+        String ejbModuleURI = XMLUtilities.findValue(moduleNode, "ejb");
         if (ejbModuleURI != null) {
             File file = new File(earRoot, ejbModuleURI);
             ejbModules.add(new Module(file, ejbModuleURI));
@@ -112,7 +112,7 @@ public class ApplicationConfig {
             for (int i = 0; i < children.getLength(); i++) {
                 Node webNode = children.item(i);
                 if (webNode.getNodeName().equals("web")) {
-                    String uri = XMLUtilities.findProperty(webNode, "web-uri");
+                    String uri = XMLUtilities.findValue(webNode, "web-uri");
                     File file = new File(earRoot, uri);
                     webModules.add(new Module(file, uri));
                     log.debug("Found web module " + uri);

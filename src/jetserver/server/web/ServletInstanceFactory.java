@@ -55,14 +55,18 @@ class ServletInstanceFactory {
 
     private HttpServlet createInstance(String servletName) throws IOException {
         try {
-            JSServletConfig servletDeclaration = webApp.getConfig().getServletDeclaration(servletName);
-            Class servletClass = classLoader.loadClass(servletDeclaration.getClassName());
+            JSServletConfig servletConfig = webApp.getConfig().getServletConfig(servletName);
+            Class servletClass = classLoader.loadClass(servletConfig.getClassName());
             HttpServlet servlet = (HttpServlet) servletClass.newInstance();
             if (servlet instanceof SingleThreadModel) {
                 throw new RuntimeException("single thread model servlets are not supported!");
             }
 
-            servlet.init(null);
+            try {
+                servlet.init(servletConfig);
+            } catch (ServletException e) {
+                throw new IOException("Cant initialize servlet: " + e);
+            }
             return servlet;
 
         } catch (ClassNotFoundException e) {
