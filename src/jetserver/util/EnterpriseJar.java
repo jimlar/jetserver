@@ -7,16 +7,22 @@ import java.util.jar.*;
 
 public class EnterpriseJar {
 
+    private File file;
     private boolean isValid;
     private JarFile jarFile;
 
     public EnterpriseJar(File file) {
+        this.file = file;
         try {
             this.jarFile = new JarFile(file);
             isValid = true;
         } catch (IOException e) {
             isValid = false;
         }
+    }
+
+    public File getFile() {
+        return file;
     }
 
     /** @return true if this is a valid jar file */

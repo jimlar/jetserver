@@ -12,7 +12,9 @@
   </logs>
 
   <!-- The dropzone is where you put your war/ear/ejb-jar file to deploy it -->
-  <dropzonewatch dropzone="../dropzone" deploy-dir="../deployments"/>
+  <dropzonewatch dropzone="../dropzone"/>
+
+  <deployer deploy-dir="../deployments"/>
 
   <webcontainer>
 

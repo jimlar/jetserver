@@ -12,10 +12,18 @@
     <servlet-name>HelloContainerServlet</servlet-name>
     <servlet-class>HelloContainerServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>EJBCallerServlet</servlet-name>
+    <servlet-class>EJBCallerServlet</servlet-class>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>HelloContainerServlet</servlet-name>
     <url-pattern>/hellocontainer</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>EJBCallerServlet</servlet-name>
+    <url-pattern>/callejb</url-pattern>
   </servlet-mapping>
 
   <welcome-file-list>

@@ -10,17 +10,16 @@ import jetserver.util.*;
 
 public class DropZoneWatch implements DirectoryListener {
     
-    private Deployer containerManager;
+    private Deployer deployer;
     private DirectoryWatch directoryWatch;
     private File dropZone;
     private File deployDir;
 
     private Log log;
 
-    public DropZoneWatch(Deployer containerManager) {
+    public DropZoneWatch(Deployer deployer) {
         ServerConfig config = ServerConfig.getInstance();
-        this.containerManager = containerManager;
-        this.deployDir = config.getFile("jetserver.dropzonewatch.deploy-dir");
+        this.deployer = deployer;
         this.dropZone = config.getFile("jetserver.dropzonewatch.dropzone");
         this.directoryWatch = new DirectoryWatch(dropZone, 1000);
         this.directoryWatch.addListener(this);
@@ -33,30 +32,7 @@ public class DropZoneWatch implements DirectoryListener {
     }
 
     public void fileFound(File file) {
-
-        EnterpriseJar jar = new EnterpriseJar(file);
-        if (jar.isWebApplication()) {
-
-            try {
-                File unpackDir = new File(deployDir, file.getName());
-                jar.unpackTo(unpackDir);
-                containerManager.deployWebApplication(unpackDir);
-
-            } catch (IOException e) {
-                log.error("Cant unpack and deploy " + file, e);
-            }
-
-        } else if (jar.isEJBJar()) {
-
-            try {
-                File unpackDir = new File(deployDir, file.getName());
-                jar.unpackTo(unpackDir);
-                containerManager.deployEJBJar(unpackDir);
-
-            } catch (IOException e) {
-                log.error("Cant unpack and deploy " + file, e);
-            }
-        }
+        deployer.deploy(file);
     }
 
     public void fileChanged(File file) {

@@ -21,8 +21,8 @@
   <target name="clean">
     <delete dir="build" />
     <delete>
-      <fileset dir="test/testwebapp/WEB-INF/classes" includes="**/*.class"/>
-      <fileset dir="test/ejb" includes="**/*.class"/>
+      <fileset dir="testapplication/web/WEB-INF/classes" includes="**/*.class"/>
+      <fileset dir="testapplication/ejb" includes="**/*.class"/>
     </delete>
   </target>
 
@@ -51,37 +51,41 @@
 
 
   <!-- test application -->
-  <target name="testapp">
-
-    <mkdir dir="build/dropzone"/>
-
-    <!-- The test web app -->
-    <javac destdir="test/testwebapp/WEB-INF/classes"
-	   classpath="${classpath}"
-	   includes="**/*.java">
-
-      <src path="test/testwebapp/WEB-INF/classes"/>
-    </javac>
-
-    <jar jarfile="build/dropzone/testwebapp.war"
-         basedir="test/testwebapp" />
+  <target name="testapplication">
 
     <!-- The test ejb jar -->
-    <javac destdir="test/ejb"
+    <javac destdir="testapplication/ejb"
 	   classpath="${classpath}"
 	   includes="**/*.java">
 
-      <src path="test/ejb"/>
+      <src path="testapplication/ejb"/>
     </javac>
 
-    <jar jarfile="build/dropzone/testejb.jar"
-         basedir="test/ejb" />
+    <jar jarfile="testapplication/ejb.jar"
+         basedir="testapplication/ejb" />
+
+    <!-- The test web app -->
+    <javac destdir="testapplication/web/WEB-INF/classes"
+	   classpath="${classpath}:testapplication/ejb"
+	   includes="**/*.java">
+
+      <src path="testapplication/web/WEB-INF/classes"/>
+    </javac>
+
+    <jar jarfile="testapplication/web.war"
+         basedir="testapplication/web" />
+
+    <!-- Ear it together -->
+    <mkdir dir="build/dropzone"/>
+    <jar jarfile="build/dropzone/testapplication.ear"
+         basedir="testapplication"
+         includes="*web.war, ejn.jar, META-INF/*.xml" />
 
   </target>
 
 
   <!-- start server -->
-  <target name="start" depends="jetserver, testapp">
+  <target name="start" depends="jetserver, testapplication">
     <java classname="jetserver.server.JetServer"
           classpath="${classpath}"
           fork="true"
