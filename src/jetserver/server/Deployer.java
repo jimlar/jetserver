@@ -6,21 +6,21 @@ import java.io.*;
 import java.util.*;
 
 import jetserver.server.web.*;
-import jetserver.server.ejb.EJBContainer;
+import jetserver.server.ejb.EJBDeployer;
 
 /**
  * This class manages all containers in JetServer, you can add all types of supported
  * applications to this manager to activate them
  */
 
-public class ContainerManager {
+public class Deployer {
 
     private WebContainer webContainer;
-    private EJBContainer ejbContainer;
+    private EJBDeployer ejbContainer;
     
-    public ContainerManager() throws IOException {
+    public Deployer() throws IOException {
         this.webContainer = new WebContainer();
-        this.ejbContainer = new EJBContainer();
+        this.ejbContainer = new EJBDeployer();
     }
 
     /**

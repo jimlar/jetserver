@@ -5,19 +5,19 @@ import java.io.*;
 import java.util.*;
 
 import jetserver.config.ServerConfig;
-import jetserver.server.ContainerManager;
+import jetserver.server.Deployer;
 import jetserver.util.*;
 
 public class DropZoneWatch implements DirectoryListener {
     
-    private ContainerManager containerManager;
+    private Deployer containerManager;
     private DirectoryWatch directoryWatch;
     private File dropZone;
     private File deployDir;
 
     private Log log;
 
-    public DropZoneWatch(ContainerManager containerManager) {
+    public DropZoneWatch(Deployer containerManager) {
         ServerConfig config = ServerConfig.getInstance();
         this.containerManager = containerManager;
         this.deployDir = config.getFile("jetserver.dropzonewatch.deploy-dir");

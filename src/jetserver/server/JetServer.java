@@ -11,12 +11,12 @@ import jetserver.util.Log;
 public class JetServer {
 
     private DropZoneWatch dropZoneWatch;
-    private ContainerManager containerManager;
+    private Deployer containerManager;
 
     public JetServer() 
 	throws IOException
     {
-	this.containerManager = new ContainerManager();
+	this.containerManager = new Deployer();
 	this.dropZoneWatch = new DropZoneWatch(containerManager);
 	this.dropZoneWatch.start();
 
