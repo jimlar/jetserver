@@ -333,22 +333,4 @@ public class BeanWrapperFactory {
         }
         return null;
     }
-
-    /**
-     * @return true if the method matches the signature of a businenss method
-     * in the ejbInterface class
-     */
-    private boolean isBusinessMethod(Method method, Class ejbInterface) {
-        Method[] businessMethods = ejbInterface.getDeclaredMethods();
-        if (businessMethods != null) {
-            for (int i = 0; i < businessMethods.length; i++) {
-                if (method.getReturnType().equals(businessMethods[i].getReturnType())
-                        && method.getName().equals(businessMethods[i].getName())
-                        && Arrays.equals(method.getParameterTypes(), businessMethods[i].getParameterTypes())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }
